@@ -1,0 +1,478 @@
+[gd_scene load_steps=32 format=3 uid="uid://vksqwmmac5gt"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/interactable.gd" id="3_inter"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.02, 0.02, 0.04, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.3, 0.4, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
+glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(0.12, 0.1, 0.12, 1)
+fog_density = 0.02
+
+[sub_resource type="StandardMaterial3D" id="mat_floor"]
+albedo_color = Color(0.42, 0.3, 0.24, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_rug"]
+albedo_color = Color(0.55, 0.27, 0.15, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_ceiling"]
+albedo_color = Color(0.85, 0.82, 0.76, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_wall"]
+albedo_color = Color(0.78, 0.7, 0.55, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_wood"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_tv"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_shade"]
+albedo_color = Color(1, 0.9, 0.7, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.45, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="BoxShape3D" id="shape_tv"]
+size = Vector3(0.85, 0.65, 0.65)
+
+[sub_resource type="StandardMaterial3D" id="mat_screen"]
+albedo_color = Color(0.1, 0.15, 0.25, 1)
+emission_enabled = true
+emission = Color(0.45, 0.6, 1, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxShape3D" id="shape_couch"]
+size = Vector3(2.4, 0.95, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_couch"]
+albedo_color = Color(0.18, 0.3, 0.22, 1)
+
+[sub_resource type="BoxShape3D" id="shape_candy"]
+size = Vector3(0.8, 0.3, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="mat_pillowcase"]
+albedo_color = Color(0.85, 0.85, 0.88, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_candy_a"]
+albedo_color = Color(1, 0.5, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_candy_b"]
+albedo_color = Color(0.5, 0.2, 0.7, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_candy_c"]
+albedo_color = Color(0.85, 0.1, 0.15, 1)
+
+[sub_resource type="BoxShape3D" id="shape_mask"]
+size = Vector3(0.3, 0.1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="mat_mask"]
+albedo_color = Color(0.92, 0.9, 0.85, 1)
+
+[sub_resource type="BoxShape3D" id="shape_window"]
+size = Vector3(0.1, 1.1, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_window"]
+albedo_color = Color(0.05, 0.07, 0.15, 1)
+emission_enabled = true
+emission = Color(0.08, 0.12, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="shape_sibdoor"]
+size = Vector3(0.1, 2, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="mat_door"]
+albedo_color = Color(0.55, 0.45, 0.35, 1)
+
+[sub_resource type="StandardMaterial3D" id="mat_dreamwall"]
+albedo_color = Color(0.5, 0.47, 0.6, 1)
+
+[sub_resource type="BoxShape3D" id="shape_dreamdoor"]
+size = Vector3(0.9, 2, 0.15)
+
+[sub_resource type="StandardMaterial3D" id="mat_glow"]
+albedo_color = Color(1, 0.85, 0.6, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.5, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="CapsuleShape3D" id="shape_player"]
+radius = 0.25
+height = 1.3
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Room" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+use_collision = true
+size = Vector3(6, 0.1, 5)
+material = SubResource("mat_floor")
+
+[node name="Rug" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.6)
+size = Vector3(2.4, 0.01, 1.8)
+material = SubResource("mat_rug")
+
+[node name="Ceiling" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65, 0)
+use_collision = true
+size = Vector3(6, 0.1, 5)
+material = SubResource("mat_ceiling")
+
+[node name="WallSouth" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 2.55)
+use_collision = true
+size = Vector3(6.2, 2.6, 0.1)
+material = SubResource("mat_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05, 1.3, 0)
+use_collision = true
+size = Vector3(0.1, 2.6, 5)
+material = SubResource("mat_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05, 1.3, 0)
+use_collision = true
+size = Vector3(0.1, 2.6, 5)
+material = SubResource("mat_wall")
+
+[node name="WallNorthA" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 1.3, -2.55)
+use_collision = true
+size = Vector3(4.6, 2.6, 0.1)
+material = SubResource("mat_wall")
+
+[node name="WallNorthB" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.3, -2.55)
+use_collision = true
+size = Vector3(0.6, 2.6, 0.1)
+material = SubResource("mat_wall")
+
+[node name="DoorHeader" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.35, -2.55)
+use_collision = true
+size = Vector3(1, 0.5, 0.1)
+material = SubResource("mat_wall")
+
+[node name="HallFloor" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, -4.1)
+use_collision = true
+size = Vector3(1.2, 0.1, 3)
+material = SubResource("mat_floor")
+
+[node name="HallCeiling" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.25, -4.1)
+use_collision = true
+size = Vector3(1.2, 0.1, 3)
+material = SubResource("mat_ceiling")
+
+[node name="HallWallLeft" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 1.1, -4.1)
+use_collision = true
+size = Vector3(0.1, 2.2, 3)
+material = SubResource("mat_wall")
+
+[node name="HallWallRight" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.1, -4.1)
+use_collision = true
+size = Vector3(0.1, 2.2, 3)
+material = SubResource("mat_wall")
+
+[node name="HallEndWall" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.1, -5.65)
+use_collision = true
+size = Vector3(1.2, 2.2, 0.1)
+material = SubResource("mat_wall")
+
+[node name="Furniture" type="Node3D" parent="."]
+
+[node name="TVStand" type="CSGBox3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.25, -2.2)
+use_collision = true
+size = Vector3(1.4, 0.5, 0.5)
+material = SubResource("mat_wood")
+
+[node name="CoffeeTable" type="CSGBox3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.5)
+use_collision = true
+size = Vector3(1.1, 0.4, 0.6)
+material = SubResource("mat_wood")
+
+[node name="LampPole" type="CSGCylinder3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.75, 2.1)
+use_collision = true
+radius = 0.03
+height = 1.5
+material = SubResource("mat_tv")
+
+[node name="LampShade" type="CSGCylinder3D" parent="Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.55, 2.1)
+radius = 0.22
+height = 0.3
+material = SubResource("mat_shade")
+
+[node name="Interactables" type="Node3D" parent="."]
+
+[node name="TV" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.8, -2.2)
+script = ExtResource("3_inter")
+prompt = "Watch TV"
+memory_text = "The Halloween special again. You've seen it twice this week. You watch anyway."
+repeat_text = "Commercials. A toy you are definitely circling in the catalog."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/TV"]
+shape = SubResource("shape_tv")
+
+[node name="Body" type="CSGBox3D" parent="Interactables/TV"]
+size = Vector3(0.8, 0.6, 0.6)
+material = SubResource("mat_tv")
+
+[node name="Screen" type="CSGBox3D" parent="Interactables/TV"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.31)
+size = Vector3(0.6, 0.45, 0.02)
+material = SubResource("mat_screen")
+
+[node name="Couch" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+script = ExtResource("3_inter")
+prompt = "Lie down"
+memory_text = "Just for a minute. The TV gets quieter and quieter."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, 0.05)
+shape = SubResource("shape_couch")
+
+[node name="Seat" type="CSGBox3D" parent="Interactables/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+size = Vector3(2.2, 0.45, 0.9)
+material = SubResource("mat_couch")
+
+[node name="Back" type="CSGBox3D" parent="Interactables/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.35)
+size = Vector3(2.2, 0.55, 0.2)
+material = SubResource("mat_couch")
+
+[node name="ArmL" type="CSGBox3D" parent="Interactables/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.325, 0)
+size = Vector3(0.2, 0.65, 0.9)
+material = SubResource("mat_couch")
+
+[node name="ArmR" type="CSGBox3D" parent="Interactables/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.325, 0)
+size = Vector3(0.2, 0.65, 0.9)
+material = SubResource("mat_couch")
+
+[node name="Candy" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0, 0.6)
+script = ExtResource("3_inter")
+prompt = "Sort candy"
+memory_text = "Trade pile. Keep pile. The full-size bar from the house with the fog machine goes straight in keep."
+repeat_text = "You eat one more. Okay, two."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.15, 0)
+shape = SubResource("shape_candy")
+
+[node name="Pillowcase" type="CSGBox3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.125, -0.1)
+size = Vector3(0.35, 0.25, 0.3)
+material = SubResource("mat_pillowcase")
+
+[node name="PieceA" type="CSGBox3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.02, 0.05)
+size = Vector3(0.12, 0.04, 0.08)
+material = SubResource("mat_candy_a")
+
+[node name="PieceB" type="CSGBox3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.02, 0.15)
+size = Vector3(0.1, 0.04, 0.1)
+material = SubResource("mat_candy_b")
+
+[node name="PieceC" type="CSGBox3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.02, -0.12)
+size = Vector3(0.14, 0.04, 0.06)
+material = SubResource("mat_candy_c")
+
+[node name="PieceD" type="CSGBox3D" parent="Interactables/Candy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.05)
+size = Vector3(0.08, 0.04, 0.08)
+material = SubResource("mat_candy_a")
+
+[node name="Mask" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.42, 0.5)
+script = ExtResource("3_inter")
+prompt = "Pick up mask"
+memory_text = "The elastic left a red line across your cheek. It still smells like plastic and the costume aisle."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/Mask"]
+shape = SubResource("shape_mask")
+
+[node name="Shape" type="CSGBox3D" parent="Interactables/Mask"]
+size = Vector3(0.22, 0.04, 0.28)
+material = SubResource("mat_mask")
+
+[node name="Window" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.98, 1.4, 0)
+script = ExtResource("3_inter")
+prompt = "Look outside"
+memory_text = "Porch lights all the way down the street. A few big kids still out, no costumes, just pillowcases."
+repeat_text = "Your breath fogs the glass. You draw a smiley face before anyone sees."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/Window"]
+shape = SubResource("shape_window")
+
+[node name="Frame" type="CSGBox3D" parent="Interactables/Window"]
+size = Vector3(0.04, 1.1, 1.5)
+material = SubResource("mat_wood")
+
+[node name="Glass" type="CSGBox3D" parent="Interactables/Window"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0, 0)
+size = Vector3(0.02, 0.95, 1.35)
+material = SubResource("mat_window")
+
+[node name="SiblingDoor" type="StaticBody3D" parent="Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52, 1, -4.3)
+script = ExtResource("3_inter")
+prompt = "Knock"
+memory_text = "Music through the door, a lot of guitar. They yell 'busy' and turn it up."
+repeat_text = "You sit against the door for a while. You can hear them laughing at something on the computer."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/SiblingDoor"]
+shape = SubResource("shape_sibdoor")
+
+[node name="Door" type="CSGBox3D" parent="Interactables/SiblingDoor"]
+size = Vector3(0.05, 2, 0.8)
+material = SubResource("mat_door")
+
+[node name="Sign" type="Label3D" parent="Interactables/SiblingDoor"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.04, 0.4, 0)
+modulate = Color(0.85, 0.1, 0.1, 1)
+text = "KEEP OUT"
+font_size = 28
+outline_size = 0
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Lamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.5, 2.1)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.6
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="TVGlow" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.9, -1.7)
+light_color = Color(0.5, 0.62, 1, 1)
+light_energy = 1.2
+omni_range = 4.5
+
+[node name="HallLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.9, -4.6)
+light_color = Color(1, 0.8, 0.6, 1)
+light_energy = 0.35
+omni_range = 3.0
+
+[node name="DreamHall" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.05, -13.85)
+use_collision = true
+size = Vector3(1.2, 0.1, 16.5)
+material = SubResource("mat_floor")
+
+[node name="Ceiling" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.25, -13.85)
+use_collision = true
+size = Vector3(1.2, 0.1, 16.5)
+material = SubResource("mat_dreamwall")
+
+[node name="WallL" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 1.1, -13.85)
+use_collision = true
+size = Vector3(0.1, 2.2, 16.5)
+material = SubResource("mat_dreamwall")
+
+[node name="WallR" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 1.1, -13.85)
+use_collision = true
+size = Vector3(0.1, 2.2, 16.5)
+material = SubResource("mat_dreamwall")
+
+[node name="EndWall" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.1, -22.15)
+use_collision = true
+size = Vector3(1.2, 2.2, 0.1)
+material = SubResource("mat_dreamwall")
+
+[node name="DoorA" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52, 1, -9)
+size = Vector3(0.05, 2, 0.8)
+material = SubResource("mat_door")
+
+[node name="DoorB" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.48, 1, -13)
+size = Vector3(0.05, 2, 0.8)
+material = SubResource("mat_door")
+
+[node name="DoorC" type="CSGBox3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52, 1, -17)
+size = Vector3(0.05, 2, 0.8)
+material = SubResource("mat_door")
+
+[node name="DreamDoor" type="StaticBody3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, -22.05)
+script = ExtResource("3_inter")
+prompt = "Open"
+memory_text = "It's warm on the other side. It smells like Grandma's kitchen."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DreamHall/DreamDoor"]
+shape = SubResource("shape_dreamdoor")
+
+[node name="Door" type="CSGBox3D" parent="DreamHall/DreamDoor"]
+size = Vector3(0.8, 2, 0.05)
+material = SubResource("mat_door")
+
+[node name="LightUnderDoor" type="CSGBox3D" parent="DreamHall/DreamDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.99, 0.04)
+size = Vector3(0.8, 0.02, 0.02)
+material = SubResource("mat_glow")
+
+[node name="DreamLight" type="OmniLight3D" parent="DreamHall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.2, -21.6)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0.8
+omni_range = 4.0
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.05, 1.1)
+script = ExtResource("2_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("shape_player")
+
+[node name="Head" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head"]
+current = true
+
+[node name="InteractRay" type="RayCast3D" parent="Player/Head/Camera3D"]
+target_position = Vector3(0, 0, -1.6)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
