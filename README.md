@@ -21,13 +21,18 @@ E or left click: interact · Esc: free the mouse (click to recapture)
 - **Look**: 640×360 scaled 2× for a PS2-era feel, with SSAO/SSIL, volumetric fog, moonlight and
   textured materials. The street outside is built in `scripts/street.gd`.
 
-## Replacing placeholder audio
-All audio is placeholder. To use real recordings, drop a `.wav` or `.ogg` with the **same name**
-into `audio/voice/`, `audio/music/` or `audio/sfx/`. Regenerate placeholders with:
-- `tools/generate_voices.ps1` (Windows text-to-speech, reads `data/lines.json`; `-Force` re-records all)
-- `python tools/generate_audio.py` (synthesized music and sound effects)
+## Audio
+- **Voices**: neural text-to-speech with [Piper](https://github.com/rhasspy/piper), offline and free.
+  `python tools/generate_voices.py --setup` once (downloads Piper + voices into the gitignored
+  `tools/piper/`), then `python tools/generate_voices.py` records any new lines from `data/lines.json`
+  (`--force` re-records all, or pass line ids). Voice choice per character is `SPEAKERS` in that script.
+- **Music and sound effects**: real CC0 recordings from BigSoundBank, Kenney and OpenGameArt, cut
+  by `python tools/fetch_audio.py` (credits in `audio/CREDITS.md`). The Kenney packs must be
+  downloaded by hand; the script tells you where to put them.
+- `python tools/generate_audio.py` makes the few deliberately electronic sounds (TV jingles, sign-off tone, bulb buzz).
 
-Per-speaker pitch and subtitle color live in `SPEAKERS` in `scripts/audio.gd`.
+To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the **same name** into `audio/voice/`,
+`audio/music/` or `audio/sfx/`. In-game pitch and subtitle color per speaker are in `SPEAKERS` in `scripts/audio.gd`.
 
 ## Where things live
 - `scripts/player.gd`: Leo's movement, look, footsteps, interaction raycast

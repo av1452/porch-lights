@@ -5,14 +5,14 @@ extends Node
 
 const LINES_PATH := "res://data/lines.json"
 
-## Per-speaker subtitle name, color and playback pitch (placeholder TTS voices
-## are pitched here so Leo sounds like a kid without re-recording).
+## Per-speaker subtitle name, color and playback pitch. Leo's generated voice
+## is nudged up so he reads as an 8-year-old; set 1.0 for real recordings.
 const SPEAKERS := {
-	"leo": { "name": "", "color": Color(1, 0.97, 0.9), "pitch": 1.16, "bus": "Voice" },
+	"leo": { "name": "", "color": Color(1, 0.97, 0.9), "pitch": 1.07, "bus": "Voice" },
 	"mom": { "name": "Mom", "color": Color(1, 0.8, 0.75), "pitch": 1.0, "bus": "Voice" },
-	"dad": { "name": "Dad", "color": Color(0.75, 0.85, 1), "pitch": 0.93, "bus": "Voice" },
-	"sibling": { "name": "Through the door", "color": Color(0.85, 1, 0.75), "pitch": 1.12, "bus": "Muffled" },
-	"tv": { "name": "TV", "color": Color(0.7, 0.85, 1), "pitch": 1.05, "bus": "TV" },
+	"dad": { "name": "Dad", "color": Color(0.75, 0.85, 1), "pitch": 1.0, "bus": "Voice" },
+	"sibling": { "name": "Through the door", "color": Color(0.85, 1, 0.75), "pitch": 1.0, "bus": "Muffled" },
+	"tv": { "name": "TV", "color": Color(0.7, 0.85, 1), "pitch": 1.0, "bus": "TV" },
 }
 
 signal line_finished(id: String)
@@ -106,7 +106,7 @@ func get_stream(folder: String, name: String, loop := false) -> AudioStream:
 	if _cache.has(key):
 		return _cache[key]
 	var stream: AudioStream = null
-	for ext in [".ogg", ".wav"]:
+	for ext in [".ogg", ".mp3", ".wav"]:
 		var path := "res://audio/%s/%s%s" % [folder, name, ext]
 		if ResourceLoader.exists(path):
 			stream = load(path)
@@ -119,6 +119,8 @@ func get_stream(folder: String, name: String, loop := false) -> AudioStream:
 			wav.loop_end = int(wav.get_length() * wav.mix_rate)
 		elif stream is AudioStreamOggVorbis:
 			(stream as AudioStreamOggVorbis).loop = true
+		elif stream is AudioStreamMP3:
+			(stream as AudioStreamMP3).loop = true
 	_cache[key] = stream
 	return stream
 
@@ -157,6 +159,9 @@ func stop_music(fade_time := 2.0) -> void:
 ## One-shot sound. Pass `at` for positional 3D sound. `variants` picks
 ## name_1..name_N at random (footsteps, barks).
 func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter := 0.0, variants := 0) -> void:
+	if SEQUENCES.has(name):
+		_play_sequence(name, at, volume_db, pitch_jitter)
+		return
 	var file := name
 	if variants > 0:
 		file = "%s_%d" % [name, randi_range(1, variants)]
@@ -183,6 +188,20 @@ func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter :
 		add_child(p2)
 		p2.play()
 		p2.finished.connect(p2.queue_free)
+
+
+## Sounds made of several hits: plays name_1, name_2... at these times.
+const SEQUENCES := {
+	"knock": [0.0, 0.26, 0.5],
+}
+
+
+func _play_sequence(name: String, at: Variant, volume_db: float, pitch_jitter: float) -> void:
+	var times: Array = SEQUENCES[name]
+	for i in times.size():
+		if i > 0:
+			await get_tree().create_timer(times[i] - times[i - 1]).timeout
+		play_sfx("%s_%d" % [name, i + 1], at, volume_db, pitch_jitter)
 
 
 ## A looping positional ambience (TV, crickets, clock). Returns the player so

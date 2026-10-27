@@ -668,7 +668,7 @@ script = ExtResource("3_inter")
 prompt = "Knock"
 line_id = "sib_first"
 repeat_line_ids = PackedStringArray("sib_repeat")
-use_sfx = "door_close"
+use_sfx = "knock"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interactables/SiblingDoor"]
 shape = SubResource("shape_sibdoor")

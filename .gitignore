@@ -1,1 +1,5 @@
 ﻿.godot/
+
+tools/piper/
+tools/.audio_cache/
+__pycache__/

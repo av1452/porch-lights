@@ -180,7 +180,7 @@ func _porch_sequence() -> void:
 	await get_tree().create_timer(1.0).timeout
 	await Audio.say("leo_final")
 	await get_tree().create_timer(1.5).timeout
-	Audio.play_music("ending_music_box", 3.0)
+	Audio.play_music("ending", 3.0)
 	await hud.show_title("End of Chapter 2", "To be continued...", 4.0).finished
 	hud.show_memory("Press E to play again.", 600.0)
 	_ended = true

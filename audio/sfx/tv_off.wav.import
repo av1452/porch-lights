@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://dsgytrovsgcxi"
-path="res://.godot/imported/ch2_night.wav-7ee8c0f09d555d676593f649badddb74.sample"
+uid="uid://doy1x0vg5vxdj"
+path="res://.godot/imported/tv_off.wav-b058f4ec5d97799bd08c9f478fe28478.sample"
 
 [deps]
 
-source_file="res://audio/music/ch2_night.wav"
-dest_files=["res://.godot/imported/ch2_night.wav-7ee8c0f09d555d676593f649badddb74.sample"]
+source_file="res://audio/sfx/tv_off.wav"
+dest_files=["res://.godot/imported/tv_off.wav-b058f4ec5d97799bd08c9f478fe28478.sample"]
 
 [params]
 

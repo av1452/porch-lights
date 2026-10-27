@@ -58,6 +58,8 @@ func _ready() -> void:
 
 
 func _apply_channel() -> void:
+	if _show.channel != channel:
+		Audio.play_sfx("tv_off" if channel == "off" else "tv_zap", get_parent(), -8.0)
 	_show.channel = channel
 	var video_path := "res://media/%s.ogv" % channel
 	var has_video := ResourceLoader.exists(video_path)
