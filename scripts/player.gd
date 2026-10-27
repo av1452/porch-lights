@@ -1,6 +1,6 @@
 class_name Player
 extends CharacterBody3D
-## First-person controller tuned to feel like an 8-year-old:
+## Leo. First-person controller tuned to feel like an 8-year-old:
 ## low eye height, short reach, slow walk, quick little sprint.
 
 signal target_changed(target: Interactable)
@@ -38,6 +38,10 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _bob_t := 0.0
 var _target: Interactable = null
 var _capsule: CapsuleShape3D
+var _step_index := 0
+## Set a "surface" metadata string on floor nodes ("wood", "porch") to pick
+## footstep sounds.
+var _surface := "wood"
 
 
 func _ready() -> void:
@@ -85,6 +89,10 @@ func _physics_process(delta: float) -> void:
 	velocity.x = lerpf(velocity.x, dir.x * speed, w)
 	velocity.z = lerpf(velocity.z, dir.z * speed, w)
 	move_and_slide()
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i)
+		if c.get_normal().y > 0.7 and c.get_collider() is Object:
+			_surface = str((c.get_collider() as Object).get_meta("surface", "wood"))
 
 	_update_bob(delta)
 	_update_target()
@@ -105,6 +113,11 @@ func _update_bob(delta: float) -> void:
 	if is_on_floor() and hspeed > 0.2:
 		_bob_t += delta * bob_frequency * TAU * (hspeed / walk_speed) * 0.5
 		target = Vector3(cos(_bob_t * 0.5) * bob_amount * 0.6, sin(_bob_t) * bob_amount, 0)
+		var step := int(_bob_t / PI)
+		if step != _step_index:
+			_step_index = step
+			var vol := -14.0 if crouching else (-4.0 if hspeed > walk_speed + 0.3 else -8.0)
+			Audio.play_sfx("footstep_" + _surface, global_position, vol, 0.08, 4)
 	camera.position = camera.position.lerp(target, clampf(10.0 * delta, 0.0, 1.0))
 
 
@@ -123,6 +136,17 @@ func _update_target() -> void:
 func tween_fov(fov: float, time: float) -> Tween:
 	var t := create_tween()
 	t.tween_property(camera, "fov", fov, time)
+	return t
+
+
+## Smoothly turn body and head to face a world point (for cutscenes).
+func tween_look_at(point: Vector3, time: float) -> Tween:
+	var to := point - head.global_position
+	var yaw := atan2(-to.x, -to.z)
+	var pitch := atan2(to.y, Vector2(to.x, to.z).length())
+	var t := create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	t.tween_property(self, "rotation:y", rotation.y + wrapf(yaw - rotation.y, -PI, PI), time)
+	t.tween_property(head, "rotation:x", pitch, time)
 	return t
 
 
