@@ -7,3 +7,6 @@ export_presets.cfg
 # OS
 .DS_Store
 Thumbs.db
+
+# Local screenshots from tests/screenshots.gd
+screenshots/
