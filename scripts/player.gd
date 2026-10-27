@@ -20,6 +20,7 @@ signal target_changed(target: Interactable)
 @export var crouch_eye_height := 0.65
 @export var stand_height := 1.3
 @export var crouch_height := 0.8
+@export var seated_eye_height := 0.92
 
 @export_group("Head bob")
 @export var bob_amount := 0.03
@@ -33,6 +34,8 @@ signal target_changed(target: Interactable)
 ## Set true during cutscenes and transitions.
 var input_locked := false
 var crouching := false
+## While seated you can look around but not walk.
+var seated := false
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _bob_t := 0.0
@@ -65,13 +68,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if seated:
+		velocity = Vector3.ZERO
+		_update_crouch(delta)
+		_update_bob(delta)
+		_update_target()
+		return
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 
 	_update_crouch(delta)
 
 	var input_dir := Vector2.ZERO
-	if not input_locked:
+	if not input_locked and not seated:
 		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var dir := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
@@ -91,11 +100,15 @@ func _physics_process(delta: float) -> void:
 
 
 func _update_crouch(delta: float) -> void:
-	crouching = Input.is_action_pressed("crouch") and not input_locked
+	crouching = Input.is_action_pressed("crouch") and not input_locked and not seated
 	var h := crouch_height if crouching else stand_height
 	_capsule.height = move_toward(_capsule.height, h, delta * 4.0)
 	body_shape.position.y = _capsule.height / 2.0
-	var eye := crouch_eye_height if crouching else stand_eye_height
+	var eye := stand_eye_height
+	if seated:
+		eye = seated_eye_height
+	elif crouching:
+		eye = crouch_eye_height
 	head.position.y = lerpf(head.position.y, eye, clampf(10.0 * delta, 0.0, 1.0))
 
 
@@ -131,6 +144,19 @@ func teleport(pos: Vector3, yaw_degrees: float = 0.0) -> void:
 	rotation.y = deg_to_rad(yaw_degrees)
 	head.rotation.x = 0.0
 	velocity = Vector3.ZERO
+
+
+## Sit at a spot (chair, couch). Movement stops; looking still works.
+func sit(pos: Vector3, yaw_degrees: float) -> void:
+	teleport(pos, yaw_degrees)
+	seated = true
+	body_shape.disabled = true
+
+
+func stand(pos: Vector3, yaw_degrees: float) -> void:
+	seated = false
+	body_shape.disabled = false
+	teleport(pos, yaw_degrees)
 
 
 func _setup_inputs() -> void:
