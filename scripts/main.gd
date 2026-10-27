@@ -35,6 +35,7 @@ func _ready() -> void:
 		"tv_color": tv_glow.light_color,
 	}
 	remove_child(dream_hall) # only exists while dreaming
+	hud.fade(0.0, 2.5)
 
 	await get_tree().create_timer(1.5).timeout
 	hud.show_memory("Halloween night. Your costume is half off and your pillowcase is heavy.", 6.0)
