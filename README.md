@@ -1,9 +1,10 @@
 # Porch Lights
 
-A short, first-person story game about growing up in the early 2000s, told through
-the holidays from Halloween to Christmas. You play Leo, an 8-year-old. Your older
-sibling Jamie is 15, and the dog is Biscuit. Everything is a little too big, the
-grown-ups talk quietly in the kitchen, and every chapter ends with you falling asleep.
+A short, first-person story game about being a kid in the early 2000s, from Halloween
+to the last day of winter break. You play Leo, an 8-year-old. Your older sibling Jamie
+is 15, Mom and Dad are doing their best, Biscuit is a very good dog, and Grandma brings
+the fudge. Candy taxes, the kids' table, untangling the lights, matching pajamas, and
+the porch light you leave on so everyone can find their way home.
 
 ![Living room](docs/1_living_room.png)
 
@@ -19,54 +20,59 @@ Open in **Godot 4.3+** (Import → select `project.godot`), then press F5.
 WASD / arrows: move · Mouse: look · Shift: run · C or Ctrl: crouch
 E or left click: interact · Esc: free the mouse (click to recapture)
 
-## Story so far
+## Story
 
-**Chapter 1: October 31, Halloween.** Sort your candy. Pay the candy tax (and
-overhear Mom and Dad worrying about Grandma). Turn off the porch light, and watch the
-rest of the street go dark one house at a time. Show Jamie your haul and hang out in
-their room until Mom calls bedtime. Fall asleep, and the hallway keeps going: Jamie's
-door is open, the room is full of boxes, and at the very end there's a warm door
-that smells like Grandma's kitchen.
+**Chapter 1: October 31, Halloween.** Sort your candy. Pay the candy tax (and catch Mom
+and Dad plotting to keep the full-size bars). Turn off the porch light and watch the rest
+of the street go dark one house at a time. Show Jamie your haul and hang out in their
+room until Mom calls bedtime. Fall asleep, and the hallway keeps going, all the way to a
+warm door that smells like Grandma's kitchen.
 
-**Interlude: 2:14 a.m., The Porch Light.** Something wakes you. Jamie's still up.
-Mom's in the kitchen on the phone with Grandma, who can't sleep and keeps asking
-about her porch light. Biscuit is whining at the front door. You turn the porch light
-back on and let him out, and every porch light on the street is on again, at two in
-the morning. One by one they go out, until only one is left: way at the end of the
-street, the same orange as Grandma's.
+**Interlude: 2:14 a.m., The Midnight Candy Raid.** A crinkle wakes you. Jamie heard it
+too. Flashlight in hand, you catch Mom and Dad in the kitchen eating your Halloween candy.
+Everybody gets one. Then Biscuit needs to go out, and from the porch you watch the
+neighborhood's porch lights click off one by one. Goodnight, Halloween.
 
-**Chapter 2: November, Thanksgiving at Grandma's** (opening). Say hi to Grandma,
-who sits down while she cooks now. Take your seat at the kids' table while Jamie
-moves up to the big table. After dinner, the house goes quiet, and Grandma saves
-you the first slice of pie.
+**Chapter 2: November, Thanksgiving at Grandma's.** Say hi to Grandma and open the
+canned cranberry sauce (ridges and all). Take your seat at the kids' table while Jamie
+moves up to the big table. After dinner, Grandma saves you the first slice of pie.
 
 **Chapter 3: November, The Long Drive Home.** The back seat, leftovers on your lap,
-sodium streetlights sliding over the ceiling. Jamie lends you one earbud. Up front,
-Mom talks quietly about Grandma's hands. You lean on the window and fall asleep, and
-the car is gone: you're walking down a street where every porch light goes dark
-behind you, toward the orange one at the end. Grandma's waiting on her porch. Then
-Dad's carrying you inside.
+streetlights sliding over the ceiling. Jamie lends you one earbud. Mom circles things in
+the Black Friday ads ("nobody look"), and the first Christmas song of the year comes on
+the radio. You fall asleep, and in your dream every porch light you pass turns into
+Christmas lights, all the way to Grandma's porch.
 
-**Chapter 4: December 18, The Last Week Before Winter Break.** Mom's been at
-Grandma's since Sunday. Dad makes his famous (burnt) pizza and you set the table for
-three. Mom calls from Grandma's: she's sleeping a lot. Dad takes the phone into the
-garage and shuts the door. Jamie needs help finding the one dead bulb that keeps the
-whole string dark. You fall asleep watching the Christmas special, and in the dream
-it's snowing in the living room and Grandma calls: leave your porch light on
-Christmas Eve, so she can find you.
+**Chapter 4: December 19, The Last Day Before Winter Break.** Paper snowflakes, a candy
+cane from your teacher, and two whole weeks off. Sprinkles duty on Mom's sugar cookies.
+The advent calendar (Jamie ate tomorrow's). The toy catalog, page 47. Help Jamie find
+the one dead bulb so the whole tree lights up. Grandma calls: she's coming for Christmas
+Eve. You fall asleep to the claymation special and dream it's snowing in the living
+room, then wake up to real snow.
 
-**Planned:** Christmas Eve, Christmas morning and the quiet after.
+**Chapter 5: December 24, Christmas Eve.** Grandma's here with her fudge. One present
+tonight: matching reindeer pajamas for everybody, even Dad, and a bandana for Biscuit.
+The disposable-camera family picture. Cookies and milk for Santa, carrots for the
+reindeer, and the porch light on so Santa can find the house. Was that sleigh bells?
+
+**Chapter 6: December 25, Christmas Morning.** 5:52 a.m. He came! A stocking with an
+orange in the toe, like every year. The Mega Robo Racer: batteries not included, but
+Grandma always brings batteries. Dad's snowman pancakes (snow blobs). A snowball ambush
+from Jamie, and an afternoon nap with everybody you love in one room.
+
+**Chapter 7: January 3, The Last Day of Winter Break.** Take down the tree, one ornament
+memory at a time. Write Grandma a thank-you note. One more round as player two, practicing
+what you'll tell everyone at school. Then the porch light that's been on since Christmas
+Eve finally clicks off. Until next Halloween.
 
 ## Project layout
-- `scenes/chapter_1_halloween.tscn`, `scenes/chapter_2_thanksgiving.tscn`,
-  `scenes/chapter_3_drive_home.tscn`, `scenes/chapter_4_winter_break.tscn`: levels
-  (Chapter 4 inherits the Chapter 1 house and redecorates it in code)
-  (the interlude plays in the Chapter 1 house, with the porch and street outside)
+- `scenes/chapter_1_halloween.tscn` ... `scenes/chapter_7_last_day_of_break.tscn`: levels.
+  The interlude plays in the Chapter 1 house. Chapters 4-7 inherit that house and
+  redecorate it in code (`scripts/house_chapter.gd`, `scripts/decorations.gd`).
 - `scripts/chapter.gd`: base class for chapters: `say()` dialogue (voiced automatically),
   `objective()`, `open_chapter()` title cards, `swing_door()`, `add_chatter()`, room-state swapping
-- `scripts/chapter_1_halloween.gd`, `scripts/interlude_porch_light.gd`,
-  `scripts/chapter_2_thanksgiving.gd`, `scripts/chapter_3_drive_home.gd`,
-  `scripts/chapter_4_winter_break.gd`: story steps
+- `scripts/chapter_1_halloween.gd`, `scripts/interlude_porch_light.gd`, and
+  `scripts/chapter_2_...` through `scripts/chapter_7_...`: story steps
 - `scripts/car_ride.gd`: the family car at night, with the road sliding past
 - `scripts/figure.gd`: builds people in code (Mom, Dad, Jamie, Grandma) to match the scenes
 - `scripts/player.gd`: Leo's kid-height first-person controller (walk, run, crouch, sit, footsteps)
@@ -105,4 +111,7 @@ godot --headless -s res://tests/playtest_chapter_1.gd   # Chapter 1 + the interl
 godot --headless -s res://tests/playtest_chapter_2.gd
 godot --headless -s res://tests/playtest_chapter_3.gd
 godot --headless -s res://tests/playtest_chapter_4.gd
+godot --headless -s res://tests/playtest_chapter_5.gd
+godot --headless -s res://tests/playtest_chapter_6.gd
+godot --headless -s res://tests/playtest_chapter_7.gd
 ```

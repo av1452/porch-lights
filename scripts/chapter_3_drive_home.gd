@@ -1,8 +1,9 @@
 extends Chapter
 ## Chapter 3 — November. The long drive home from Grandma's.
-## Back seat → share Jamie's headphones → overhear Mom and Dad → lean on the
-## window and fall asleep → the dream street → Grandma's porch light →
-## waking up as Dad carries you in → Chapter 4.
+## Back seat → share Jamie's headphones → Mom and the Black Friday ads, and
+## the first Christmas song on the radio → lean on the window and fall asleep
+## → the dream street, where every porch light turns into Christmas lights as
+## you pass → Grandma's porch → waking up as Dad carries you in → Chapter 4.
 
 enum Step { RIDE, OVERHEAR, SLEEP, DREAM, GRANDMA, END }
 
@@ -141,18 +142,19 @@ func _on_jamie(_by: Node) -> void:
 	await _overhear()
 
 
-# --- Step 1: Mom and Dad, quietly ---------------------------------------
+# --- Step 1: Black Friday ads and the first Christmas song ---------------
 
 func _overhear() -> void:
 	busy = true
 	await say([
-		["Mom", "Did you see her hands? She couldn't open the cranberry sauce."],
-		["Dad", "It's one can, hon."],
-		["Mom", "It's not one can."],
-		["", "The blinker ticks. Nobody says anything for a whole streetlight."],
-		["Mom", "I'm going to start driving up on weekends. Every other weekend, at least."],
-		["Dad", "Okay. We'll make it work."],
-		["", "Jamie turns the music up. Neither of you looks at the other."],
+		["", "Mom clicks on the dome light. She's got the Black Friday ads from Grandma's paper and a pen."],
+		["Mom", "Okay. I'm circling things. Nobody look."],
+		["Dad", "Is it the robot car? It's the robot car."],
+		["Mom", "I said nobody look!"],
+		["", "The radio plays the first Christmas song of the year. Dad turns it up. Mom pretends to be annoyed, then sings anyway."],
+		["Dad", "It's not even December!"],
+		["Mom", "It's after Thanksgiving. It counts."],
+		["", "Jamie takes out the earbud so you can both hear. Everybody sings the part they know."],
 	])
 	busy = false
 	step = Step.SLEEP
@@ -182,7 +184,7 @@ func _on_sleep(_by: Node) -> void:
 	await hud.fade(0.0, 3.0).finished
 	lock(false)
 	busy = false
-	hud.show_memory("The car is gone. You're standing on a street you almost know. Every porch light is on.", 5.0)
+	hud.show_memory("The car is gone. You're standing on a street you almost know. Every porch light is on, waiting.", 5.0)
 	await wait(3.0)
 	objective("Follow the porch lights")
 
@@ -236,11 +238,12 @@ func _process(delta: float) -> void:
 	# The street is only built once the fade into the dream is done.
 	if (step != Step.DREAM and step != Step.GRANDMA) or street == null:
 		return
-	# The street goes dark behind you as you walk.
+	# Every porch light you pass turns into Christmas lights.
 	for e in street.porch_lights:
-		if e.light.light_energy > 0.0 and e.z > player.global_position.z + 10.0 and not e.get("dark", false):
-			e["dark"] = true
-			street.kill_light(e, 1.2)
+		if e.z > player.global_position.z + 3.0 and not e.get("christmas", false):
+			e["christmas"] = true
+			street.set_light_color(e, Decorations.BULB_COLORS[street.porch_lights.find(e) % 3])
+			Audio.play_sfx("dog_tags", (e.light as Node3D).global_position, -6.0, 0.2)
 	if step == Step.DREAM and player.global_position.z < -52.0:
 		step = Step.GRANDMA
 		objective("Go up to Grandma's porch")
@@ -259,7 +262,8 @@ func _on_grandma(_by: Node) -> void:
 	await say([
 		["Grandma", "There you are. I left the light on for you."],
 		["", "Her porch smells like her kitchen. Cinnamon, and the oven, and the hand lotion by the sink."],
-		["Grandma", "Remember what you promised me? Not too fast."],
+		["Grandma", "Look at that. The whole street's ready for Christmas."],
+		["Grandma", "Remember what you promised me? Not too fast. Christmas comes when it comes."],
 		["", "You nod. She fixes your collar like it's the most important job in the world."],
 		["Grandma", "Go on, now. Your dad's carrying you in."],
 	])

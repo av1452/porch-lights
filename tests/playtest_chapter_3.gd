@@ -32,8 +32,8 @@ func _initialize():
 	# walk down the dream street
 	ch.player.teleport(Vector3(-17.8, -0.4, -10.0), 0.0)
 	await create_timer(1.0).timeout
-	var dark: int = ch.street.porch_lights.filter(func(e): return e.get("dark", false)).size()
-	print("lights gone dark behind you: ", dark, " / ", ch.street.porch_lights.size(), " y=", ch.player.global_position.y)
+	var merry: int = ch.street.porch_lights.filter(func(e): return e.get("christmas", false)).size()
+	print("lights turned to Christmas colors: ", merry, " / ", ch.street.porch_lights.size(), " y=", ch.player.global_position.y)
 	ch.player.teleport(Vector3(-24.0, -0.4, -64.0), 90.0)
 	await create_timer(1.0).timeout
 	print("near grandma step=", ch.step)

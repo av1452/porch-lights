@@ -1,9 +1,10 @@
 extends Node
-## Interlude — 2:14 a.m., later that night. Plays inside the Chapter 1 house
-## after the dream hallway, then hands off to Chapter 2.
-## Wake up → Jamie's still awake → overhear Mom on the phone about Grandma →
-## Biscuit wants out → porch light back on → every porch light on the street
-## is on again, and they go out one by one → all but one.
+## Interlude — 2:14 a.m., later that night: the midnight candy raid.
+## Plays inside the Chapter 1 house after the dream hallway, then hands off
+## to Chapter 2. Wake up → Jamie's up too → sneak to the kitchen and catch
+## Mom and Dad eating your Halloween candy → everybody gets one → Biscuit
+## wants out → porch light on → watch the neighborhood's porch lights go off
+## one by one as Halloween ends → back to bed.
 
 enum Step { WAKE, LET_OUT, PORCH, END }
 
@@ -33,6 +34,7 @@ var _energy := {}
 var _porch_energy := 0.0
 var _standing_jamie: Node3D
 var _jamie_coming := false
+var _caught := false
 
 
 func _ready() -> void:
@@ -53,13 +55,13 @@ func start() -> void:
 	_set_up_night()
 	Audio.play_music("ch2_night", 4.0, -4.0)
 	await ch.wait(1.0)
-	await hud.chapter_card("2:14 a.m.", "The Porch Light")
+	await hud.chapter_card("2:14 a.m.", "The Midnight Candy Raid")
 	await hud.fade(0.0, 3.0).finished
 	ch.lock(false)
 	ch.busy = false
-	hud.show_memory("Something woke you up. Out in the living room, Biscuit is whining.", 5.0)
+	hud.show_memory("Something woke you up. A crinkle. The exact sound of a candy wrapper.", 5.0)
 	await ch.wait(3.0)
-	ch.objective("Check on Biscuit")
+	ch.objective("Find out who's in your candy")
 
 
 func _set_up_night() -> void:
@@ -151,10 +153,10 @@ func _on_pass_jamie() -> void:
 	ch.busy = true
 	await ch.swing_door(ch.jamie_door, 95.0)
 	await ch.say([
-		["Jamie", "...Hey. Why are you up?"],
-		["", "You point down the hall. Biscuit whines again, louder."],
-		["Jamie", "He's been doing that for like an hour. I thought it was the dryer."],
-		["Jamie", "Fine. I'm coming. If something eats you, Mom's gonna blame me."],
+		["Jamie", "...You heard it too?"],
+		["", "Jamie's in socks and a hoodie, holding a flashlight like a weapon."],
+		["Jamie", "Somebody's in the candy. I counted my Reese's before bed. I always count."],
+		["Jamie", "Stay behind me. If it's a raccoon, you're on your own."],
 	])
 	ch.busy = false
 	_jamie_coming = true
@@ -194,21 +196,29 @@ func _place_jamie(pos: Vector3, facing: Vector3) -> void:
 # --- Mom and Dad in the kitchen -----------------------------------------
 
 func _on_overhear() -> void:
-	if step == Step.END:
+	if step == Step.END or _caught:
 		return
-	ch.say([
-		["Mom (kitchen)", "That was her again. Two in the morning, and she's wide awake."],
-		["Dad (kitchen)", "Is she okay?"],
-		["Mom (kitchen)", "She says the house is too quiet. She asked if I remembered to turn her porch light on."],
-		["Mom (kitchen)", "Like I still live there. Like I'm twelve."],
-		["Dad (kitchen)", "I'll call her in the morning. Come back to bed."],
-		["Mom (kitchen)", "In a minute."],
+	_caught = true
+	ch.busy = true
+	await ch.say([
+		["Mom (kitchen)", "Just one more peanut butter cup. Then we hide the wrappers."],
+		["Dad (kitchen)", "It's not stealing. It's the candy tax. Late fees."],
+		["Mom (kitchen)", "Shh! Did you hear that?"],
+		["", "Jamie clicks on the flashlight. Mom and Dad freeze, mouths full, both of your pillowcases open on the table."],
+		["Dad", "...This isn't what it looks like."],
+		["Mom", "It's exactly what it looks like. Okay. Okay! Everybody gets one. Then bed."],
+		["", "You pick a full-size bar. Nobody says a word about it. Best night of the year."],
 	])
+	ch.busy = false
+	await ch.wait(1.0)
+	hud.show_memory("Out in the living room, Biscuit is whining at the front door.", 4.0)
+	ch.objective("Check on Biscuit")
 
 
 func _on_parents(_by: Node) -> void:
-	if active and not ch.busy:
-		hud.show_memory("You stay in the doorway. They haven't seen you, and you don't want them to.", 4.0)
+	if active and not ch.busy and _caught:
+		var pool := [["Dad", "We will never speak of this."], ["Mom", "Bed, sweetie. And brush your teeth. Again."]]
+		ch.say([pool[randi() % pool.size()]])
 
 
 # --- Biscuit and the front door -----------------------------------------
@@ -217,7 +227,7 @@ func _on_reach_dog() -> void:
 	if step != Step.WAKE:
 		return
 	step = Step.LET_OUT
-	hud.show_memory("Biscuit's nose is pressed to the crack under the door. His tail isn't wagging.", 5.0)
+	hud.show_memory("Biscuit's nose is pressed to the crack under the door. He's doing his I-need-to-go-out dance.", 5.0)
 	ch.objective("Let Biscuit out")
 
 
@@ -226,14 +236,14 @@ func _on_switch(_by: Node) -> void:
 		return
 	_set_porch_light(not _porch_on)
 	if _porch_on and porch_switch.times_used == 1:
-		hud.show_memory("Click. You turned it off yourself, a few hours ago. It feels like a lot longer.", 4.5)
+		hud.show_memory("Click. You turned it off yourself a few hours ago. Halloween's not quite over yet.", 4.5)
 
 
 func _on_front_door(_by: Node) -> void:
 	if not active or step == Step.PORCH or step == Step.END:
 		return
 	if not _porch_on:
-		hud.show_memory("It's pitch black out there. You turned the porch light off yourself.", 4.5)
+		hud.show_memory("It's pitch black out there. Biscuit is brave. You are less brave.", 4.5)
 		ch.objective("Turn the porch light back on")
 		return
 	step = Step.PORCH
@@ -248,7 +258,7 @@ func _on_front_door(_by: Node) -> void:
 	create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT).tween_method(func(a: float) -> void:
 		front_door.rotation.y = a
 		front_door.position = hinge + Vector3(cos(a), 0, -sin(a)) * 0.5, 0.0, deg_to_rad(95.0), 1.6)
-	hud.show_memory("Cold air. Every porch light on the street is on. All of them. At two in the morning.", 5.0)
+	hud.show_memory("Cold air, leaves, and the smell of everybody's jack-o'-lanterns. A few porch lights are still on.", 5.0)
 	ch.objective("Follow Biscuit")
 	dog.set_whining(false)
 	await ch.wait(0.8)
@@ -274,9 +284,9 @@ func _on_porch() -> void:
 	ch.fade_crickets(-60.0, 4.0)
 	Audio.stop_music(5.0)
 	await ch.wait(2.5)
-	await ch.say([["", "It's so quiet. Even the crickets stopped."]])
+	await ch.say([["", "It's so quiet. Smashed pumpkin on the sidewalk. Toilet paper in the Hendersons' tree."]])
 	if _jamie_coming:
-		await ch.say([["Jamie", "...Why is everybody's porch light on?"]])
+		await ch.say([["Jamie", "Watch. Everybody's going to bed. This is how you know Halloween's really over."]])
 
 	var lights := street.porch_lights
 	for i in lights.size():
@@ -287,28 +297,27 @@ func _on_porch() -> void:
 		street.kill_light(e)
 		Audio.play_sfx("light_out", at, 8.0)
 		if i == 2:
-			hud.show_line("", "One by one, down the street, they go out. Nobody's flipping them. Nobody's there.")
+			hud.show_line("", "One by one, down the street, the porch lights click off. Goodnight, Halloween.")
 		if i == 6:
 			hud.clear_line()
 			dog.set_pose(Dog.Pose.STAND)
-			dog.growl()
+			dog.bark(1)
 		await ch.wait(0.9 if i < 3 else 0.6)
 
 	var far: Vector3 = (street.far_light.light as Node3D).global_position
 	player.tween_fov(30.0, 4.0)
 	await player.tween_look_at(far, 3.0).finished
 	await ch.wait(1.0)
-	await ch.say([["", "Except one. Way at the end of the street. The same orange as Grandma's porch light."]])
+	await ch.say([["", "Except one, way at the end of the street. The same orange as Grandma's porch light. Three more weeks till Thanksgiving."]])
 	if _jamie_coming:
-		await ch.say([["Jamie", "...Whose house is that?"]])
+		await ch.say([["Jamie", "The Kowalskis. They leave it on till November. Every year."]])
 	await ch.wait(1.0)
 	player.tween_fov(player.base_fov, 1.0)
 
-	# Our own light gives out.
-	Audio.play_sfx("bulb_flicker", porch_light, 2.0)
-	for i in 7:
-		_set_porch_light(i % 2 == 1)
-		await ch.wait(randf_range(0.05, 0.2))
+	# Last one on our side of the street: ours.
+	if _jamie_coming:
+		await ch.say([["Jamie", "Okay. You do ours. It's tradition now."]])
+	Audio.play_sfx("switch_click", porch_light, 0.0)
 	_set_porch_light(false)
 	await ch.wait(0.6)
 	await dog.bark(2)
@@ -316,18 +325,18 @@ func _on_porch() -> void:
 
 	await hud.fade(1.0, 2.0).finished
 	await ch.wait(1.0)
-	var lines := [["Dad", "Hey. Hey. What are you doing out here?"]]
+	var lines := [["Dad", "Hey. Hey. What are you doing out here? It's freezing."]]
 	if _jamie_coming:
 		lines += [
 			["Jamie", "Biscuit had to go out."],
-			["Dad", "At two in the morning. Inside. Both of you. Biscuit, you too."],
+			["Dad", "At two in the morning. With chocolate on your face. Inside. Both of you. Biscuit, you too."],
 		]
 	else:
-		lines += [["Dad", "It's two in the morning. Inside, bud. Biscuit, you too."]]
+		lines += [["Dad", "It's two in the morning, bud. Inside. Biscuit, you too."]]
 	lines += [
-		["", "Behind him, Mom is standing in the hallway with the phone still in her hand."],
-		["Mom", "...Was her light on?"],
-		["Dad", "Bed. Everybody."],
+		["Mom", "Hey. Best Halloween ever?"],
+		["", "You nod. You fall asleep with chocolate on your fingers and your costume on the floor."],
+		["Dad", "Bed. Everybody. Happy Halloween."],
 	]
 	await ch.say(lines)
 	await ch.wait(2.0)

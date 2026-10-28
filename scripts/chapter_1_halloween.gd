@@ -108,9 +108,9 @@ func _on_candy(_by: Node) -> void:
 
 func _on_overhear() -> void:
 	await say([
-		["Mom", "...she said she's fine, but she sounded so tired."],
-		["Dad", "She always says she's fine."],
-		["Mom", "We'll see how she is at Thanksgiving. Let's not worry the kids."],
+		["Mom", "...okay, but if we hide the full-size bars, they'll never know."],
+		["Dad", "They'll know. They count. Leo counts everything."],
+		["Mom", "Then we call it the candy tax. Rules are rules."],
 		["Dad", "Hey! There's the big winner. How'd we do?"],
 	])
 

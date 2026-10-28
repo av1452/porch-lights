@@ -275,6 +275,22 @@ func restore_lights() -> void:
 		(e.halo as GeometryInstance3D).transparency = 0.0
 
 
+## Swap a porch light's bulb, glow and halo to another color (Christmas).
+func set_light_color(entry: Dictionary, color: Color) -> void:
+	(entry.light as OmniLight3D).light_color = color
+	var mat: StandardMaterial3D = entry.material
+	mat.albedo_color = color
+	mat.emission = color
+	var halo: GeometryInstance3D = entry.halo
+	var hmat := (halo as MeshInstance3D).material_override as StandardMaterial3D
+	var grad := ((hmat.albedo_texture as GradientTexture2D).gradient as Gradient).duplicate() as Gradient
+	grad.set_color(0, Color(color, 0.9))
+	grad.set_color(1, Color(color, 0.0))
+	var tex := (hmat.albedo_texture as GradientTexture2D).duplicate() as GradientTexture2D
+	tex.gradient = grad
+	hmat.albedo_texture = tex
+
+
 ## End of trick-or-treating: the street's porch lights go off one at a time.
 func lights_out_one_by_one(gap := 0.7) -> void:
 	for e in porch_lights + [far_light]:

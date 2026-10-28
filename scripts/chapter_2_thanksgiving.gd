@@ -37,6 +37,7 @@ func _ready() -> void:
 	])
 	add_chatter(diners.get_node("Dad"), "Dad", [
 		"Save room. Grandma made two pies and she'll know if you didn't have both.",
+		"The dog show's on after the parade. Biscuit would win. Don't tell the other dogs.",
 		"Uncle Ray's telling the fishing story again. Act surprised.",
 	])
 	add_chatter(diners.get_node("Mom"), "Mom", [
@@ -71,14 +72,14 @@ func _on_grandma_hi(_by: Node) -> void:
 		["Grandma", "There's my favorite. Don't tell your cousins."],
 		["Grandma", "Look at you. You'll be taller than me by Christmas."],
 	])
-	# She sits down on the step stool. She never used to sit while she cooked.
+	# She climbs up on her step stool to supervise the kitchen, like a queen.
 	await hud.fade(0.6, 0.6).finished
 	stash(grandma_standing)
 	unstash(grandma_stool, story)
 	await hud.fade(0.0, 0.8).finished
 	await say([
-		["", "She sits down on the step stool for a minute. She never used to sit down while she cooked."],
-		["Grandma", "Go find your seat, honey. Kids' table's by the window."],
+		["", "She hands you the can opener and the cranberry sauce. It slides out in one piece, ridges and all. Perfect."],
+		["Grandma", "Now that's a cranberry log. Go find your seat, honey. Kids' table's by the window."],
 	])
 	seat.enabled = true
 	busy = false
@@ -88,7 +89,7 @@ func _on_grandma_hi(_by: Node) -> void:
 func _on_grandma_stool(_by: Node) -> void:
 	if busy:
 		return
-	var pool := ["Just resting my feet. Go on, sit down.", "Did you wash your hands? Show me. ...Good."]
+	var pool := ["Did you wash your hands? Show me. ...Good.", "Taste this gravy. Too much pepper? Don't tell your uncle."]
 	say([["Grandma", pool[randi() % pool.size()]]])
 
 

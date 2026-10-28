@@ -1,4 +1,11 @@
 ; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
 config_version=5
 
 [application]
@@ -6,6 +13,10 @@ config_version=5
 config/name="Porch Lights (Prototype)"
 run/main_scene="res://scenes/chapter_1_halloween.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
+
+[autoload]
+
+Audio="*res://scripts/audio.gd"
 
 [display]
 
@@ -18,8 +29,3 @@ window/stretch/mode="viewport"
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-anti_aliasing/quality/msaa_3d=0
-
-[autoload]
-
-Audio="*res://scripts/audio.gd"
