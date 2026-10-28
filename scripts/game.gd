@@ -23,12 +23,13 @@ var current := -1
 var finished := false
 var settings := {
 	"master": 1.0, "music": 1.0, "voice": 1.0, "sfx": 1.0,
-	"sensitivity": 1.0, "subtitles": true, "fullscreen": false,
+	"sensitivity": 1.0, "subtitles": true, "fullscreen": false, "home_video": true,
 }
 ## Each photo: { "file": "user://photos/...png" or "", "caption": "...", "stamp": "'03 12 24" }
 var photos: Array = []
 
 var _pause: CanvasLayer
+var _film: CanvasLayer
 ## Headless runs (the playtests) never read or write your save or album.
 var _testing := DisplayServer.get_name() == "headless"
 
@@ -36,6 +37,7 @@ var _testing := DisplayServer.get_name() == "headless"
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_game()
+	_make_film()
 	apply_settings()
 
 
@@ -77,8 +79,24 @@ func apply_settings() -> void:
 		var i := AudioServer.get_bus_index(bus)
 		if i != -1:
 			AudioServer.set_bus_volume_db(i, linear_to_db(maxf(settings.voice, 0.001)) + (-4.0 if bus == "TV" else 0.0))
+	if _film:
+		_film.visible = settings.home_video
 	if DisplayServer.get_name() != "headless":
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
+
+
+## The home-video filter over the 3D picture (under the HUD and menus).
+func _make_film() -> void:
+	_film = CanvasLayer.new()
+	_film.layer = 1
+	var rect := ColorRect.new()
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://shaders/home_video.gdshader")
+	rect.material = mat
+	_film.add_child(rect)
+	add_child(_film)
 
 
 # ---------------------------------------------------------------- chapters

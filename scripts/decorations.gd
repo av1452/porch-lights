@@ -44,22 +44,24 @@ static func christmas_tree(parent: Node3D, lit: bool, checkable := false) -> Dic
 	tree.name = "ChristmasTree"
 	tree.position = TREE_POS
 	parent.add_child(tree)
-	var trunk := CSGCylinder3D.new()
-	trunk.radius = 0.06
-	trunk.height = 0.3
-	trunk.position.y = 0.15
-	trunk.material = mat(Color(0.3, 0.18, 0.1))
-	tree.add_child(trunk)
-	var green := mat(Color(0.1, 0.3, 0.15))
-	for i in 3:
-		var cone := CSGCylinder3D.new()
-		cone.cone = true
-		cone.radius = 0.55 - i * 0.14
-		cone.height = 0.7 - i * 0.1
-		cone.position.y = 0.55 + i * 0.42
-		cone.sides = 10
-		cone.material = green
-		tree.add_child(cone)
+	# A real fir when the scanned assets are installed; green cones otherwise.
+	if Realism.prop(tree, "fir_sapling", Vector3.ZERO, 0.0, Vector3(0, 1.7, 0), true, true) == null:
+		var trunk := CSGCylinder3D.new()
+		trunk.radius = 0.06
+		trunk.height = 0.3
+		trunk.position.y = 0.15
+		trunk.material = mat(Color(0.3, 0.18, 0.1))
+		tree.add_child(trunk)
+		var green := mat(Color(0.1, 0.3, 0.15))
+		for i in 3:
+			var cone := CSGCylinder3D.new()
+			cone.cone = true
+			cone.radius = 0.55 - i * 0.14
+			cone.height = 0.7 - i * 0.1
+			cone.position.y = 0.55 + i * 0.42
+			cone.sides = 10
+			cone.material = green
+			tree.add_child(cone)
 	var star := CSGBox3D.new()
 	star.size = Vector3(0.12, 0.12, 0.03)
 	star.rotation_degrees.z = 45

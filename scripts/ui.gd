@@ -83,7 +83,7 @@ static func settings_panel(on_back: Callable) -> Control:
 			Game.apply_settings())
 		h.add_child(s)
 		box.add_child(h)
-	for row in [["Subtitles", "subtitles"], ["Fullscreen", "fullscreen"]]:
+	for row in [["Subtitles", "subtitles"], ["Home-video look", "home_video"], ["Fullscreen", "fullscreen"]]:
 		var c := CheckBox.new()
 		c.text = row[0]
 		c.button_pressed = Game.settings[row[1]]

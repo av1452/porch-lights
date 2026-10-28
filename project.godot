@@ -21,13 +21,14 @@ Game="*res://scripts/game.gd"
 
 [display]
 
-window/size/viewport_width=854
-window/size/viewport_height=480
+window/size/viewport_width=640
+window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
 
 [rendering]
 
 textures/canvas_textures/default_texture_filter=1
-anti_aliasing/quality/msaa_3d=2
+anti_aliasing/quality/msaa_3d=1
+anti_aliasing/quality/use_taa=true

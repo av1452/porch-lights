@@ -60,7 +60,8 @@ func _text(t: String, pos: Vector3, size: int, color: Color, yaw := 0.0, pixel :
 
 
 func _room() -> void:
-	var tile := _mat(Color(0.82, 0.8, 0.72), 0.0, 0.5)
+	var real := Realism.has_assets()
+	var tile: Material = Realism.pbr("terrazzo_tiles", Color(0.95, 0.93, 0.88), 1.5) if real else _mat(Color(0.82, 0.8, 0.72), 0.0, 0.5)
 	var floor := _box(Vector3(W, 0.1, D), Vector3(0, -0.05, 0), tile, true)
 	floor.set_meta("surface", "wood")
 	# speckled school tile: a few darker squares in the pattern
@@ -68,14 +69,14 @@ func _room() -> void:
 	for x in range(-4, 5, 2):
 		for z in range(-3, 4, 3):
 			_box(Vector3(0.6, 0.004, 0.6), Vector3(x + 0.3, 0.002, z + 0.3), fleck)
-	_box(Vector3(W, 0.1, D), Vector3(0, H + 0.05, 0), _mat(Color(0.93, 0.92, 0.88)), true)
+	_box(Vector3(W, 0.1, D), Vector3(0, H + 0.05, 0), Realism.pbr("painted_plaster_wall", Color(1, 1, 0.98), 3.0) if real else _mat(Color(0.93, 0.92, 0.88)), true)
 	# drop-ceiling grid
 	var grid := _mat(Color(0.8, 0.8, 0.78))
 	for x in range(-4, 5, 1):
 		_box(Vector3(0.02, 0.02, D), Vector3(x * 1.0, H - 0.01, 0), grid)
 	for z in range(-3, 4, 1):
 		_box(Vector3(W, 0.02, 0.02), Vector3(0, H - 0.01, z * 1.0), grid)
-	var block := _mat(Color(0.94, 0.9, 0.74))
+	var block: Material = Realism.pbr("painted_plaster_wall", Color(1.0, 0.95, 0.78), 2.0) if real else _mat(Color(0.94, 0.9, 0.74))
 	_box(Vector3(W, H, 0.2), Vector3(0, H / 2, -D / 2 - 0.1), block, true)
 	_box(Vector3(W, H, 0.2), Vector3(0, H / 2, D / 2 + 0.1), block, true)
 	_box(Vector3(0.2, H, D), Vector3(-W / 2 - 0.1, H / 2, 0), block, true)
@@ -185,13 +186,19 @@ func _desks() -> void:
 	for x in [-2.4, -0.8, 0.8, 2.4]:
 		for z in [-1.4, 0.0, 1.4]:
 			var desk := Vector3(x, 0, z)
-			_box(Vector3(0.62, 0.04, 0.46), desk + Vector3(0, 0.62, 0), top, true)
-			_box(Vector3(0.56, 0.14, 0.4), desk + Vector3(0, 0.53, 0), metal)
+			var parts: Array[CSGBox3D] = [
+				_box(Vector3(0.62, 0.04, 0.46), desk + Vector3(0, 0.62, 0), top, true),
+				_box(Vector3(0.56, 0.14, 0.4), desk + Vector3(0, 0.53, 0), metal)]
 			for lx in [-0.27, 0.27]:
-				_box(Vector3(0.03, 0.5, 0.03), desk + Vector3(lx, 0.25, -0.18), metal)
-				_box(Vector3(0.03, 0.5, 0.03), desk + Vector3(lx, 0.25, 0.18), metal)
-			_box(Vector3(0.38, 0.04, 0.36), desk + Vector3(0, 0.38, 0.42), chair)
-			_box(Vector3(0.38, 0.32, 0.04), desk + Vector3(0, 0.58, 0.6), chair)
+				parts.append(_box(Vector3(0.03, 0.5, 0.03), desk + Vector3(lx, 0.25, -0.18), metal))
+				parts.append(_box(Vector3(0.03, 0.5, 0.03), desk + Vector3(lx, 0.25, 0.18), metal))
+			parts.append(_box(Vector3(0.38, 0.04, 0.36), desk + Vector3(0, 0.38, 0.42), chair))
+			parts.append(_box(Vector3(0.38, 0.32, 0.04), desk + Vector3(0, 0.58, 0.6), chair))
+			# Real school furniture when installed; the blocks stay as collision.
+			if Realism.prop(self, "SchoolDesk_01", desk, 180.0, Vector3(0.62, 0.66, 0.46), false):
+				Realism.prop(self, "SchoolChair_01", desk + Vector3(0, 0, 0.45), 180.0, Vector3(0, 0.82, 0))
+				for p in parts:
+					p.visible = false
 	# paper and markers on a few desks
 	var colors := [Color(0.9, 0.2, 0.2), Color(0.2, 0.6, 0.25), Color(1, 0.85, 0.3)]
 	for i in 6:
@@ -294,6 +301,7 @@ func _lights() -> void:
 	for x in [-2.5, 0.0, 2.5]:
 		for z in [-2.0, 1.5]:
 			_box(Vector3(1.2, 0.03, 0.6), Vector3(x, H - 0.02, z), panel)
+			Realism.prop(self, "mounted_fluorescent_lights", Vector3(x, H - 0.06, z), 0.0, Vector3(1.25, 0, 0.62), false)
 			var l := OmniLight3D.new()
 			l.light_color = Color(0.95, 0.97, 1.0)
 			l.light_energy = 0.55

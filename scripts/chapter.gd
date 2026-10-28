@@ -16,8 +16,20 @@ var _blink_on := true
 func _ready() -> void:
 	player.target_changed.connect(hud.set_target)
 	Game.chapter_started(scene_file_path)
-	# Deferred, so it also covers everything the chapter builds in its _ready.
-	Look.upgrade.call_deferred(self)
+	# Deferred, so it also covers everything the chapter builds in its _ready:
+	# real materials and furniture first (when installed), then the look pass.
+	_dress.call_deferred()
+
+
+func _dress() -> void:
+	var world := get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world:
+		Realism.light(world.environment)
+	if has_node("House/LivingRoom"):
+		Realism.dress_house(self)
+	elif has_node("House/Room"):
+		Realism.dress_grandmas(self)
+	Look.upgrade(self)
 
 
 func _process(delta: float) -> void:

@@ -33,6 +33,7 @@ func _ready() -> void:
 	_porch_energy = porch_light.light_energy
 	dog.player = player
 	Decorations.put_away_halloween(self)
+	street.set_snowy(true)
 	# Chapter 1's dream pieces aren't used after Halloween.
 	_dream_hall = $DreamHall
 	_jamie_dream = $House/JamieRoom/JamieRoomDream
