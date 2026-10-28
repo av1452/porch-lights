@@ -59,8 +59,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	var captured := Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	if event is InputEventMouseMotion and captured and not input_locked:
 		var motion := event as InputEventMouseMotion
-		rotate_y(-motion.relative.x * mouse_sensitivity)
-		head.rotate_x(-motion.relative.y * mouse_sensitivity)
+		var sens: float = mouse_sensitivity * Game.settings.sensitivity
+		rotate_y(-motion.relative.x * sens)
+		head.rotate_x(-motion.relative.y * sens)
 		head.rotation.x = clampf(head.rotation.x, deg_to_rad(-80), deg_to_rad(80))
 	elif event.is_action_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

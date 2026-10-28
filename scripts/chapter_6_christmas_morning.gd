@@ -136,7 +136,7 @@ func _on_present(_by: Node) -> void:
 		["Jamie", "Okay. That's actually legendary."],
 		["Mom", "Hold it up! Hold it up for the picture!"],
 	])
-	await _flash()
+	await _flash("The Mega Robo Racer!")
 	_present.prompt = "Mega Robo Racer"
 	_present.memory_text = "It climbs the couch. It climbs Biscuit. Biscuit does not want it to climb Biscuit."
 	_present.repeat_text = "Vrrrrrr. Best present in the history of presents."
@@ -145,7 +145,8 @@ func _on_present(_by: Node) -> void:
 	objective("Show Dad the Robo Racer")
 
 
-func _flash() -> void:
+func _flash(caption: String, stamp := "'03 12 25") -> void:
+	await Game.take_photo(caption, stamp)
 	Audio.play_sfx("switch_click", null, 2.0)
 	await hud.fade(0.85, 0.05, Color.WHITE).finished
 	await hud.fade(0.0, 0.6, Color.WHITE).finished
@@ -225,7 +226,7 @@ func _on_porch() -> void:
 		["", "You get Jamie back, right in the hood. Biscuit tries to eat every snowball. Grandma cheers for everyone."],
 		["Grandma", "Picture! Everybody stay right there!"],
 	])
-	await _flash()
+	await _flash("Snowball ambush")
 	await wait(1.0)
 	await hud.fade(1.0, 3.0).finished
 	await say([["", "That afternoon you fall asleep on the couch in your reindeer pajamas, a Christmas movie on, Robo Racer on your chest, everybody you love in one room."]])

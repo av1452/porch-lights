@@ -169,21 +169,10 @@ func _on_pass_jamie() -> void:
 
 ## Jamie's model is built sitting at the desk; make a standing copy.
 func _make_standing_jamie() -> Node3D:
-	var j: StaticBody3D = ch.jamie.duplicate(Node.DUPLICATE_GROUPS)
-	j.visible = true
-	j.collision_layer = 0
-	var mat: Material = (j.get_node("Thighs") as CSGBox3D).material
-	for part in ["Thighs", "Shins"]:
-		j.get_node(part).free()
-	for c in j.get_children():
-		if c is Node3D:
-			(c as Node3D).position.y += 0.36
-	var legs := CSGBox3D.new()
-	legs.size = Vector3(0.3, 0.86, 0.17)
-	legs.position.y = 0.43
-	legs.material = mat
-	j.add_child(legs)
+	var j := Node3D.new()
+	j.name = "StandingJamie"
 	add_child(j)
+	Figure.build(j, 1.62, Figure.JAMIE)
 	return j
 
 

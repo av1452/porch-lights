@@ -107,7 +107,12 @@ func _on_seat(_by: Node) -> void:
 		["Ben", "I'm gonna sit at the big table when I'm eleven."],
 		["Maddie", "You have to be, like, in high school."],
 		["", "You look over. Jamie's laughing at something Uncle Ray said. They don't look back."],
+		["Aunt Lisa", "Kids' table, look up! Say 'turkey!'"],
 	])
+	await Game.take_photo("The kids' table", "'03 11 27")
+	Audio.play_sfx("switch_click", null, 2.0)
+	await hud.fade(0.85, 0.05, Color.WHITE).finished
+	await hud.fade(0.0, 0.6, Color.WHITE).finished
 	await wait(1.5)
 	await _after_dinner()
 

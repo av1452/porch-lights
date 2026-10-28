@@ -127,7 +127,12 @@ func _on_mom(_by: Node) -> void:
 			["Mom", "Candy tax. Rules are rules."],
 			["Dad", "Ooh, the peanut butter cups. Good kid."],
 			["Mom", "Can you flip the porch light off for me, hon? We're done for the night."],
+			["Dad", "Wait! Costume picture. Hold up the pillowcase. Big smile."],
 		])
+		await Game.take_photo("Halloween, with the haul", "'03 10 31")
+		Audio.play_sfx("switch_click", null, 2.0)
+		await hud.fade(0.85, 0.05, Color.WHITE).finished
+		await hud.fade(0.0, 0.6, Color.WHITE).finished
 		objective("Turn off the porch light")
 		return
 	var lines := {

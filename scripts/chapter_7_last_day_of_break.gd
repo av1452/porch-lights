@@ -133,6 +133,11 @@ func _on_jamie(_by: Node) -> void:
 		["", "Everybody's going to care about the bulb."],
 	])
 	await wait(0.5)
+	await say([["Dad", "Hold on! One picture left on the roll. Everybody on the couch. Biscuit too!"]])
+	await Game.take_photo("Last picture on the roll", "'04 01 03")
+	Audio.play_sfx("switch_click", null, 2.0)
+	await hud.fade(0.85, 0.05, Color.WHITE).finished
+	await hud.fade(0.0, 0.6, Color.WHITE).finished
 	await say([["Mom", "Hey, Leo? The porch light's been on since Christmas Eve. Nine whole days. Want to do the honors?"]])
 	player.stand(Vector3(0.45, 0.05, 1.3), 0.0)
 	lock(false)
@@ -168,4 +173,20 @@ func _on_switch(_by: Node) -> void:
 	])
 	await wait(2.0)
 	await hud.chapter_card("Porch Lights", "The End", 5.0)
-	hud.show_memory("For everyone who ever left a light on.", 10.0)
+	hud.show_memory("For everyone who ever left a light on.", 6.0)
+	await wait(7.0)
+	Game.game_finished()
+	_show_album()
+
+
+## The pictures came back from the drugstore. Then back to the title screen.
+func _show_album() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 40
+	add_child(layer)
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.85)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(dim)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	layer.add_child(UI.centered(UI.album(Game.to_menu, "Your pictures are back from the drugstore")))

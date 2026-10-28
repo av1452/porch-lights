@@ -8,6 +8,7 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - `audio/music/ending.mp3`: "Starfield Romance" by Yoiyami (CC0) https://opengameart.org/node/182246
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
 - `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
+- `audio/music/school_jingle_bells.wav`: "Jingle Bells" (James Lord Pierpont, 1857, public domain) on the same music-box notes
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
@@ -33,6 +34,9 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #0971 Car door #1: https://bigsoundbank.com/s0971.html
 - #0252 Fixed telephone ring #3: https://bigsoundbank.com/s0252.html
 - #3353 Phone hung up #1: https://bigsoundbank.com/s3353.html
+- #1269 Industrial doorbell (the school bell): https://bigsoundbank.com/s1269.html
+- #0008 Scissors: https://bigsoundbank.com/s0008.html
+- #2740 Recreation, kindergarten #1: https://bigsoundbank.com/s2740.html
 - #1866 Music box, A# #1: https://bigsoundbank.com/s1866.html
 - #1867 Music box, C #1: https://bigsoundbank.com/s1867.html
 - #1868 Music box, C# #1: https://bigsoundbank.com/s1868.html

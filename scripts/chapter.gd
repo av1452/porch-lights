@@ -15,6 +15,9 @@ var _blink_on := true
 
 func _ready() -> void:
 	player.target_changed.connect(hud.set_target)
+	Game.chapter_started(scene_file_path)
+	# Deferred, so it also covers everything the chapter builds in its _ready.
+	Look.upgrade.call_deferred(self)
 
 
 func _process(delta: float) -> void:

@@ -44,7 +44,7 @@ func _ready() -> void:
 
 	Audio.make_loop("wind", $Exterior/Ambience, -12.0)
 	Audio.play_music("ch4_silent_night", 4.0, -8.0)
-	await open_chapter("December 19", "The Last Day Before Winter Break")
+	await open_chapter("December 19", "Home for Winter Break")
 	hud.show_memory("Last day of school before winter break. Two whole weeks. Your backpack is full of paper snowflakes.", 5.5)
 	await wait(3.0)
 	objective("Tell Mom about the class party")

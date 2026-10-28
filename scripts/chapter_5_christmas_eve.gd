@@ -129,7 +129,7 @@ func _on_mom(_by: Node) -> void:
 	await say([
 		["Mom", "Okay! Grandma in the middle. Jamie, smile with teeth. Biscuit, look at me. Biscuit!"],
 	])
-	await camera_flash()
+	await camera_flash("Christmas Eve, matching pajamas", "'03 12 24")
 	await say([
 		["", "Click. Wind, wind, wind. Click. The disposable camera has three pictures left. They're all going to be of the tree."],
 		["Mom", "We won't see these until the drugstore develops them. That's half the fun."],
@@ -141,7 +141,8 @@ func _on_mom(_by: Node) -> void:
 
 
 ## The disposable camera: a white flash and a click.
-func camera_flash() -> void:
+func camera_flash(caption: String, stamp: String) -> void:
+	await Game.take_photo(caption, stamp)
 	Audio.play_sfx("switch_click", null, 2.0)
 	await hud.fade(0.85, 0.05, Color.WHITE).finished
 	await hud.fade(0.0, 0.6, Color.WHITE).finished

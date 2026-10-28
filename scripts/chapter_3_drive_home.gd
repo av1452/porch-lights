@@ -3,7 +3,7 @@ extends Chapter
 ## Back seat → share Jamie's headphones → Mom and the Black Friday ads, and
 ## the first Christmas song on the radio → lean on the window and fall asleep
 ## → the dream street, where every porch light turns into Christmas lights as
-## you pass → Grandma's porch → waking up as Dad carries you in → Chapter 4.
+## you pass → Grandma's porch → waking up as Dad carries you in → the class party.
 
 enum Step { RIDE, OVERHEAR, SLEEP, DREAM, GRANDMA, END }
 
@@ -200,6 +200,7 @@ func _enter_dream() -> void:
 	street = Street.new()
 	street.name = "DreamStreet"
 	add_child(street)
+	Look.upgrade(street)
 	_build_dream_bounds()
 	player.head.rotation.z = 0.0
 	player.camera.fov = 85.0
@@ -285,4 +286,4 @@ func _on_grandma(_by: Node) -> void:
 	await wait(1.5)
 	Audio.stop_music(2.0)
 	await wait(1.0)
-	go_to_chapter("res://scenes/chapter_4_winter_break.tscn")
+	go_to_chapter("res://scenes/school_class_party.tscn")

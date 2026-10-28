@@ -22,8 +22,10 @@ static func _mat(c: Color) -> StandardMaterial3D:
 	return _materials[c]
 
 
-static func _box(parent: Node3D, size: Vector3, pos: Vector3, c: Color) -> CSGBox3D:
+static func _box(parent: Node3D, size: Vector3, pos: Vector3, c: Color, part := "") -> CSGBox3D:
 	var b := CSGBox3D.new()
+	if part != "":
+		b.name = part
 	b.size = size
 	b.position = pos
 	b.material = _mat(c)
@@ -31,8 +33,10 @@ static func _box(parent: Node3D, size: Vector3, pos: Vector3, c: Color) -> CSGBo
 	return b
 
 
-static func _ball(parent: Node3D, r: float, pos: Vector3, c: Color) -> CSGSphere3D:
+static func _ball(parent: Node3D, r: float, pos: Vector3, c: Color, part := "") -> CSGSphere3D:
 	var s := CSGSphere3D.new()
+	if part != "":
+		s.name = part
 	s.radius = r
 	s.radial_segments = 10
 	s.rings = 6
@@ -48,21 +52,23 @@ static func build(parent: Node3D, height: float, look: Dictionary, seated := fal
 	var h := height
 	var drop := 0.136 * h if seated else 0.0
 	if seated:
-		_box(parent, Vector3(0.3, 0.14, 0.42), Vector3(0, 0.305 * h, 0.17), look.legs)
-		_box(parent, Vector3(0.3, 0.263 * h, 0.13), Vector3(0, 0.131 * h, 0.36), look.legs)
+		_box(parent, Vector3(0.3, 0.14, 0.42), Vector3(0, 0.305 * h, 0.17), look.legs, "Thighs")
+		_box(parent, Vector3(0.3, 0.263 * h, 0.13), Vector3(0, 0.131 * h, 0.36), look.legs, "Shins")
 	else:
-		_box(parent, Vector3(0.3, 0.47 * h, 0.17), Vector3(0, 0.235 * h, 0), look.legs)
+		_box(parent, Vector3(0.3, 0.47 * h, 0.17), Vector3(0, 0.235 * h, 0), look.legs, "Legs")
 	var torso_y := 0.63 * h - drop
-	_box(parent, Vector3(0.4, 0.32 * h, 0.22), Vector3(0, torso_y, 0), look.shirt)
+	_box(parent, Vector3(0.4, 0.32 * h, 0.22), Vector3(0, torso_y, 0), look.shirt, "Torso")
 	for side in [-1, 1]:
-		_box(parent, Vector3(0.09, 0.304 * h, 0.11), Vector3(0.25 * side, torso_y, 0.02), look.shirt)
+		_box(parent, Vector3(0.09, 0.304 * h, 0.11), Vector3(0.25 * side, torso_y, 0.02), look.shirt, "ArmL" if side < 0 else "ArmR")
 		_ball(parent, 0.00864 * h, Vector3(0.0274 * h * side, 0.8692 * h - drop, 0.067 * h), Color(0.05, 0.05, 0.06))
-	_ball(parent, 0.072 * h, Vector3(0, 0.8656 * h - drop, 0), SKIN)
-	_ball(parent, 0.0763 * h, Vector3(0, 0.8786 * h - drop, -0.013 * h), look.hair)
+	_ball(parent, 0.072 * h, Vector3(0, 0.8656 * h - drop, 0), SKIN, "Head")
+	_ball(parent, 0.0763 * h, Vector3(0, 0.8786 * h - drop, -0.013 * h), look.hair, "Hair")
 	if look.get("long_hair", false):
-		_box(parent, Vector3(0.144 * h, 0.158 * h, 0.043 * h), Vector3(0, 0.8224 * h - drop, -0.05 * h), look.hair)
+		_box(parent, Vector3(0.144 * h, 0.158 * h, 0.043 * h), Vector3(0, 0.8224 * h - drop, -0.05 * h), look.hair, "HairBack")
 	if look.get("apron", false):
 		_box(parent, Vector3(0.34, 0.5, 0.02), Vector3(0, 0.65 - drop, 0.12), Color(0.95, 0.95, 0.95))
+	# Rounded body, hands, shoes and a face (scripts/look.gd).
+	Look.upgrade(parent)
 
 
 ## A person you can look at and talk to: an Interactable with a body.

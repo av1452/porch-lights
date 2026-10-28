@@ -39,6 +39,7 @@ BSB_SOUNDS = {
     "2450": "Dog singing #1",
     "3098": "Car interior, 80 km/h", "1021": "Blinker", "0971": "Car door #1",
     "0252": "Fixed telephone ring #3", "3353": "Phone hung up #1",
+    "1269": "Industrial doorbell (the school bell)", "0008": "Scissors", "2740": "Recreation, kindergarten #1",
     # music box notes, for the chapter 1 lullaby
     "1866": "Music box, A# #1", "1867": "Music box, C #1", "1868": "Music box, C# #1",
     "1869": "Music box, D# #1", "1870": "Music box, F #1", "1871": "Music box, G #1",
@@ -272,6 +273,14 @@ def sound_effects():
     d, r = read("3353")
     write(SFX, "phone_hangup", fade(d, r, 0.005, 0.2), r)
 
+    # School: the last bell, scissors, and a room full of kids
+    d, r = read("1269")
+    write(SFX, "school_bell", fade(loudest(d, r, 3.0), r, 0.01, 0.4), r)
+    d, r = read("0008")
+    write(SFX, "scissors", fade(loudest(d, r, 1.0), r, 0.01, 0.1), r)
+    d, r = read("2740")
+    write(SFX, "classroom", loop(cut(d, r, 5, 35), r, 2.0), r, 0.5)
+
 
 def _growl(data, rate):
     """Longest stretch of steady, low-pitched (low zero-crossing) sound."""
@@ -392,6 +401,39 @@ def silent_night():
     write(MUSIC, "ch4_silent_night", _reverb(out, 0.35, 1.3)[:len(out)], rate, 0.7)
 
 
+def jingle_bells():
+    """The class party: "Jingle Bells" (James Lord Pierpont, 1857, public domain)."""
+    note, rate = music_box()
+    E, D, C, G, F, G4, A4, B4, C5 = 76, 74, 72, 79, 77, 67, 69, 71, 72
+    # (note, beats) in 4/4: verse ending and the chorus, twice
+    chorus = [(E, 1), (E, 1), (E, 2), (E, 1), (E, 1), (E, 2), (E, 1), (G, 1), (C, 1.5), (D, .5), (E, 4),
+              (F, 1), (F, 1), (F, 1.5), (F, .5), (F, 1), (E, 1), (E, 1), (E, .5), (E, .5),
+              (E, 1), (D, 1), (D, 1), (E, 1), (D, 2), (G, 2),
+              (E, 1), (E, 1), (E, 2), (E, 1), (E, 1), (E, 2), (E, 1), (G, 1), (C, 1.5), (D, .5), (E, 4),
+              (F, 1), (F, 1), (F, 1.5), (F, .5), (F, 1), (E, 1), (E, 1), (E, .5), (E, .5),
+              (G, 1), (G, 1), (F, 1), (D, 1), (C, 4)]
+    bass = [48, 48, 41, 43, 48, 48, 41, 48]
+    beat = 0.3
+    total = sum(n for _, n in chorus)
+    out = [0.0] * int((total + 4) * beat * rate)
+
+    def put(m, t, vel):
+        start = int(t * rate)
+        for i, x in enumerate(note(m, vel)):
+            if start + i < len(out):
+                out[start + i] += x
+
+    t = 0.0
+    for m, n in chorus:
+        put(m, t * beat, 0.8)
+        t += n
+    for bar, root in enumerate(bass * 2):
+        if bar * 4 < total:
+            put(root + 24, bar * 4 * beat, 0.4)
+            put(root + 28, (bar * 4 + 2) * beat, 0.3)
+    write(MUSIC, "school_jingle_bells", _reverb(out, 0.3, 1.1)[:len(out)], rate, 0.7)
+
+
 def music():
     lines = []
     for name, (url, credit) in OGA_MUSIC.items():
@@ -412,6 +454,7 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 {chr(10).join(music_lines)}
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
 - `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
+- `audio/music/school_jingle_bells.wav`: "Jingle Bells" (James Lord Pierpont, 1857, public domain) on the same music-box notes
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
@@ -437,6 +480,7 @@ def main():
     sound_effects()
     lullaby()
     silent_night()
+    jingle_bells()
     credits(music())
 
 

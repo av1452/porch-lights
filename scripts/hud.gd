@@ -123,6 +123,10 @@ func show_memory(text: String, duration: float = 5.0) -> void:
 
 ## A spoken line. Empty speaker = narration.
 func show_line(speaker: String, text: String) -> void:
+	# Spoken lines can be turned off in Settings; narration always shows,
+	# since it's the only way to hear what Leo's thinking.
+	if speaker != "" and not Game.settings.subtitles:
+		return
 	if speaker == "":
 		_line.text = "[center][color=#e8dcc8]%s[/color][/center]" % text
 	else:

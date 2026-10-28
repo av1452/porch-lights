@@ -48,13 +48,20 @@ SPEAKERS = {
     "maddie": {"model": LIBRITTS, "speaker": 693, "pace": 1.0, "noise": 0.8, "noise_w": 0.9},
     "tyler": {"model": LIBRITTS, "speaker": 869, "pace": 0.95, "noise": 0.8, "noise_w": 0.9},
     "ben": {"model": LIBRITTS, "speaker": 517, "pace": 1.05, "noise": 0.8, "noise_w": 0.9},
+    # school
+    "mrs._patterson": {"model": LIBRITTS, "speaker": 0, "pace": 1.0, "noise": 0.75, "noise_w": 0.9},
+    "maya": {"model": LIBRITTS, "speaker": 737, "pace": 1.0, "noise": 0.8, "noise_w": 0.9},
+    "tyler_b.": {"model": LIBRITTS, "speaker": 396, "pace": 0.95, "noise": 0.8, "noise_w": 0.9},
+    "marcus": {"model": LIBRITTS, "speaker": 550, "pace": 1.0, "noise": 0.8, "noise_w": 0.9},
+    "emily": {"model": LIBRITTS, "speaker": 561, "pace": 1.0, "noise": 0.8, "noise_w": 0.9},
+    "josh": {"model": LIBRITTS, "speaker": 539, "pace": 1.0, "noise": 0.8, "noise_w": 0.9},
 }
 
 STRING = r'"((?:[^"\\]|\\.)*)"'
 # A speaker is a short name, optionally with a place: "Uncle Ray", "Mom (kitchen)".
-SPEAKER = r'"([A-Z][A-Za-z ]{0,20}(?: \([a-z ]+\))?)"'
+SPEAKER = r'"([A-Z][A-Za-z .]{0,20}(?: \([a-z ]+\))?)"'
 # Story scripts only (chapters and interludes).
-SCRIPTS = ["chapter*.gd", "interlude*.gd"]
+SCRIPTS = ["chapter*.gd", "interlude*.gd", "school*.gd"]
 
 
 def setup():

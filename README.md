@@ -17,8 +17,17 @@ the porch light you leave on so everyone can find their way home.
 ## Play it
 Open in **Godot 4.3+** (Import → select `project.godot`), then press F5.
 
+The title screen has Continue, New Game, Chapters (every chapter you've reached),
+Photo Album and Settings (volumes, mouse sensitivity, subtitles, fullscreen). Progress,
+settings and photos save automatically.
+
 WASD / arrows: move · Mouse: look · Shift: run · C or Ctrl: crouch
-E or left click: interact · Esc: free the mouse (click to recapture)
+E or left click: interact · Esc: pause menu
+
+**Photo album:** whenever somebody pulls out a disposable camera, the picture really
+gets taken and saved as a "developed print" with the orange date stamp in the corner.
+Your pictures come back from the drugstore at the end of the game, and you can flip
+through them any time from the menu.
 
 ## Story
 
@@ -43,8 +52,14 @@ the Black Friday ads ("nobody look"), and the first Christmas song of the year c
 the radio. You fall asleep, and in your dream every porch light you pass turns into
 Christmas lights, all the way to Grandma's porch.
 
-**Chapter 4: December 19, The Last Day Before Winter Break.** Paper snowflakes, a candy
-cane from your teacher, and two whole weeks off. Sprinkles duty on Mom's sugar cookies.
+**School: December 19, The Class Party.** Mrs. Patterson's third grade, last day before
+break. The handprint turkeys and paper bats are still up. Put your letter in the North Pole
+mailbox, cut a paper snowflake, do Secret Santa (a Slinky for you, glitter gel pens for
+Maya), cupcakes with the crunchy sprinkles, juice boxes, candy canes, the class picture,
+the claymation special on the TV cart, one last "Jingle Bells" for the concert... and
+the bell.
+
+**Chapter 4: December 19, Home for Winter Break.** Two whole weeks off. Sprinkles duty on Mom's sugar cookies.
 The advent calendar (Jamie ate tomorrow's). The toy catalog, page 47. Help Jamie find
 the one dead bulb so the whole tree lights up. Grandma calls: she's coming for Christmas
 Eve. You fall asleep to the claymation special and dream it's snowing in the living
@@ -85,11 +100,16 @@ Eve finally clicks off. Until next Halloween.
 - `scripts/tv_screen.gd`, `scripts/tv_show.gd`: the live picture on the TV. Drop an Ogg
   Theora video at `media/<channel>.ogv` (`special`, `commercial`, `dream`, `signoff`, `static`) to use real footage
 - `scripts/audio.gd`: autoload `Audio` (music, sound effects, voices)
+- `scripts/game.gd`: autoload `Game` (chapter order, save, settings, photo album, pause menu)
+- `scripts/main_menu.gd`, `scripts/pause_menu.gd`, `scripts/ui.gd`: menus and the album
+- `scripts/classroom.gd`, `scripts/school_class_party.gd`: the school chapter
+- `scripts/look.gd`: the realism pass
 - `tests/`: automated playthroughs and a screenshot tool
 
-Rendering is 640×360 scaled 2× for a low-res PS2-era look
-(Project Settings → Display → Window), with a night sky, SSAO/SSIL and volumetric fog.
-Geometry is placeholder CSG, ready to be replaced with real models and textures.
+Rendering is 854×480 (480p, the PS2/DVD era) with smooth filtering and MSAA, a night
+sky, SSAO/SSIL and volumetric fog. `scripts/look.gd` runs on every chapter: it rounds
+off shapes, gives flat materials subtle surface grain, and turns the block people into
+rounded ones with hands, shoes and faces. Geometry is still CSG, ready for real models.
 
 ## Audio
 - **Voices**: every character line in `say()` and `add_chatter()` is voiced with
@@ -110,6 +130,7 @@ To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name i
 godot --headless -s res://tests/playtest_chapter_1.gd   # Chapter 1 + the interlude
 godot --headless -s res://tests/playtest_chapter_2.gd
 godot --headless -s res://tests/playtest_chapter_3.gd
+godot --headless -s res://tests/playtest_school.gd
 godot --headless -s res://tests/playtest_chapter_4.gd
 godot --headless -s res://tests/playtest_chapter_5.gd
 godot --headless -s res://tests/playtest_chapter_6.gd
