@@ -76,6 +76,8 @@ static func person(parent: Node3D, name: String, pos: Vector3, yaw_degrees: floa
 		look: Dictionary, seated := false, prompt := "") -> Interactable:
 	var p := Interactable.new()
 	p.name = name
+	# Node names can't hold periods ("Mrs. Patterson"); keep the real name.
+	p.set_meta("person_name", name)
 	p.prompt = prompt if prompt != "" else "Talk to " + name
 	p.position = pos
 	p.rotation.y = deg_to_rad(yaw_degrees)

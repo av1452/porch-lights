@@ -111,6 +111,15 @@ sky, SSAO/SSIL and volumetric fog. `scripts/look.gd` runs on every chapter: it r
 off shapes, gives flat materials subtle surface grain, and turns the block people into
 rounded ones with hands, shoes and faces. Geometry is still CSG, ready for real models.
 
+## Making it look real
+- `python tools/fetch_realistic.py` downloads free CC0 scanned furniture, photo-based
+  materials and sky photos from Poly Haven into `assets/polyhaven/` (already included).
+  `scripts/realism.gd` puts them in every location; the block originals stay as collision.
+- **People and Biscuit:** drop exported models into `assets/people/` and `assets/animals/`
+  and the game uses them automatically. Step-by-step (MakeHuman for people, Sketchfab for
+  Biscuit): [docs/REAL_CHARACTERS.md](docs/REAL_CHARACTERS.md).
+- Settings has a **Home-video look** toggle (warm 2003 color, film grain, vignette).
+
 ## Audio
 - **Voices**: every character line in `say()` and `add_chatter()` is voiced with
   [Piper](https://github.com/rhasspy/piper), offline and free. Narration stays silent text.

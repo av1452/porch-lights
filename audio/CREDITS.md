@@ -53,3 +53,7 @@ libritts_r voices. See tools/generate_voices.py.
 
 ## Synthesized
 `tv_show`, `tv_ad`, `tv_signoff`, `bulb_flicker`: tools/generate_audio.py
+
+## Biscuit
+Not added yet. When you add a dog model from Sketchfab, credit it here:
+- "<model name>" by <author> (<license>) <link>

@@ -15,3 +15,5 @@ screenshots/
 tools/piper/
 tools/.audio_cache/
 __pycache__/
+tools/makehuman/
+tools/blender/

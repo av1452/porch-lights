@@ -129,6 +129,9 @@ static func _flat(c: Color) -> StandardMaterial3D:
 ## a face. Works on the hand-built people in the scenes and on Figure people.
 static func _person(p: Node3D) -> void:
 	p.set_meta("look_person", true)
+	# A real exported model wins, if there's one for this person.
+	if RealCharacters.apply_person(p):
+		return
 	var head := p.get_node("Head") as CSGSphere3D
 	var skin: Material = head.material
 	var rh := head.radius
