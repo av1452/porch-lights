@@ -47,17 +47,26 @@ the car is gone: you're walking down a street where every porch light goes dark
 behind you, toward the orange one at the end. Grandma's waiting on her porch. Then
 Dad's carrying you inside.
 
-**Planned:** the last week before winter break, Christmas Eve, Christmas morning
-and the quiet after.
+**Chapter 4: December 18, The Last Week Before Winter Break.** Mom's been at
+Grandma's since Sunday. Dad makes his famous (burnt) pizza and you set the table for
+three. Mom calls from Grandma's: she's sleeping a lot. Dad takes the phone into the
+garage and shuts the door. Jamie needs help finding the one dead bulb that keeps the
+whole string dark. You fall asleep watching the Christmas special, and in the dream
+it's snowing in the living room and Grandma calls: leave your porch light on
+Christmas Eve, so she can find you.
+
+**Planned:** Christmas Eve, Christmas morning and the quiet after.
 
 ## Project layout
 - `scenes/chapter_1_halloween.tscn`, `scenes/chapter_2_thanksgiving.tscn`,
-  `scenes/chapter_3_drive_home.tscn`: levels
+  `scenes/chapter_3_drive_home.tscn`, `scenes/chapter_4_winter_break.tscn`: levels
+  (Chapter 4 inherits the Chapter 1 house and redecorates it in code)
   (the interlude plays in the Chapter 1 house, with the porch and street outside)
 - `scripts/chapter.gd`: base class for chapters: `say()` dialogue (voiced automatically),
   `objective()`, `open_chapter()` title cards, `swing_door()`, `add_chatter()`, room-state swapping
 - `scripts/chapter_1_halloween.gd`, `scripts/interlude_porch_light.gd`,
-  `scripts/chapter_2_thanksgiving.gd`, `scripts/chapter_3_drive_home.gd`: story steps
+  `scripts/chapter_2_thanksgiving.gd`, `scripts/chapter_3_drive_home.gd`,
+  `scripts/chapter_4_winter_break.gd`: story steps
 - `scripts/car_ride.gd`: the family car at night, with the road sliding past
 - `scripts/figure.gd`: builds people in code (Mom, Dad, Jamie, Grandma) to match the scenes
 - `scripts/player.gd`: Leo's kid-height first-person controller (walk, run, crouch, sit, footsteps)
@@ -95,4 +104,5 @@ To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name i
 godot --headless -s res://tests/playtest_chapter_1.gd   # Chapter 1 + the interlude
 godot --headless -s res://tests/playtest_chapter_2.gd
 godot --headless -s res://tests/playtest_chapter_3.gd
+godot --headless -s res://tests/playtest_chapter_4.gd
 ```

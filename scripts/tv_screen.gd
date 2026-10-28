@@ -6,7 +6,7 @@ extends Node
 
 const CHANNEL_SOUND := {
 	"special": "tv_show", "commercial": "tv_ad", "dream": "tv_show",
-	"signoff": "tv_signoff", "static": "tv_static", "off": "",
+	"signoff": "tv_signoff", "static": "tv_static", "off": "", "winter": "",
 }
 
 @export var screen_path: NodePath = ^"../Screen"

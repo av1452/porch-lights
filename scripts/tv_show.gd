@@ -1,7 +1,8 @@
 class_name TvShow
 extends Node2D
 ## Placeholder TV programs drawn live at 160x120: a Halloween cartoon special,
-## a toy commercial, a dream version, a broadcast sign-off and static.
+## a winter special, a toy commercial, a dream version, a broadcast sign-off
+## and static.
 ## Replace any of them with a real video via media/<channel>.ogv.
 
 const W := 160.0
@@ -27,6 +28,8 @@ func light_color() -> Color:
 			return Color.from_hsv(fmod(_t * 0.25, 1.0), 0.5, 1.0)
 		"dream":
 			return Color(0.7, 0.45, 1.0)
+		"winter":
+			return Color(0.75, 0.85, 1.0)
 		"signoff":
 			return Color(0.9, 0.9, 1.0)
 		"static":
@@ -44,6 +47,8 @@ func _draw() -> void:
 			_draw_special(true)
 		"commercial":
 			_draw_commercial()
+		"winter":
+			_draw_winter()
 		"signoff":
 			_draw_signoff()
 		"static":
@@ -101,6 +106,34 @@ func _draw_special(dream: bool) -> void:
 	if not dream and fmod(_t, 24.0) < 4.0:
 		_text("SPOOKY HOLLOW", Vector2(W / 2, 14), 14, Color(1, 0.6, 0.1))
 		_text("HALLOWEEN SPECIAL", Vector2(W / 2, 26), 8, Color(1, 1, 1))
+
+
+func _draw_winter() -> void:
+	for i in 12:
+		draw_rect(Rect2(0, i * 7, W, 7), Color(0.05, 0.08, 0.2).lerp(Color(0.25, 0.3, 0.5), i / 11.0))
+	for i in 20:
+		draw_rect(Rect2(fmod(i * 37.0, W), fmod(i * 23.0, 60.0), 1, 1), Color(1, 1, 0.9, 0.6 + 0.4 * sin(_t * 2.0 + i)))
+	var hill := PackedVector2Array([Vector2(0, 88)])
+	for x in range(0, 170, 10):
+		hill.append(Vector2(x, 86 + sin(x * 0.04) * 5))
+	hill.append_array([Vector2(W, H), Vector2(0, H)])
+	draw_colored_polygon(hill, Color(0.9, 0.93, 1.0))
+	# a snowman, and a little house with its light on
+	var s := Vector2(46, 86)
+	draw_circle(s, 11, Color.WHITE)
+	draw_circle(s + Vector2(0, -16), 8, Color.WHITE)
+	draw_circle(s + Vector2(0, -28), 6, Color.WHITE)
+	draw_rect(Rect2(s.x - 5, s.y - 40, 10, 6), Color(0.1, 0.1, 0.1))
+	draw_colored_polygon(PackedVector2Array([s + Vector2(0, -28), s + Vector2(8, -27), s + Vector2(0, -26)]), Color(1, 0.5, 0.1))
+	draw_rect(Rect2(108, 66, 30, 20), Color(0.5, 0.25, 0.2))
+	draw_colored_polygon(PackedVector2Array([Vector2(104, 66), Vector2(123, 52), Vector2(142, 66)]), Color(0.3, 0.15, 0.15))
+	draw_rect(Rect2(118, 72, 8, 14), Color(0.25, 0.12, 0.08))
+	draw_circle(Vector2(129, 70), 2.0, Color(1, 0.75, 0.3))
+	for i in 60:
+		var p := Vector2(fmod(i * 53.0 + sin(_t + i) * 6.0, W), fmod(i * 17.0 + _t * (10.0 + i % 5), H))
+		draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.85))
+	if fmod(_t, 20.0) < 4.0:
+		_text("A WINTER SPECIAL", Vector2(W / 2, 16), 12, Color(0.9, 0.95, 1.0))
 
 
 func _draw_commercial() -> void:

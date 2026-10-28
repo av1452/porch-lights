@@ -151,9 +151,9 @@ func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter :
 		p3.volume_db = volume_db
 		p3.unit_size = 3.0
 		p3.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
-		# Playtests add the level straight to the root, with no current_scene.
-		var parent: Node = get_tree().current_scene if get_tree().current_scene else get_tree().root
-		parent.add_child(p3)
+		# Lives under this autoload, which is never busy adding children (a level
+		# might be, mid-_ready). Under a plain Node it uses world coordinates.
+		add_child(p3)
 		p3.global_position = at if at is Vector3 else (at as Node3D).global_position
 		p3.play()
 		p3.finished.connect(p3.queue_free)

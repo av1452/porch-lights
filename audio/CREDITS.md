@@ -7,6 +7,7 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - `audio/music/ch2_night.mp3`: "Midnight" by Anton Revin (CC0) https://opengameart.org/content/midnight
 - `audio/music/ending.mp3`: "Starfield Romance" by Yoiyami (CC0) https://opengameart.org/node/182246
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
+- `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
@@ -30,6 +31,8 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #3098 Car interior, 80 km/h: https://bigsoundbank.com/s3098.html
 - #1021 Blinker: https://bigsoundbank.com/s1021.html
 - #0971 Car door #1: https://bigsoundbank.com/s0971.html
+- #0252 Fixed telephone ring #3: https://bigsoundbank.com/s0252.html
+- #3353 Phone hung up #1: https://bigsoundbank.com/s3353.html
 - #1866 Music box, A# #1: https://bigsoundbank.com/s1866.html
 - #1867 Music box, C #1: https://bigsoundbank.com/s1867.html
 - #1868 Music box, C# #1: https://bigsoundbank.com/s1868.html

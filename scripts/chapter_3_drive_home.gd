@@ -2,7 +2,7 @@ extends Chapter
 ## Chapter 3 — November. The long drive home from Grandma's.
 ## Back seat → share Jamie's headphones → overhear Mom and Dad → lean on the
 ## window and fall asleep → the dream street → Grandma's porch light →
-## waking up as Dad carries you in.
+## waking up as Dad carries you in → Chapter 4.
 
 enum Step { RIDE, OVERHEAR, SLEEP, DREAM, GRANDMA, END }
 
@@ -279,5 +279,6 @@ func _on_grandma(_by: Node) -> void:
 		["", "You're not asleep. Not all the way. You just don't want to open your eyes yet."],
 	])
 	await wait(1.5)
-	Audio.play_music("ch1_living_room", 3.0, -6.0)
-	await hud.chapter_card("To be continued", "Next: December, the last week before winter break", 4.0)
+	Audio.stop_music(2.0)
+	await wait(1.0)
+	go_to_chapter("res://scenes/chapter_4_winter_break.tscn")

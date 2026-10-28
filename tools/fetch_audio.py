@@ -38,6 +38,7 @@ BSB_SOUNDS = {
     "2352": "Old dog barking #1", "2955": "Barking dog #3", "1060": "2 small dogs bark and growl",
     "2450": "Dog singing #1",
     "3098": "Car interior, 80 km/h", "1021": "Blinker", "0971": "Car door #1",
+    "0252": "Fixed telephone ring #3", "3353": "Phone hung up #1",
     # music box notes, for the chapter 1 lullaby
     "1866": "Music box, A# #1", "1867": "Music box, C #1", "1868": "Music box, C# #1",
     "1869": "Music box, D# #1", "1870": "Music box, F #1", "1871": "Music box, G #1",
@@ -264,6 +265,13 @@ def sound_effects():
     d, r = read("0971")
     write(SFX, "car_door", fade(loudest(d, r, 1.2), r, 0.01, 0.3), r)
 
+    # December: the kitchen phone
+    d, r = read("0252")
+    ev = events(d, r, 0.2, 0.6)
+    write(SFX, "phone_ring", d[ev[0][0]:ev[min(2, len(ev) - 1)][0]] if len(ev) > 2 else d, r, 0.7)
+    d, r = read("3353")
+    write(SFX, "phone_hangup", fade(d, r, 0.005, 0.2), r)
+
 
 def _growl(data, rate):
     """Longest stretch of steady, low-pitched (low zero-crossing) sound."""
@@ -286,9 +294,8 @@ def _growl(data, rate):
     return data[start:start + max(best, 20) * hop]
 
 
-def lullaby():
-    """Chapter 1: a little waltz played on real music-box notes."""
-    random.seed(1)
+def music_box():
+    """A note(midi, velocity) player built from the real music-box recordings."""
     samples = []
     for id_ in ("1866", "1867", "1868", "1869", "1870", "1871", "1872", "1874", "1875"):
         d, r = read(id_)
@@ -303,6 +310,13 @@ def lullaby():
         out = pitch_shift(d, 2 ** ((m - src_midi) / 12) * r / rate)
         return [x * vel for x in fade(out[:int(2.5 * rate)], rate, 0.001, 0.4)]
 
+    return note, rate
+
+
+def lullaby():
+    """Chapter 1: a little waltz played on real music-box notes."""
+    random.seed(1)
+    note, rate = music_box()
     beat = 60 / 76
     chords = ["C", "Am", "F", "G", "C", "Em", "F", "G", "Am", "F", "C", "G", "F", "G", "C", "C"]
     tones = {"C": [60, 64, 67], "Am": [57, 60, 64], "F": [53, 57, 60], "G": [55, 59, 62], "Em": [52, 55, 59]}
@@ -342,6 +356,42 @@ def lullaby():
     write(SFX, "title_sting", _reverb(sting, 0.5, 1.4)[:len(sting)], rate, 0.8)
 
 
+def silent_night():
+    """Chapter 4: "Silent Night" (Gruber, 1818, public domain) on the music box."""
+    note, rate = music_box()
+    G, A, B, C, D, E, F = 67, 69, 71, 72, 74, 76, 77  # G4..F5, then up an octave
+    E4, D4, F4, C4 = 64, 62, 65, 60
+    # (note, length in eighths) in 6/8
+    tune = [
+        (G, 1.5), (A, .5), (G, 1), (E4, 3), (G, 1.5), (A, .5), (G, 1), (E4, 3),
+        (D, 2), (D, 1), (B, 3), (C, 2), (C, 1), (G, 3),
+        (A, 2), (A, 1), (C, 1.5), (B, .5), (A, 1), (G, 1.5), (A, .5), (G, 1), (E4, 3),
+        (A, 2), (A, 1), (C, 1.5), (B, .5), (A, 1), (G, 1.5), (A, .5), (G, 1), (E4, 3),
+        (D, 2), (D, 1), (F, 1.5), (D, .5), (B, 1), (C, 3), (E, 3),
+        (C, 1.5), (G, .5), (E4, 1), (G, 1.5), (F4, .5), (D4, 1), (C4, 6),
+    ]
+    # one chord root per 6/8 bar
+    bass = [48, 48, 43, 48, 41, 48, 41, 48, 43, 48, 48, 48]
+    eighth = 0.36
+    total = sum(n for _, n in tune)
+    out = [0.0] * int((total + 6) * eighth * rate)
+
+    def put(m, t, vel):
+        start = int(t * rate)
+        for i, x in enumerate(note(m, vel)):
+            if start + i < len(out):
+                out[start + i] += x
+
+    t = 0.0
+    for m, n in tune:
+        put(m + 12, t * eighth, 0.8)
+        t += n
+    for bar, root in enumerate(bass):
+        put(root + 24, bar * 6 * eighth, 0.4)
+        put(root + 31, (bar * 6 + 3) * eighth, 0.25)
+    write(MUSIC, "ch4_silent_night", _reverb(out, 0.35, 1.3)[:len(out)], rate, 0.7)
+
+
 def music():
     lines = []
     for name, (url, credit) in OGA_MUSIC.items():
@@ -361,6 +411,7 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 ## Music
 {chr(10).join(music_lines)}
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
+- `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
@@ -385,6 +436,7 @@ def main():
     os.makedirs(MUSIC, exist_ok=True)
     sound_effects()
     lullaby()
+    silent_night()
     credits(music())
 
 
