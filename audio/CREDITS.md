@@ -38,8 +38,9 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #1875 Music box, C# #2: https://bigsoundbank.com/s1875.html
 
 ## Voices
-Generated with Piper (https://github.com/rhasspy/piper) using the en_US lessac, ryan and
-libritts_r voices. See tools/generate_voices.py.
+Generated with Piper (https://github.com/rhasspy/piper): Mom uses en_US lessac, Dad en_US ryan,
+and everyone else (Jamie, Grandma, Uncle Ray, Aunt Lisa, Maddie, Tyler, Ben) en_US libritts_r.
+See tools/generate_voices.py.
 
 ## Synthesized
 `tv_show`, `tv_ad`, `tv_signoff`, `bulb_flicker`: tools/generate_audio.py

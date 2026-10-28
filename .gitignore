@@ -1,5 +1,17 @@
-﻿.godot/
+# Godot 4
+.godot/
+/android/
+*.translation
+export_presets.cfg
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Local screenshots from tests/screenshots.gd
+screenshots/
+
+# Downloaded tools and caches (see tools/)
 tools/piper/
 tools/.audio_cache/
 __pycache__/

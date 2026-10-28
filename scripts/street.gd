@@ -12,6 +12,10 @@ extends Node3D
 ## The last light at the end of the street.
 @export var far_light_pos := Vector3(-26.8, 1.6, -64)
 @export var far_light_color := Color(1, 0.5, 0.15)
+## Roof over our own living room (off when the house has its own shape).
+@export var build_own_roof := true
+## Where our front walk meets the steps, along the street.
+@export var front_walk_z := 0.0
 
 const GROUND_Y := -0.45
 const SIDINGS := [Color(0.55, 0.6, 0.62), Color(0.7, 0.62, 0.5), Color(0.45, 0.5, 0.45),
@@ -26,7 +30,8 @@ func _ready() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 31
 	_ground()
-	_own_roof()
+	if build_own_roof:
+		_own_roof()
 	_moon()
 	var houses: Array[Dictionary] = []
 	for z in across_z:
@@ -39,6 +44,7 @@ func _ready() -> void:
 	far_light = _house(far_light_pos.x, far_light_pos.z, 1, rng, far_light_color, false)
 	# Grandma-orange, and bright enough to read from the far end of the street.
 	(far_light.light as OmniLight3D).light_energy = 3.0
+	far_light.energy = 3.0
 	(far_light.light as OmniLight3D).omni_range = 10.0
 	(far_light.material as StandardMaterial3D).emission_energy_multiplier = 12.0
 	(far_light.halo as MeshInstance3D).scale = Vector3.ONE * 2.5
@@ -90,7 +96,7 @@ func _ground() -> void:
 	_box(Vector3(9, 0.04, 160), Vector3(-17.8, GROUND_Y - 0.01, -10), asphalt)
 	_box(Vector3(1.5, 0.04, 160), Vector3(-23.3, GROUND_Y + 0.01, -10), concrete)
 	# front walk from our steps to the sidewalk
-	_box(Vector3(6.4, 0.04, 1.1), Vector3(-9.0, GROUND_Y + 0.01, 0), concrete)
+	_box(Vector3(6.4, 0.04, 1.1), Vector3(-9.0, GROUND_Y + 0.01, front_walk_z), concrete)
 
 
 ## Gable roof: a triangle (in X/Y) extruded along Z, sitting on `base`.
@@ -122,8 +128,8 @@ func _moon() -> void:
 	mi.mesh = mesh
 	mi.material_override = mat
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mi.position = dir * 300.0
 	add_child(mi)
+	mi.global_position = dir * 300.0
 
 
 func _own_roof() -> void:
@@ -259,3 +265,18 @@ func kill_light(entry: Dictionary, time := 0.4) -> void:
 	t.tween_property(light, "light_energy", 0.0, time * 0.5)
 	t.parallel().tween_property(mat, "emission_energy_multiplier", 0.0, time * 0.5)
 	t.parallel().tween_property(entry.halo, "transparency", 1.0, time * 0.5)
+
+
+## Every porch light on, the far one included.
+func restore_lights() -> void:
+	for e in porch_lights + [far_light]:
+		(e.light as OmniLight3D).light_energy = e.energy
+		(e.material as StandardMaterial3D).emission_energy_multiplier = 12.0 if e == far_light else 4.0
+		(e.halo as GeometryInstance3D).transparency = 0.0
+
+
+## End of trick-or-treating: the street's porch lights go off one at a time.
+func lights_out_one_by_one(gap := 0.7) -> void:
+	for e in porch_lights + [far_light]:
+		kill_light(e)
+		await get_tree().create_timer(gap).timeout

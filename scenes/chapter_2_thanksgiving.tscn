@@ -1,0 +1,1864 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/chapter_2_thanksgiving.gd" id="ch"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="player"]
+[ext_resource type="Script" path="res://scripts/interactable.gd" id="inter"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="hud"]
+[ext_resource type="Script" path="res://scripts/trigger.gd" id="trigger"]
+
+[sub_resource type="StandardMaterial3D" id="mat_grandma_carpet"]
+albedo_color = Color(0.45, 0.35, 0.3, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_lino"]
+albedo_color = Color(0.86, 0.82, 0.62, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_ceiling"]
+albedo_color = Color(0.85, 0.82, 0.76, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_wallpaper"]
+albedo_color = Color(0.7, 0.55, 0.45, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_maroon"]
+albedo_color = Color(0.5, 0.15, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_door"]
+albedo_color = Color(0.55, 0.45, 0.35, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_metal"]
+albedo_color = Color(0.55, 0.56, 0.58, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_cabinet"]
+albedo_color = Color(0.5, 0.35, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_counter"]
+albedo_color = Color(0.75, 0.7, 0.6, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_black"]
+albedo_color = Color(0.05, 0.05, 0.06, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_red"]
+albedo_color = Color(0.8, 0.15, 0.15, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_white"]
+albedo_color = Color(0.9, 0.9, 0.88, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_turkey"]
+albedo_color = Color(0.7, 0.42, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_orange"]
+albedo_color = Color(1, 0.5, 0.1, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_wood_light"]
+albedo_color = Color(0.6, 0.45, 0.28, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_wood"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_tablecloth"]
+albedo_color = Color(0.9, 0.85, 0.75, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_card_table"]
+albedo_color = Color(0.3, 0.3, 0.32, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_window_day"]
+albedo_color = Color(0.5, 0.55, 0.6, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(0.55, 0.6, 0.7, 1)
+emission_energy_multiplier = 0.9
+
+[sub_resource type="StandardMaterial3D" id="mat_window"]
+albedo_color = Color(0.05, 0.07, 0.15, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(0.08, 0.12, 0.3, 1)
+emission_energy_multiplier = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_mustard"]
+albedo_color = Color(0.75, 0.6, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_pink"]
+albedo_color = Color(0.85, 0.5, 0.6, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_yellow"]
+albedo_color = Color(0.95, 0.8, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_plant"]
+albedo_color = Color(0.2, 0.45, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_jacket_blue"]
+albedo_color = Color(0.15, 0.25, 0.5, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_jacket_red"]
+albedo_color = Color(0.6, 0.12, 0.12, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_navy"]
+albedo_color = Color(0.15, 0.2, 0.4, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_tv"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_screen_game"]
+albedo_color = Color(0.1, 0.3, 0.1, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(0.3, 0.8, 0.35, 1)
+emission_energy_multiplier = 1.3
+
+[sub_resource type="StandardMaterial3D" id="mat_shade"]
+albedo_color = Color(1, 0.9, 0.7, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(1, 0.75, 0.45, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="StandardMaterial3D" id="mat_blue"]
+albedo_color = Color(0.2, 0.35, 0.75, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_teal"]
+albedo_color = Color(0.2, 0.55, 0.55, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p6_0p5_0p6"]
+size = Vector3(0.6, 0.5, 0.6)
+
+[sub_resource type="BoxShape3D" id="shape_0p3_0p12_0p3"]
+size = Vector3(0.3, 0.12, 0.3)
+
+[sub_resource type="BoxShape3D" id="shape_0p5_1p2_1p25"]
+size = Vector3(0.5, 1.2, 1.25)
+
+[sub_resource type="BoxShape3D" id="shape_0p45_0p1_0p45"]
+size = Vector3(0.45, 0.1, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="mat_green"]
+albedo_color = Color(0.25, 0.6, 0.3, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p8_0p08_0p8"]
+size = Vector3(0.8, 0.08, 0.8)
+
+[sub_resource type="BoxShape3D" id="shape_0p65_0p55_0p65"]
+size = Vector3(0.65, 0.55, 0.65)
+
+[sub_resource type="BoxShape3D" id="shape_1p4_1p0_0p1"]
+size = Vector3(1.4, 1.0, 0.1)
+
+[sub_resource type="BoxShape3D" id="shape_1p4_0p5_0p1"]
+size = Vector3(1.4, 0.5, 0.1)
+
+[sub_resource type="BoxShape3D" id="shape_2p2_0p1_0p4"]
+size = Vector3(2.2, 0.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="shape_0p55_1p6_0p5"]
+size = Vector3(0.55, 1.6, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_slacks"]
+albedo_color = Color(0.25, 0.25, 0.27, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_skin1"]
+albedo_color = Color(0.87, 0.7, 0.58, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_hair_gray"]
+albedo_color = Color(0.75, 0.75, 0.75, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p55_1p2_0p5"]
+size = Vector3(0.55, 1.2, 0.5)
+
+[sub_resource type="BoxShape3D" id="shape_0p55_1p35_0p5"]
+size = Vector3(0.55, 1.35, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_khaki"]
+albedo_color = Color(0.6, 0.55, 0.4, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_hair_red"]
+albedo_color = Color(0.6, 0.25, 0.1, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p55_1p26_0p5"]
+size = Vector3(0.55, 1.26, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_hair_blonde"]
+albedo_color = Color(0.85, 0.7, 0.4, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_flannel"]
+albedo_color = Color(0.6, 0.2, 0.15, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_hair_brown"]
+albedo_color = Color(0.3, 0.2, 0.12, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_jeans"]
+albedo_color = Color(0.2, 0.28, 0.45, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_lav"]
+albedo_color = Color(0.6, 0.55, 0.75, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_black"]
+albedo_color = Color(0.1, 0.1, 0.12, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_hair_black"]
+albedo_color = Color(0.08, 0.07, 0.07, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p55_0p975_0p5"]
+size = Vector3(0.55, 0.975, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_skin2"]
+albedo_color = Color(0.62, 0.45, 0.33, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p55_0p99_0p5"]
+size = Vector3(0.55, 0.99, 0.5)
+
+[sub_resource type="BoxShape3D" id="shape_0p55_0p788_0p5"]
+size = Vector3(0.55, 0.7875, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_shirt_green"]
+albedo_color = Color(0.3, 0.5, 0.35, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_0p45_0p9_0p45"]
+size = Vector3(0.45, 0.9, 0.45)
+
+[sub_resource type="CapsuleShape3D" id="shape_player"]
+radius = 0.25
+height = 1.3
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.05, 0.04, 0.04, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.47, 0.42, 1)
+ambient_light_energy = 0.45
+tonemap_mode = 2
+glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(0.2, 0.17, 0.15, 1)
+fog_density = 0.015
+
+[node name="Chapter2" type="Node3D"]
+script = ExtResource("ch")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="House" type="Node3D" parent="."]
+
+[node name="Room" type="Node3D" parent="House"]
+
+[node name="Floor" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, -0.05, 0.0)
+size = Vector3(8.2, 0.1, 6.2)
+material = SubResource("mat_grandma_carpet")
+use_collision = true
+
+[node name="KitchenFloor" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.15, 0.002, -2.1)
+size = Vector3(3.7, 0.004, 1.8)
+material = SubResource("mat_lino")
+
+[node name="Ceiling" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 2.65, 0.0)
+size = Vector3(8.2, 0.1, 6.2)
+material = SubResource("mat_ceiling")
+use_collision = true
+
+[node name="WallNorth" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 1.3, -3.05)
+size = Vector3(8.2, 2.6, 0.1)
+material = SubResource("mat_wallpaper")
+use_collision = true
+
+[node name="WallSouth" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 1.3, 3.05)
+size = Vector3(8.2, 2.6, 0.1)
+material = SubResource("mat_wallpaper")
+use_collision = true
+
+[node name="WallWest" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -4.05, 1.3, 0.0)
+size = Vector3(0.1, 2.6, 6.2)
+material = SubResource("mat_wallpaper")
+use_collision = true
+
+[node name="WallEast" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 4.05, 1.3, 0.0)
+size = Vector3(0.1, 2.6, 6.2)
+material = SubResource("mat_wallpaper")
+use_collision = true
+
+[node name="BorderN" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 2.2, -2.995)
+size = Vector3(8.1, 0.12, 0.02)
+material = SubResource("mat_shirt_maroon")
+
+[node name="BorderS" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 2.2, 2.995)
+size = Vector3(8.1, 0.12, 0.02)
+material = SubResource("mat_shirt_maroon")
+
+[node name="BorderW" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.995, 2.2, 0)
+size = Vector3(0.02, 0.12, 6.1)
+material = SubResource("mat_shirt_maroon")
+
+[node name="BorderE" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 3.995, 2.2, 0)
+size = Vector3(0.02, 0.12, 6.1)
+material = SubResource("mat_shirt_maroon")
+
+[node name="FrontDoor" type="CSGBox3D" parent="House/Room"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -4.0, 1.02, 0.0)
+size = Vector3(0.06, 2.04, 0.95)
+material = SubResource("mat_door")
+
+[node name="FrontKnob" type="CSGSphere3D" parent="House/Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.96, 1.0, 0.38)
+radius = 0.035
+radial_segments = 6
+rings = 4
+material = SubResource("mat_metal")
+
+[node name="Furniture" type="Node3D" parent="House"]
+
+[node name="CounterBase" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.1, 0.45, -2.7)
+size = Vector3(3.6, 0.9, 0.6)
+material = SubResource("mat_cabinet")
+use_collision = true
+
+[node name="CounterTop" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.1, 0.92, -2.68)
+size = Vector3(3.64, 0.04, 0.64)
+material = SubResource("mat_counter")
+
+[node name="Uppers" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.1, 1.85, -2.83)
+size = Vector3(3.6, 0.7, 0.35)
+material = SubResource("mat_cabinet")
+
+[node name="Burner0" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.945, -2.8)
+radius = 0.09
+height = 0.01
+sides = 10
+material = SubResource("mat_black")
+
+[node name="Burner1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.945, -2.55)
+radius = 0.09
+height = 0.01
+sides = 10
+material = SubResource("mat_black")
+
+[node name="Burner2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.945, -2.8)
+radius = 0.09
+height = 0.01
+sides = 10
+material = SubResource("mat_black")
+
+[node name="Burner3" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.945, -2.55)
+radius = 0.09
+height = 0.01
+sides = 10
+material = SubResource("mat_black")
+
+[node name="Pot1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.04, -2.62)
+radius = 0.13
+height = 0.18
+sides = 10
+material = SubResource("mat_metal")
+
+[node name="Pot2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.01, -2.75)
+radius = 0.11
+height = 0.12
+sides = 10
+material = SubResource("mat_red")
+
+[node name="OvenDoor" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.45, 0.45, -2.39)
+size = Vector3(0.6, 0.5, 0.02)
+material = SubResource("mat_black")
+
+[node name="Platter" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.955, -2.65)
+radius = 0.3
+height = 0.03
+sides = 14
+material = SubResource("mat_white")
+
+[node name="Turkey" type="CSGSphere3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 1.09, -2.65)
+radius = 0.2
+radial_segments = 12
+rings = 8
+material = SubResource("mat_turkey")
+
+[node name="PieA" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.96, -2.65)
+radius = 0.14
+height = 0.04
+sides = 12
+material = SubResource("mat_orange")
+
+[node name="PieB" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.96, -2.65)
+radius = 0.14
+height = 0.04
+sides = 12
+material = SubResource("mat_cabinet")
+
+[node name="StepStool" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.0, 0.2, -1.9)
+size = Vector3(0.35, 0.4, 0.3)
+material = SubResource("mat_wood_light")
+use_collision = true
+
+[node name="BigTable" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.75, -1.0)
+size = Vector3(2.2, 0.05, 1.1)
+material = SubResource("mat_wood")
+use_collision = true
+
+[node name="Tablecloth" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.78, -1.0)
+size = Vector3(2.3, 0.01, 1.2)
+material = SubResource("mat_tablecloth")
+
+[node name="TableLeg0" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -2.5, 0.365, -1.45)
+size = Vector3(0.06, 0.73, 0.06)
+material = SubResource("mat_wood")
+
+[node name="TableLeg1" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.5, 0.365, -1.45)
+size = Vector3(0.06, 0.73, 0.06)
+material = SubResource("mat_wood")
+
+[node name="TableLeg2" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -2.5, 0.365, -0.55)
+size = Vector3(0.06, 0.73, 0.06)
+material = SubResource("mat_wood")
+
+[node name="TableLeg3" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.5, 0.365, -0.55)
+size = Vector3(0.06, 0.73, 0.06)
+material = SubResource("mat_wood")
+
+[node name="ChairN0" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -2.3, 0, -1.95)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairN0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairN0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateN0" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 0.79, -1.3)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="ChairS0" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -2.3, 0, -0.05)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairS0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairS0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateS0" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 0.79, -0.7)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="ChairN1" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0, -1.95)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairN1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairN1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateN1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.79, -1.3)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="ChairS1" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -1.5, 0, -0.05)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairS1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairS1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateS1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.79, -0.7)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="ChairN2" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.7, 0, -1.95)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairN2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairN2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateN2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.79, -1.3)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="ChairS2" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -0.7, 0, -0.05)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/ChairS2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/ChairS2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="PlateS2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.79, -0.7)
+radius = 0.12
+height = 0.012
+sides = 12
+material = SubResource("mat_white")
+
+[node name="GravyBoat" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.82, -1.0)
+radius = 0.06
+height = 0.08
+sides = 10
+material = SubResource("mat_white")
+
+[node name="Rolls" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 0.81, -0.95)
+radius = 0.14
+height = 0.06
+sides = 10
+material = SubResource("mat_wood_light")
+
+[node name="Candle1" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.2, 0.9, -1.0)
+size = Vector3(0.03, 0.22, 0.03)
+material = SubResource("mat_orange")
+
+[node name="CardTable" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.68, 1.9)
+size = Vector3(0.9, 0.04, 0.9)
+material = SubResource("mat_card_table")
+use_collision = true
+
+[node name="CardLeg0" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.9, 0.33, 1.5)
+size = Vector3(0.03, 0.66, 0.03)
+material = SubResource("mat_metal")
+
+[node name="CardLeg1" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.1, 0.33, 1.5)
+size = Vector3(0.03, 0.66, 0.03)
+material = SubResource("mat_metal")
+
+[node name="CardLeg2" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.9, 0.33, 2.3)
+size = Vector3(0.03, 0.66, 0.03)
+material = SubResource("mat_metal")
+
+[node name="CardLeg3" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.1, 0.33, 2.3)
+size = Vector3(0.03, 0.66, 0.03)
+material = SubResource("mat_metal")
+
+[node name="FoldingChair0" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0, 1.25)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/FoldingChair0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.44, 0)
+size = Vector3(0.38, 0.04, 0.38)
+material = SubResource("mat_metal")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/FoldingChair0"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.68, -0.18)
+size = Vector3(0.38, 0.4, 0.03)
+material = SubResource("mat_metal")
+
+[node name="KidPlate0" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.705, 1.47)
+radius = 0.1
+height = 0.01
+sides = 10
+material = SubResource("mat_white")
+
+[node name="FoldingChair1" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -2.15, 0, 1.9)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/FoldingChair1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.44, 0)
+size = Vector3(0.38, 0.04, 0.38)
+material = SubResource("mat_metal")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/FoldingChair1"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.68, -0.18)
+size = Vector3(0.38, 0.4, 0.03)
+material = SubResource("mat_metal")
+
+[node name="KidPlate1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.93, 0.705, 1.9)
+radius = 0.1
+height = 0.01
+sides = 10
+material = SubResource("mat_white")
+
+[node name="FoldingChair2" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -0.85, 0, 1.9)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/FoldingChair2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.44, 0)
+size = Vector3(0.38, 0.04, 0.38)
+material = SubResource("mat_metal")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/FoldingChair2"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.68, -0.18)
+size = Vector3(0.38, 0.4, 0.03)
+material = SubResource("mat_metal")
+
+[node name="KidPlate2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.07, 0.705, 1.9)
+radius = 0.1
+height = 0.01
+sides = 10
+material = SubResource("mat_white")
+
+[node name="FoldingChair3" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -1.5, 0, 2.55)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/FoldingChair3"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.44, 0)
+size = Vector3(0.38, 0.04, 0.38)
+material = SubResource("mat_metal")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/FoldingChair3"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.68, -0.18)
+size = Vector3(0.38, 0.4, 0.03)
+material = SubResource("mat_metal")
+
+[node name="KidPlate3" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.705, 2.33)
+radius = 0.1
+height = 0.01
+sides = 10
+material = SubResource("mat_white")
+
+[node name="WindowFrame" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 1.5, 3.0)
+size = Vector3(1.4, 1.0, 0.04)
+material = SubResource("mat_white")
+
+[node name="WindowDay" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 1.5, 2.98)
+size = Vector3(1.3, 0.9, 0.02)
+material = SubResource("mat_window_day")
+
+[node name="WindowNight" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 1.5, 2.982)
+size = Vector3(1.3, 0.9, 0.018)
+material = SubResource("mat_window")
+
+[node name="CurtainL" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -2.4, 1.55, 2.96)
+size = Vector3(0.32, 1.4, 0.05)
+material = SubResource("mat_shirt_mustard")
+
+[node name="CurtainR" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.6, 1.55, 2.96)
+size = Vector3(0.32, 1.4, 0.05)
+material = SubResource("mat_shirt_mustard")
+
+[node name="ChinaCabinet" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.8, 0.9, -2.2)
+size = Vector3(0.45, 1.8, 1.2)
+material = SubResource("mat_wood")
+use_collision = true
+
+[node name="ChinaGlass" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.57, 1.25, -2.2)
+size = Vector3(0.02, 1.1, 1.0)
+material = SubResource("mat_window_day")
+
+[node name="Plate0" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -3.68, 1.35, -2.5)
+radius = 0.12
+height = 0.015
+sides = 12
+material = SubResource("mat_white")
+
+[node name="Plate1" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -3.68, 1.35, -2.2)
+radius = 0.12
+height = 0.015
+sides = 12
+material = SubResource("mat_white")
+
+[node name="Plate2" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -3.68, 1.35, -1.9)
+radius = 0.12
+height = 0.015
+sides = 12
+material = SubResource("mat_white")
+
+[node name="SideTable" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.7, 0.325, 1.7)
+size = Vector3(0.45, 0.65, 0.45)
+material = SubResource("mat_wood")
+use_collision = true
+
+[node name="MintDish" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.67, 1.7)
+radius = 0.1
+height = 0.04
+sides = 12
+material = SubResource("mat_window_day")
+
+[node name="Mint0" type="CSGSphere3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.68, 0.7, 1.73)
+radius = 0.018
+radial_segments = 6
+rings = 4
+material = SubResource("mat_shirt_pink")
+
+[node name="Mint1" type="CSGSphere3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.73, 0.7, 1.7)
+radius = 0.018
+radial_segments = 6
+rings = 4
+material = SubResource("mat_yellow")
+
+[node name="Mint2" type="CSGSphere3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.67, 0.7, 1.67)
+radius = 0.018
+radial_segments = 6
+rings = 4
+material = SubResource("mat_plant")
+
+[node name="Mint3" type="CSGSphere3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.71, 0.7, 1.66)
+radius = 0.018
+radial_segments = 6
+rings = 4
+material = SubResource("mat_white")
+
+[node name="CoatChair" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -3.5, 0, -0.9)
+
+[node name="Seat" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.45, 0)
+size = Vector3(0.42, 0.05, 0.42)
+material = SubResource("mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.74, -0.19)
+size = Vector3(0.42, 0.55, 0.05)
+material = SubResource("mat_wood")
+
+[node name="Coat0" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(0.98481, 0, -0.17365, 0, 1, 0, 0.17365, 0, 0.98481, 0, 0.55, 0)
+size = Vector3(0.5, 0.1, 0.45)
+material = SubResource("mat_jacket_blue")
+
+[node name="Coat1" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(0.93969, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.93969, 0.05, 0.65, 0)
+size = Vector3(0.5, 0.1, 0.45)
+material = SubResource("mat_jacket_red")
+
+[node name="Coat2" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(0.81915, 0, -0.57358, 0, 1, 0, 0.57358, 0, 0.81915, -0.03, 0.73, 0)
+size = Vector3(0.5, 0.1, 0.45)
+material = SubResource("mat_shirt_mustard")
+
+[node name="Coat3" type="CSGBox3D" parent="House/Furniture/CoatChair"]
+transform = Transform3D(0.99619, 0, 0.08716, 0, 1, 0, -0.08716, 0, 0.99619, 0.02, 0.8, 0)
+size = Vector3(0.5, 0.1, 0.45)
+material = SubResource("mat_shirt_navy")
+
+[node name="TVCart" type="Node3D" parent="House/Furniture"]
+transform = Transform3D(-0.70711, 0, 0.70711, 0, 1, 0, -0.70711, 0, -0.70711, 3.4, 0, 2.4)
+
+[node name="Cart" type="CSGBox3D" parent="House/Furniture/TVCart"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.35, 0)
+size = Vector3(0.7, 0.7, 0.5)
+material = SubResource("mat_metal")
+use_collision = true
+
+[node name="TV" type="CSGBox3D" parent="House/Furniture/TVCart"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.95, 0)
+size = Vector3(0.6, 0.5, 0.5)
+material = SubResource("mat_tv")
+
+[node name="Screen" type="CSGBox3D" parent="House/Furniture/TVCart"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.96, 0.26)
+size = Vector3(0.46, 0.34, 0.02)
+material = SubResource("mat_screen_game")
+
+[node name="Pendant" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 2.3, -1.0)
+size = Vector3(0.02, 0.6, 0.02)
+material = SubResource("mat_black")
+
+[node name="PendantShade" type="CSGCylinder3D" parent="House/Furniture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.95, -1.0)
+radius = 0.28
+height = 0.2
+sides = 10
+cone = true
+material = SubResource("mat_shade")
+
+[node name="Frame0" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.4, 1.6, 2.99)
+size = Vector3(0.3, 0.38, 0.03)
+material = SubResource("mat_wood")
+
+[node name="Photo0" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.4, 1.6, 2.985)
+size = Vector3(0.24, 0.32, 0.035)
+material = SubResource("mat_blue")
+
+[node name="Frame1" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.9, 1.6, 2.99)
+size = Vector3(0.3, 0.38, 0.03)
+material = SubResource("mat_wood")
+
+[node name="Photo1" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.9, 1.6, 2.985)
+size = Vector3(0.24, 0.32, 0.035)
+material = SubResource("mat_shirt_teal")
+
+[node name="Frame2" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.4, 1.6, 2.99)
+size = Vector3(0.3, 0.38, 0.03)
+material = SubResource("mat_wood")
+
+[node name="Photo2" type="CSGBox3D" parent="House/Furniture"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.4, 1.6, 2.985)
+size = Vector3(0.24, 0.32, 0.035)
+material = SubResource("mat_shirt_mustard")
+
+[node name="Things" type="Node3D" parent="House"]
+
+[node name="Coats" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.5, 0.7, -0.9)
+script = ExtResource("inter")
+prompt = "Look at coats"
+memory_text = "Everybody's coats in one big pile. It smells like cold air and Grandma's house: cinnamon and old books."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Coats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p6_0p5_0p6")
+
+[node name="Mints" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.7, 0.7, 1.7)
+script = ExtResource("inter")
+prompt = "Take a mint"
+memory_text = "The little dish of butter mints. They're always here. Every single time."
+repeat_text = "They melt the second they touch your tongue."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Mints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p3_0p12_0p3")
+
+[node name="China" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.8, 1.2, -2.2)
+script = ExtResource("inter")
+prompt = "Look at china"
+memory_text = "The good plates. You're not allowed to even look at them too hard."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/China"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p5_1p2_1p25")
+
+[node name="RelishTray" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.9, 0.82, -1.0)
+script = ExtResource("inter")
+prompt = "Look at relish tray"
+memory_text = "Black olives. You put one on every finger before anyone can stop you."
+repeat_text = "Mom gives you The Look. You eat the evidence."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p45_0p1_0p45")
+
+[node name="Tray" type="CSGCylinder3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
+radius = 0.2
+height = 0.02
+sides = 14
+material = SubResource("mat_white")
+
+[node name="Olive0" type="CSGSphere3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.015, 0.02)
+radius = 0.022
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Olive1" type="CSGSphere3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.015, -0.07)
+radius = 0.022
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Olive2" type="CSGSphere3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.015, 0.08)
+radius = 0.022
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Olive3" type="CSGSphere3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 0.015, -0.02)
+radius = 0.022
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Olive4" type="CSGSphere3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.015, 0.0)
+radius = 0.022
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Celery0" type="CSGBox3D" parent="House/Things/RelishTray"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.1, 0.012, 0.1)
+size = Vector3(0.14, 0.02, 0.025)
+material = SubResource("mat_green")
+
+[node name="Celery1" type="CSGBox3D" parent="House/Things/RelishTray"]
+transform = Transform3D(0.76604, 0, -0.64279, 0, 1, 0, 0.64279, 0, 0.76604, 0.1, 0.012, 0.1)
+size = Vector3(0.14, 0.02, 0.025)
+material = SubResource("mat_green")
+
+[node name="Celery2" type="CSGBox3D" parent="House/Things/RelishTray"]
+transform = Transform3D(0.17365, 0, -0.98481, 0, 1, 0, 0.98481, 0, 0.17365, -0.12, 0.012, -0.08)
+size = Vector3(0.14, 0.02, 0.025)
+material = SubResource("mat_green")
+
+[node name="Placemats" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.7, 1.9)
+script = ExtResource("inter")
+prompt = "Look at placemats"
+memory_text = "Everyone traced their hand and turned it into a turkey. Yours has the most feathers by a lot."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Placemats"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p8_0p08_0p8")
+
+[node name="Football" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 3.4, 0.95, 2.4)
+script = ExtResource("inter")
+prompt = "Watch the game"
+memory_text = "The game's on. Nobody's really watching, but everybody yells at the exact same time."
+repeat_text = "Uncle Ray explains a rule to you. You understand it less afterward."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Football"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_0p65_0p55_0p65")
+
+[node name="Window" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 1.5, 2.98)
+script = ExtResource("inter")
+prompt = "Look outside"
+memory_text = "Gray outside. The kind of cold where the sky looks like it's thinking about snow."
+repeat_text = "All the cars in the driveway. Your family's minivan is blocked in. That means you're staying late."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Window"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_1p4_1p0_0p1")
+
+[node name="Photos" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.9, 1.6, 2.98)
+script = ExtResource("inter")
+prompt = "Look at photos"
+memory_text = "Mom at your age, with the exact same haircut you have. Weird."
+repeat_text = "Grandma and Grandpa on their wedding day. She's laughing at something outside the picture."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_1p4_0p5_0p1")
+
+[node name="Pies" type="StaticBody3D" parent="House/Things"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 1.5, 0.98, -2.65)
+script = ExtResource("inter")
+prompt = "Look at pies"
+memory_text = "Pumpkin and pecan. You've already decided you're having both."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="House/Things/Pies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("shape_2p2_0p1_0p4")
+
+[node name="Story" type="Node3D" parent="."]
+
+[node name="Grandma" type="StaticBody3D" parent="Story"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.0, 0, -2.0)
+script = ExtResource("inter")
+prompt = "Say hi to Grandma"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("shape_0p55_1p6_0p5")
+
+[node name="Legs" type="CSGBox3D" parent="Story/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.376, 0)
+size = Vector3(0.3, 0.752, 0.17)
+material = SubResource("mat_slacks")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 1.008, 0)
+size = Vector3(0.4, 0.512, 0.22)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 1.008, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 1.008, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.385, 0)
+radius = 0.1152
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4057, -0.0207)
+radius = 0.122112
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_gray")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0438, 1.3907, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0438, 1.3907, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Apron" type="CSGBox3D" parent="Story/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.65, 0.12)
+size = Vector3(0.34, 0.5, 0.02)
+material = SubResource("mat_white")
+
+[node name="GrandmaStool" type="Node3D" parent="Story"]
+
+[node name="Grandma" type="StaticBody3D" parent="Story/GrandmaStool"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 2.0, -0.02, -1.9)
+script = ExtResource("inter")
+prompt = "Talk to Grandma"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("shape_0p55_1p2_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.4906, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_slacks")
+
+[node name="Shins" type="CSGBox3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2103, 0.36)
+size = Vector3(0.3, 0.4206, 0.13)
+material = SubResource("mat_slacks")
+
+[node name="Torso" type="CSGBox3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.7966, 0)
+size = Vector3(0.4, 0.512, 0.22)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.7966, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.7966, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="Head" type="CSGSphere3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1735, 0)
+radius = 0.1152
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1943, -0.0207)
+radius = 0.122112
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_gray")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0438, 1.1793, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/GrandmaStool/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0438, 1.1793, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="GrandmaAtTable" type="Node3D" parent="Story"]
+
+[node name="Grandma" type="StaticBody3D" parent="Story/GrandmaAtTable"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -0.7, 0, -0.05)
+script = ExtResource("inter")
+prompt = "Sit with Grandma"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("shape_0p55_1p2_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.4906, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_slacks")
+
+[node name="Shins" type="CSGBox3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2103, 0.36)
+size = Vector3(0.3, 0.4206, 0.13)
+material = SubResource("mat_slacks")
+
+[node name="Torso" type="CSGBox3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.7966, 0)
+size = Vector3(0.4, 0.512, 0.22)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.7966, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.7966, 0.02)
+size = Vector3(0.09, 0.4864, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="Head" type="CSGSphere3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1735, 0)
+radius = 0.1152
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1943, -0.0207)
+radius = 0.122112
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_gray")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0438, 1.1793, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/GrandmaAtTable/Grandma"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0438, 1.1793, 0.1071)
+radius = 0.013824
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Mug" type="CSGCylinder3D" parent="Story/GrandmaAtTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 0.83, -0.5)
+radius = 0.045
+height = 0.1
+sides = 10
+material = SubResource("mat_white")
+
+[node name="PieSlice" type="CSGCylinder3D" parent="Story/GrandmaAtTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.81, -1.3)
+radius = 0.09
+height = 0.03
+sides = 6
+material = SubResource("mat_orange")
+
+[node name="Diners" type="Node3D" parent="Story"]
+
+[node name="UncleRay" type="StaticBody3D" parent="Story/Diners"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -2.3, 0, -1.95)
+script = ExtResource("inter")
+prompt = "Talk to Uncle Ray"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("shape_0p55_1p35_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.5431, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_khaki")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2366, 0.36)
+size = Vector3(0.3, 0.4731, 0.13)
+material = SubResource("mat_khaki")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.8811, 0)
+size = Vector3(0.4, 0.576, 0.22)
+material = SubResource("mat_shirt_mustard")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.8811, 0.02)
+size = Vector3(0.09, 0.5472, 0.11)
+material = SubResource("mat_shirt_mustard")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.8811, 0.02)
+size = Vector3(0.09, 0.5472, 0.11)
+material = SubResource("mat_shirt_mustard")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3052, 0)
+radius = 0.1296
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3286, -0.0233)
+radius = 0.137376
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_red")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0492, 1.3117, 0.1205)
+radius = 0.015551999999999998
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Diners/UncleRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0492, 1.3117, 0.1205)
+radius = 0.015551999999999998
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="AuntLisa" type="StaticBody3D" parent="Story/Diners"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0, -1.95)
+script = ExtResource("inter")
+prompt = "Talk to Aunt Lisa"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
+shape = SubResource("shape_0p55_1p26_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.5116, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_slacks")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2208, 0.36)
+size = Vector3(0.3, 0.4416, 0.13)
+material = SubResource("mat_slacks")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.8304, 0)
+size = Vector3(0.4, 0.5376, 0.22)
+material = SubResource("mat_shirt_teal")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_teal")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_teal")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2262, 0)
+radius = 0.12095999999999998
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.248, -0.0218)
+radius = 0.1282176
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_blonde")
+
+[node name="HairBack" type="CSGBox3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 1.1536, -0.0847)
+size = Vector3(0.2419, 0.2661, 0.0726)
+material = SubResource("mat_hair_blonde")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Diners/AuntLisa"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Dad" type="StaticBody3D" parent="Story/Diners"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.7, 0, -1.95)
+script = ExtResource("inter")
+prompt = "Talk to Dad"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675, 0)
+shape = SubResource("shape_0p55_1p35_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.5431, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_khaki")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2366, 0.36)
+size = Vector3(0.3, 0.4731, 0.13)
+material = SubResource("mat_khaki")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.8811, 0)
+size = Vector3(0.4, 0.576, 0.22)
+material = SubResource("mat_shirt_flannel")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.8811, 0.02)
+size = Vector3(0.09, 0.5472, 0.11)
+material = SubResource("mat_shirt_flannel")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.8811, 0.02)
+size = Vector3(0.09, 0.5472, 0.11)
+material = SubResource("mat_shirt_flannel")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3052, 0)
+radius = 0.1296
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3286, -0.0233)
+radius = 0.137376
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_brown")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0492, 1.3117, 0.1205)
+radius = 0.015551999999999998
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Diners/Dad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0492, 1.3117, 0.1205)
+radius = 0.015551999999999998
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Mom" type="StaticBody3D" parent="Story/Diners"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -2.3, 0, -0.05)
+script = ExtResource("inter")
+prompt = "Talk to Mom"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
+shape = SubResource("shape_0p55_1p26_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.5116, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_jeans")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2208, 0.36)
+size = Vector3(0.3, 0.4416, 0.13)
+material = SubResource("mat_jeans")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.8304, 0)
+size = Vector3(0.4, 0.5376, 0.22)
+material = SubResource("mat_shirt_lav")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_lav")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_lav")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2262, 0)
+radius = 0.12095999999999998
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.248, -0.0218)
+radius = 0.1282176
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_brown")
+
+[node name="HairBack" type="CSGBox3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 1.1536, -0.0847)
+size = Vector3(0.2419, 0.2661, 0.0726)
+material = SubResource("mat_hair_brown")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Diners/Mom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Jamie" type="StaticBody3D" parent="Story/Diners"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -1.5, 0, -0.05)
+script = ExtResource("inter")
+prompt = "Talk to Jamie"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
+shape = SubResource("shape_0p55_1p26_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.5116, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_jeans")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.2208, 0.36)
+size = Vector3(0.3, 0.4416, 0.13)
+material = SubResource("mat_jeans")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.8304, 0)
+size = Vector3(0.4, 0.5376, 0.22)
+material = SubResource("mat_shirt_black")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_black")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.8304, 0.02)
+size = Vector3(0.09, 0.5107, 0.11)
+material = SubResource("mat_shirt_black")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2262, 0)
+radius = 0.12095999999999998
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin1")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.248, -0.0218)
+radius = 0.1282176
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_black")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Diners/Jamie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.046, 1.2323, 0.1125)
+radius = 0.014515199999999997
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Cousins" type="Node3D" parent="Story"]
+
+[node name="Maddie" type="StaticBody3D" parent="Story/Cousins"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -2.15, 0, 1.9)
+script = ExtResource("inter")
+prompt = "Talk to Maddie"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4875, 0)
+shape = SubResource("shape_0p55_0p975_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.4117, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_jeans")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1709, 0.36)
+size = Vector3(0.3, 0.3417, 0.13)
+material = SubResource("mat_jeans")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.6697, 0)
+size = Vector3(0.4, 0.416, 0.22)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.6697, 0.02)
+size = Vector3(0.09, 0.3952, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.6697, 0.02)
+size = Vector3(0.09, 0.3952, 0.11)
+material = SubResource("mat_shirt_pink")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.976, 0)
+radius = 0.0936
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin2")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9928, -0.0168)
+radius = 0.09921600000000001
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_black")
+
+[node name="HairBack" type="CSGBox3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.9198, -0.0655)
+size = Vector3(0.1872, 0.2059, 0.0562)
+material = SubResource("mat_hair_black")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0356, 0.9807, 0.087)
+radius = 0.011232
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Cousins/Maddie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0356, 0.9807, 0.087)
+radius = 0.011232
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Tyler" type="StaticBody3D" parent="Story/Cousins"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -0.85, 0, 1.9)
+script = ExtResource("inter")
+prompt = "Talk to Tyler"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.495, 0)
+shape = SubResource("shape_0p55_0p99_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.417, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_jeans")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1735, 0.36)
+size = Vector3(0.3, 0.347, 0.13)
+material = SubResource("mat_jeans")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.6782, 0)
+size = Vector3(0.4, 0.4224, 0.22)
+material = SubResource("mat_shirt_navy")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.6782, 0.02)
+size = Vector3(0.09, 0.4013, 0.11)
+material = SubResource("mat_shirt_navy")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.6782, 0.02)
+size = Vector3(0.09, 0.4013, 0.11)
+material = SubResource("mat_shirt_navy")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9892, 0)
+radius = 0.09504
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin2")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0063, -0.0171)
+radius = 0.10074240000000001
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_black")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0361, 0.9939, 0.0884)
+radius = 0.0114048
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Cousins/Tyler"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0361, 0.9939, 0.0884)
+radius = 0.0114048
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="Ben" type="StaticBody3D" parent="Story/Cousins"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -1.5, 0, 2.55)
+script = ExtResource("inter")
+prompt = "Talk to Ben"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3938, 0)
+shape = SubResource("shape_0p55_0p788_0p5")
+
+[node name="Thighs" type="CSGBox3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.346, 0.17)
+size = Vector3(0.3, 0.14, 0.42)
+material = SubResource("mat_khaki")
+
+[node name="Shins" type="CSGBox3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.138, 0.36)
+size = Vector3(0.3, 0.276, 0.13)
+material = SubResource("mat_khaki")
+
+[node name="Torso" type="CSGBox3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.564, 0)
+size = Vector3(0.4, 0.336, 0.22)
+material = SubResource("mat_shirt_green")
+
+[node name="ArmL" type="CSGBox3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -0.25, 0.564, 0.02)
+size = Vector3(0.09, 0.3192, 0.11)
+material = SubResource("mat_shirt_green")
+
+[node name="ArmR" type="CSGBox3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.25, 0.564, 0.02)
+size = Vector3(0.09, 0.3192, 0.11)
+material = SubResource("mat_shirt_green")
+
+[node name="Head" type="CSGSphere3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8114, 0)
+radius = 0.0756
+radial_segments = 10
+rings = 6
+material = SubResource("mat_skin2")
+
+[node name="Hair" type="CSGSphere3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.825, -0.0136)
+radius = 0.080136
+radial_segments = 10
+rings = 6
+material = SubResource("mat_hair_black")
+
+[node name="EyeL" type="CSGSphere3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0287, 0.8152, 0.0703)
+radius = 0.009072
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="EyeR" type="CSGSphere3D" parent="Story/Cousins/Ben"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0287, 0.8152, 0.0703)
+radius = 0.009072
+radial_segments = 6
+rings = 4
+material = SubResource("mat_black")
+
+[node name="YourSeat" type="StaticBody3D" parent="Story"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0, 1.25)
+script = ExtResource("inter")
+prompt = "Sit down"
+enabled = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Story/YourSeat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("shape_0p45_0p9_0p45")
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Pendant" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.8, -1.0)
+light_color = Color(1, 0.78, 0.5, 1)
+light_energy = 1.5
+omni_range = 5.5
+shadow_enabled = true
+
+[node name="KitchenLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 2.3, -2.0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 1.1
+omni_range = 5.0
+
+[node name="WindowLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.6, 2.4)
+light_color = Color(0.75, 0.8, 0.9, 1)
+light_energy = 0.7
+omni_range = 4.0
+
+[node name="TVGlow" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 1.0, 2.1)
+light_color = Color(0.5, 1, 0.6, 1)
+light_energy = 0.5
+omni_range = 2.5
+
+[node name="CornerLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 1.6, 2.6)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0.6
+omni_range = 4.0
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -3.3, 0.05, 0.0)
+script = ExtResource("player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("shape_player")
+
+[node name="Head" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head"]
+fov = 75.0
+current = true
+
+[node name="InteractRay" type="RayCast3D" parent="Player/Head/Camera3D"]
+target_position = Vector3(0, 0, -1.6)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("hud")
