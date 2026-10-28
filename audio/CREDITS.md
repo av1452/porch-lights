@@ -27,6 +27,9 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #2955 Barking dog #3: https://bigsoundbank.com/s2955.html
 - #1060 2 small dogs bark and growl: https://bigsoundbank.com/s1060.html
 - #2450 Dog singing #1: https://bigsoundbank.com/s2450.html
+- #3098 Car interior, 80 km/h: https://bigsoundbank.com/s3098.html
+- #1021 Blinker: https://bigsoundbank.com/s1021.html
+- #0971 Car door #1: https://bigsoundbank.com/s0971.html
 - #1866 Music box, A# #1: https://bigsoundbank.com/s1866.html
 - #1867 Music box, C #1: https://bigsoundbank.com/s1867.html
 - #1868 Music box, C# #1: https://bigsoundbank.com/s1868.html
@@ -38,9 +41,8 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #1875 Music box, C# #2: https://bigsoundbank.com/s1875.html
 
 ## Voices
-Generated with Piper (https://github.com/rhasspy/piper): Mom uses en_US lessac, Dad en_US ryan,
-and everyone else (Jamie, Grandma, Uncle Ray, Aunt Lisa, Maddie, Tyler, Ben) en_US libritts_r.
-See tools/generate_voices.py.
+Generated with Piper (https://github.com/rhasspy/piper) using the en_US lessac, ryan and
+libritts_r voices. See tools/generate_voices.py.
 
 ## Synthesized
 `tv_show`, `tv_ad`, `tv_signoff`, `bulb_flicker`: tools/generate_audio.py

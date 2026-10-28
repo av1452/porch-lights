@@ -1,6 +1,7 @@
 extends Chapter
 ## Chapter 2 — November. Thanksgiving at Grandma's.
-## Say hi to Grandma → kids' table → dinner (time skip) → pie with Grandma.
+## Say hi to Grandma → kids' table → dinner (time skip) → pie with Grandma →
+## Chapter 3, the drive home.
 
 enum Step { HI_GRANDMA, FIND_SEAT, DINNER, FIND_GRANDMA, END }
 
@@ -159,4 +160,6 @@ func _on_grandma_table(_by: Node) -> void:
 	await wait(2.0)
 	lock(true)
 	await hud.fade(1.0, 3.0).finished
-	await hud.chapter_card("To be continued", "Next: the long drive home", 4.0)
+	Audio.stop_music(3.0)
+	await wait(1.0)
+	go_to_chapter("res://scenes/chapter_3_drive_home.tscn")

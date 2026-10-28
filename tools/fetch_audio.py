@@ -37,6 +37,7 @@ BSB_SOUNDS = {
     "2134": "Zapping", "1783": "Cathode screen off #1", "0844": "Blister",
     "2352": "Old dog barking #1", "2955": "Barking dog #3", "1060": "2 small dogs bark and growl",
     "2450": "Dog singing #1",
+    "3098": "Car interior, 80 km/h", "1021": "Blinker", "0971": "Car door #1",
     # music box notes, for the chapter 1 lullaby
     "1866": "Music box, A# #1", "1867": "Music box, C #1", "1868": "Music box, C# #1",
     "1869": "Music box, D# #1", "1870": "Music box, F #1", "1871": "Music box, G #1",
@@ -252,6 +253,16 @@ def sound_effects():
     write(SFX, "dog_growl", fade(_growl(d, r), r, 0.1, 0.3), r)
     d, r = read("2450")
     write(SFX, "dog_whine", fade(d, r, 0.02, 0.2), r)
+
+    # the drive home
+    d, r = read("3098")
+    write(SFX, "car_interior", loop(cut(d, r, 5, 29), r, 2.0), r, 0.6)
+    d, r = read("1021")
+    ev = events(d, r, 0.3, 0.15)
+    k = len(ev) - 1 if (len(ev) - 1) % 2 == 0 else len(ev) - 2
+    write(SFX, "blinker", d[ev[0][0]:ev[max(k, 2)][0]], r, 0.5)
+    d, r = read("0971")
+    write(SFX, "car_door", fade(loudest(d, r, 1.2), r, 0.01, 0.3), r)
 
 
 def _growl(data, rate):

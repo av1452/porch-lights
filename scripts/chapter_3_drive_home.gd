@@ -1,0 +1,283 @@
+extends Chapter
+## Chapter 3 — November. The long drive home from Grandma's.
+## Back seat → share Jamie's headphones → overhear Mom and Dad → lean on the
+## window and fall asleep → the dream street → Grandma's porch light →
+## waking up as Dad carries you in.
+
+enum Step { RIDE, OVERHEAR, SLEEP, DREAM, GRANDMA, END }
+
+## On a booster seat, so he can see out the windshield.
+const LEO_SEAT := Vector3(0.38, 0.14, 0.62)
+## The dream street (scripts/street.gd) is built at the origin; the
+## sidewalk in front of our side of the street, facing the far end.
+const DREAM_START := Vector3(-17.8, -0.4, 16.0)
+
+@onready var env: Environment = $WorldEnvironment.environment
+@onready var car: CarRide = $CarRide
+
+var mom: Interactable
+var dad: Interactable
+var jamie: Interactable
+var grandma: Interactable
+var street: Street
+var _dream_bounds: StaticBody3D
+
+
+func _ready() -> void:
+	super._ready()
+	var cabin := car.get_node("Cabin") as Node3D
+	# Car seats sit lower than chairs, so the grown-ups sink in a little.
+	dad = Figure.person(cabin, "Dad", Vector3(-0.38, -0.1, -0.5), 180.0, 1.8, Figure.DAD, true)
+	mom = Figure.person(cabin, "Mom", Vector3(0.38, -0.1, -0.5), 180.0, 1.68, Figure.MOM, true)
+	jamie = Figure.person(cabin, "Jamie", Vector3(-0.38, -0.04, 0.62), 180.0, 1.62, Figure.JAMIE, true)
+	_headphones(jamie)
+
+	_thing(cabin, "Leftovers", Vector3(0.38, 0.52, 0.3), Vector3(0.28, 0.06, 0.22), Color(0.75, 0.75, 0.78),
+		"Leftovers", "Grandma wrapped two slices of pie. One is for you. One is 'for your father, and don't let him eat both.'",
+		"The foil is still a little warm. You can smell the cinnamon through it.")
+	_thing(cabin, "Window", Vector3(0.73, 1.05, 0.35), Vector3(0.04, 0.4, 0.6), Color(0, 0, 0, 0),
+		"Look out the window", "Streetlights slide over the ceiling one at a time, like the second hand on a clock.",
+		"You fog the glass and draw a house. Then a porch. Then a little light by the door.")
+	var hoodie := _thing(cabin, "Hoodie", Vector3(0.62, 0.78, 0.82), Vector3(0.22, 0.2, 0.2), Color(0.1, 0.1, 0.12),
+		"Lean on the window", "", "")
+	hoodie.enabled = false
+	hoodie.used.connect(_on_sleep)
+	jamie.used.connect(_on_jamie)
+
+	add_chatter(dad, "Dad", [
+		"Seatbelt on back there? Good.",
+		"Two more hours, bud. Try to get some sleep.",
+		"Don't tell your mom, but I already had one of those slices.",
+	])
+	add_chatter(mom, "Mom", [
+		"Not now, hon. I'm just watching the road.",
+		"Grandma sent you home with half the kitchen, huh?",
+	])
+
+	player.sit(LEO_SEAT, 0.0)
+	Audio.play_sfx("blinker", null, -14.0)
+	await open_chapter("November", "The Long Drive Home")
+	hud.show_memory("Leftovers on your lap. The heater smells like burnt dust. Jamie has their headphones on.", 5.0)
+	await wait(3.0)
+	objective("Ask Jamie what they're listening to")
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(street) and street.get_parent() == null:
+		street.free()
+
+
+## Big over-ear headphones, the kind with foam on them.
+func _headphones(who: Node3D) -> void:
+	var black := StandardMaterial3D.new()
+	black.albedo_color = Color(0.05, 0.05, 0.06)
+	var head_y := 0.8656 * 1.62 - 0.136 * 1.62
+	for side in [-1, 1]:
+		var cup := CSGCylinder3D.new()
+		cup.radius = 0.05
+		cup.height = 0.04
+		cup.rotation_degrees.z = 90
+		cup.position = Vector3(0.12 * side, head_y, 0)
+		cup.material = black
+		who.add_child(cup)
+	var band := CSGBox3D.new()
+	band.size = Vector3(0.25, 0.025, 0.04)
+	band.position = Vector3(0, head_y + 0.125, 0)
+	band.material = black
+	who.add_child(band)
+
+
+## Something in the car you can look at. A clear color means no mesh.
+func _thing(parent: Node3D, node_name: String, pos: Vector3, size: Vector3, color: Color,
+		prompt_text: String, first: String, again: String) -> Interactable:
+	var it := Interactable.new()
+	it.name = node_name
+	it.prompt = prompt_text
+	it.memory_text = first
+	it.repeat_text = again
+	it.position = pos
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	shape.shape = box
+	it.add_child(shape)
+	if color.a > 0.0:
+		var mesh := CSGBox3D.new()
+		mesh.size = size
+		var m := StandardMaterial3D.new()
+		m.albedo_color = color
+		m.metallic = 0.6 if node_name == "Leftovers" else 0.0
+		m.roughness = 0.35 if node_name == "Leftovers" else 0.95
+		mesh.material = m
+		it.add_child(mesh)
+	parent.add_child(it)
+	return it
+
+
+# --- Step 0: Jamie's headphones ----------------------------------------
+
+func _on_jamie(_by: Node) -> void:
+	if busy:
+		return
+	if step != Step.RIDE:
+		var pool := ["Shh. This is the good part.", "You're breathing on me.", "Go to sleep, kid."]
+		say([["Jamie", pool[randi() % pool.size()]]])
+		return
+	step = Step.OVERHEAR
+	busy = true
+	objective("")
+	await say([
+		["Jamie", "What."],
+		["", "You point at the headphones."],
+		["Jamie", "...Fine. One earbud. Don't breathe on me."],
+	])
+	Audio.play_music("ch2_night", 2.0, -16.0)
+	await say([
+		["", "It's a song you don't know yet. By spring you'll know every word."],
+		["Jamie", "If you tell anyone I listen to this, you're dead."],
+	])
+	busy = false
+	await wait(5.0)
+	await _overhear()
+
+
+# --- Step 1: Mom and Dad, quietly ---------------------------------------
+
+func _overhear() -> void:
+	busy = true
+	await say([
+		["Mom", "Did you see her hands? She couldn't open the cranberry sauce."],
+		["Dad", "It's one can, hon."],
+		["Mom", "It's not one can."],
+		["", "The blinker ticks. Nobody says anything for a whole streetlight."],
+		["Mom", "I'm going to start driving up on weekends. Every other weekend, at least."],
+		["Dad", "Okay. We'll make it work."],
+		["", "Jamie turns the music up. Neither of you looks at the other."],
+	])
+	busy = false
+	step = Step.SLEEP
+	(car.get_node("Cabin/Hoodie") as Interactable).enabled = true
+	objective("Lean on the window and close your eyes")
+
+
+# --- Step 2: falling asleep ---------------------------------------------
+
+func _on_sleep(_by: Node) -> void:
+	if busy or step != Step.SLEEP:
+		return
+	step = Step.DREAM
+	busy = true
+	objective("")
+	lock(true)
+	hud.show_memory("Jamie's hoodie is bunched against the glass. It smells like their room.", 4.0)
+	Audio.stop_music(4.0)
+	var t := create_tween().set_parallel(true)
+	t.tween_property(player.head, "rotation:z", deg_to_rad(14.0), 4.0)
+	t.tween_property(player.camera, "fov", 95.0, 5.0)
+	t.tween_property(env, "fog_density", 0.08, 5.0)
+	await wait(3.0)
+	await hud.fade(1.0, 2.5).finished
+	_enter_dream()
+	await wait(1.5)
+	await hud.fade(0.0, 3.0).finished
+	lock(false)
+	busy = false
+	hud.show_memory("The car is gone. You're standing on a street you almost know. Every porch light is on.", 5.0)
+	await wait(3.0)
+	objective("Follow the porch lights")
+
+
+func _enter_dream() -> void:
+	stash(car)
+	Audio.set_dreaming(true)
+	Audio.play_music("dream_hall", 3.0)
+	env.ambient_light_color = Color(0.3, 0.25, 0.5)
+	env.ambient_light_energy = 0.4
+	env.fog_light_color = Color(0.2, 0.15, 0.35)
+	env.fog_density = 0.03
+	street = Street.new()
+	street.name = "DreamStreet"
+	add_child(street)
+	_build_dream_bounds()
+	player.head.rotation.z = 0.0
+	player.camera.fov = 85.0
+	player.stand(DREAM_START, 0.0)
+	_add_grandma()
+
+
+func _build_dream_bounds() -> void:
+	_dream_bounds = StaticBody3D.new()
+	add_child(_dream_bounds)
+	# [center, size]: sidewalk edges, the far end, and the walk up to her porch.
+	for b in [
+		[Vector3(-12.0, 0.5, -20.0), Vector3(0.2, 3.0, 100.0)],
+		[Vector3(-24.4, 0.5, -15.0), Vector3(0.2, 3.0, 90.0)],
+		[Vector3(-18.0, 0.5, 30.0), Vector3(13.0, 3.0, 0.2)],
+		[Vector3(-19.0, 0.5, -70.0), Vector3(15.0, 3.0, 0.2)],
+		[Vector3(-26.3, 0.5, -65.0), Vector3(0.2, 3.0, 10.0)],
+		[Vector3(-25.3, 0.5, -60.0), Vector3(2.0, 3.0, 0.2)],
+	]:
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = b[1]
+		shape.shape = box
+		shape.position = b[0]
+		_dream_bounds.add_child(shape)
+
+
+func _add_grandma() -> void:
+	var at: Vector3 = (street.far_light.light as Node3D).global_position
+	grandma = Figure.person(self, "Grandma", Vector3(at.x + 0.8, Street.GROUND_Y, at.z), 90.0, 1.6, Figure.GRANDMA, false)
+	grandma.used.connect(_on_grandma)
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	# The street is only built once the fade into the dream is done.
+	if (step != Step.DREAM and step != Step.GRANDMA) or street == null:
+		return
+	# The street goes dark behind you as you walk.
+	for e in street.porch_lights:
+		if e.light.light_energy > 0.0 and e.z > player.global_position.z + 10.0 and not e.get("dark", false):
+			e["dark"] = true
+			street.kill_light(e, 1.2)
+	if step == Step.DREAM and player.global_position.z < -52.0:
+		step = Step.GRANDMA
+		objective("Go up to Grandma's porch")
+
+
+# --- Step 3: Grandma ----------------------------------------------------
+
+func _on_grandma(_by: Node) -> void:
+	if busy or step != Step.GRANDMA:
+		return
+	step = Step.END
+	busy = true
+	objective("")
+	lock(true)
+	await player.tween_look_at(grandma.global_position + Vector3(0, 1.3, 0), 1.0).finished
+	await say([
+		["Grandma", "There you are. I left the light on for you."],
+		["", "Her porch smells like her kitchen. Cinnamon, and the oven, and the hand lotion by the sink."],
+		["Grandma", "Remember what you promised me? Not too fast."],
+		["", "You nod. She fixes your collar like it's the most important job in the world."],
+		["Grandma", "Go on, now. Your dad's carrying you in."],
+	])
+	await wait(1.0)
+	await hud.fade(1.0, 2.5, Color(1.0, 0.94, 0.82)).finished
+	await wait(0.5)
+	await hud.fade(1.0, 1.0, Color.BLACK).finished
+	Audio.stop_music(2.0)
+	Audio.set_dreaming(false)
+	Audio.play_sfx("car_door", null, -6.0)
+	await wait(1.5)
+	await say([
+		["Dad", "Gotcha. Up we go, bud."],
+		["Mom", "Is he out?"],
+		["Dad", "Out cold. Grab the pie."],
+		["Jamie", "...Night, kid."],
+		["", "You're not asleep. Not all the way. You just don't want to open your eyes yet."],
+	])
+	await wait(1.5)
+	Audio.play_music("ch1_living_room", 3.0, -6.0)
+	await hud.chapter_card("To be continued", "Next: December, the last week before winter break", 4.0)

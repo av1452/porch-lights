@@ -40,16 +40,26 @@ who sits down while she cooks now. Take your seat at the kids' table while Jamie
 moves up to the big table. After dinner, the house goes quiet, and Grandma saves
 you the first slice of pie.
 
-**Planned:** the drive home (dream), the last week before winter break, Christmas
-Eve, Christmas morning and the quiet after.
+**Chapter 3: November, The Long Drive Home.** The back seat, leftovers on your lap,
+sodium streetlights sliding over the ceiling. Jamie lends you one earbud. Up front,
+Mom talks quietly about Grandma's hands. You lean on the window and fall asleep, and
+the car is gone: you're walking down a street where every porch light goes dark
+behind you, toward the orange one at the end. Grandma's waiting on her porch. Then
+Dad's carrying you inside.
+
+**Planned:** the last week before winter break, Christmas Eve, Christmas morning
+and the quiet after.
 
 ## Project layout
-- `scenes/chapter_1_halloween.tscn`, `scenes/chapter_2_thanksgiving.tscn`: levels
+- `scenes/chapter_1_halloween.tscn`, `scenes/chapter_2_thanksgiving.tscn`,
+  `scenes/chapter_3_drive_home.tscn`: levels
   (the interlude plays in the Chapter 1 house, with the porch and street outside)
 - `scripts/chapter.gd`: base class for chapters: `say()` dialogue (voiced automatically),
   `objective()`, `open_chapter()` title cards, `swing_door()`, `add_chatter()`, room-state swapping
 - `scripts/chapter_1_halloween.gd`, `scripts/interlude_porch_light.gd`,
-  `scripts/chapter_2_thanksgiving.gd`: story steps
+  `scripts/chapter_2_thanksgiving.gd`, `scripts/chapter_3_drive_home.gd`: story steps
+- `scripts/car_ride.gd`: the family car at night, with the road sliding past
+- `scripts/figure.gd`: builds people in code (Mom, Dad, Jamie, Grandma) to match the scenes
 - `scripts/player.gd`: Leo's kid-height first-person controller (walk, run, crouch, sit, footsteps)
 - `scripts/interactable.gd`: attach to any StaticBody3D. Set `prompt`,
   `memory_text`, `repeat_text` and `use_sfx` in the Inspector, or connect to `used`
@@ -84,4 +94,5 @@ To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name i
 ```
 godot --headless -s res://tests/playtest_chapter_1.gd   # Chapter 1 + the interlude
 godot --headless -s res://tests/playtest_chapter_2.gd
+godot --headless -s res://tests/playtest_chapter_3.gd
 ```
