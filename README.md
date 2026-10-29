@@ -57,18 +57,18 @@ and the first Christmas song of the year comes on the radio. You fall asleep as 
 snow starts falling in the headlights, and in your dream every porch light you pass turns
 into Christmas lights, all the way to Grandma's porch.
 
-**School: December 19, The Class Party.** Mrs. Patterson's third grade, last day before
-break. The handprint turkeys and paper bats are still up. Put your letter in the North Pole
-mailbox, cut a paper snowflake, do Secret Santa (a Slinky for you, glitter gel pens for
-Maya), cupcakes with the crunchy sprinkles, juice boxes, candy canes, the class picture,
-the claymation special on the TV cart, one last "Jingle Bells" for the concert... and
-the bell.
+**Chapter 3: December 19, The Last Day Before Winter Break.** Mrs. Patterson's third
+grade. The handprint turkeys and paper bats are still up. Put your letter in the North
+Pole mailbox, cut a paper snowflake, do Secret Santa (a mood ring for you, glitter gel pens
+for Maya), pass out the cupcakes with the crunchy sprinkles, juice boxes, candy canes, the
+class picture, the claymation special on the TV cart... until Josh yells "IT'S SNOWING!"
+and everybody runs to the windows. One last "Jingle Bells", the bell, and then you wait on
+the hallway bench for Mom while the school empties out. You fall asleep, and the hallway
+stretches on and on, snow falling indoors, Biscuit waiting by a door glowing with
+Christmas lights. *To be continued. Next: Christmas Eve.*
 
-**Chapter 4: December 19, Home for Winter Break.** Two whole weeks off. Sprinkles duty on Mom's sugar cookies.
-The advent calendar (Jamie ate tomorrow's). The toy catalog, page 47. Help Jamie find
-the one dead bulb so the whole tree lights up. Grandma calls: she's coming for Christmas
-Eve. You fall asleep to the claymation special and dream it's snowing in the living
-room, then wake up to real snow.
+*(Home for Winter Break, the old December 19 evening at home, is out of the chapter order
+while its cookies, tree lights and snow day are folded into Christmas Eve and Winter Break.)*
 
 **Chapter 5: December 24, Christmas Eve.** Grandma's here with her fudge. One present
 tonight: matching reindeer pajamas for everybody, even Dad, and a bandana for Biscuit.

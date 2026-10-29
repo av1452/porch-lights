@@ -1,13 +1,22 @@
 extends Chapter
-## December 19 — The Class Party. The last day of school before winter break,
-## in Mrs. Patterson's third-grade classroom (scripts/classroom.gd).
+## December 19 — The Last Day Before Winter Break, in Mrs. Patterson's
+## third-grade classroom (scripts/classroom.gd) and the hallway outside
+## (scripts/school_hallway.gd).
 ## Letter to Santa in the North Pole mailbox → cut a paper snowflake →
 ## Secret Santa (you get a mood ring, you give Maya glitter gel pens) → pass
 ## out the cupcakes, juice boxes, candy canes and the class picture → the
 ## claymation special on the TV cart, until somebody yells "IT'S SNOWING!" →
-## one last concert practice → the bell.
+## one last concert practice → the bell → waiting on the hallway bench for
+## Mom while the school empties → falling asleep → the dream: the hallway
+## stretches, snow falls indoors, Biscuit waits by a door outlined in
+## Christmas lights → "To be continued. Next: Christmas Eve."
 
-enum Step { LETTER, SNOWFLAKE, GIFT, MAYA, PARTY, CUPCAKES, RUG, BELL, END }
+enum Step { LETTER, SNOWFLAKE, GIFT, MAYA, PARTY, CUPCAKES, RUG, BELL, BENCH, DREAM, END }
+
+## The real hallway and the dream one, far from the classroom and each other.
+const HALL_AT := Vector3(40.0, 0.0, 0.0)
+const DREAM_AT := Vector3(80.0, 0.0, 0.0)
+const NEXT_CHAPTER := "res://scenes/chapter_5_christmas_eve.tscn"
 
 ## What each kid says when you hand them a cupcake.
 const CUPCAKE_THANKS := {
@@ -40,6 +49,10 @@ var _rug: Interactable
 var _door: Interactable
 var _unserved: Array = []
 var _window: Interactable
+var hall: SchoolHallway
+var dream_hall: SchoolHallway
+var _dream_dog: Dog
+var _dog_greeted := false
 
 
 func _ready() -> void:
@@ -101,7 +114,7 @@ func _ready() -> void:
 	teacher.used.connect(_on_teacher)
 
 	Audio.make_loop("classroom", self, -20.0, "SFX", false)
-	await open_chapter("December 19", "The Class Party")
+	await open_chapter("December 19", "The Last Day Before Winter Break")
 	hud.show_memory("Last day of school before winter break. Nobody's doing any work. Mrs. Patterson isn't even pretending.", 5.5)
 	await wait(3.0)
 	objective("Put your letter to Santa in the North Pole mailbox")
@@ -320,11 +333,123 @@ func _first_snow() -> void:
 func _on_door(_by: Node) -> void:
 	if busy or step != Step.BELL:
 		return
+	step = Step.BENCH
+	busy = true
+	lock(true)
+	objective("")
+	Audio.play_sfx("door_close", _door)
+	await hud.fade(1.0, 1.5).finished
+	await _wait_on_bench()
+
+
+# --- Step 6: the bench by the doors -------------------------------------
+
+## Mom's running late. The school empties out around you.
+func _wait_on_bench() -> void:
+	hall = SchoolHallway.new()
+	hall.position = HALL_AT
+	add_child(hall)
+	teacher.position = HALL_AT + Vector3(-0.4, 0.0, -3.4)
+	teacher.rotation.y = deg_to_rad(110.0)
+	# Classmates heading for the buses.
+	var leaving: Array[Node3D] = []
+	var i := 0
+	for kid_name in kids:
+		var kid := kids[kid_name] as Node3D
+		kid.position = HALL_AT + Vector3(-0.6 + (i % 2) * 0.5, 0.0, -6.0 - i * 1.4)
+		kid.rotation.y = 0.0
+		leaving.append(kid)
+		i += 1
+	player.sit(HALL_AT + SchoolHallway.BENCH + Vector3(0, 0.05, 0), 90.0)
+	room.visible = false
+	await hud.fade(0.0, 1.5).finished
+	for k in leaving.size():
+		var kid := leaving[k]
+		var t := create_tween()
+		t.tween_interval(k * 0.9)
+		t.tween_property(kid, "position:z", HALL_AT.z + 0.3, 3.5)
+		t.tween_callback(kid.hide)
+		get_tree().create_timer(k * 0.9 + 3.3).timeout.connect(func() -> void: Audio.play_sfx("door_close", null, -12.0, 0.1))
+	await say([
+		["", "Lockers slam. Somebody's boots squeak. Everybody's yelling 'bye' and 'merry Christmas' at the same time."],
+		["Mrs. Patterson", "Your mom called, Leo. She's running a little late. You wait right here on the bench, okay? I'll be in my room."],
+	])
+	var go := create_tween()
+	go.tween_property(teacher, "position:z", HALL_AT.z - 14.0, 4.0)
+	go.tween_callback(teacher.hide)
+	await wait(4.0)
+	await say([["", "The hallway gets quieter. Then quieter than that."]])
+	await wait(2.5)
+	# Somebody starts turning the lights off down the hall.
+	for l in hall.panel_lights.slice(3):
+		l.light_energy = 0.15
+		await wait(0.5)
+	await say([
+		["", "Mr. Ruiz's cart squeaks somewhere far away. Through the doors, the parking lot is turning white."],
+		["", "The heater ticks. Your coat is so warm. Your eyes are so heavy."],
+	])
+	var t := create_tween().set_parallel(true)
+	t.tween_property(player.head, "rotation:z", deg_to_rad(12.0), 4.0)
+	t.tween_property(player.camera, "fov", 95.0, 5.0)
+	await wait(3.0)
+	await hud.fade(1.0, 2.5).finished
+	await _enter_dream()
+
+
+# --- Step 7: the dream ---------------------------------------------------
+
+func _enter_dream() -> void:
+	step = Step.DREAM
+	hall.queue_free()
+	dream_hall = SchoolHallway.new()
+	dream_hall.dream = true
+	dream_hall.position = DREAM_AT
+	add_child(dream_hall)
+	dream_hall.far_door.used.connect(_on_far_door)
+	Audio.set_dreaming(true)
+	Audio.play_music("dream_hall", 3.0)
+	env.ambient_light_color = Color(0.3, 0.25, 0.5)
+	env.ambient_light_energy = 0.45
+	env.background_color = Color(0.03, 0.02, 0.07)
+	env.fog_light_color = Color(0.2, 0.15, 0.35)
+	env.fog_density = 0.035
+	# Biscuit, waiting at the far end, by the door with the lights.
+	_dream_dog = Dog.new()
+	_dream_dog.player = player
+	add_child(_dream_dog)
+	var spot := DREAM_AT + dream_hall.far_spot
+	_dream_dog.global_position = spot
+	_dream_dog.go_to([spot], false, spot + Vector3(0, 0, 4.0))
+	_dream_dog.arrived.connect(func() -> void: _dream_dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
+	player.head.rotation.z = 0.0
+	player.camera.fov = 85.0
+	player.stand(DREAM_AT + Vector3(0, 0.05, -2.4), 0.0)
+	await wait(1.0)
+	await hud.fade(0.0, 3.0).finished
+	lock(false)
+	busy = false
+	hud.show_memory("The hallway is longer than it should be. And it's snowing. Inside.", 5.0)
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	if step == Step.DREAM and not _dog_greeted and _dream_dog \
+			and player.global_position.distance_to(_dream_dog.global_position) < 6.0:
+		_dog_greeted = true
+		_dream_dog.greet()
+		hud.show_memory("Biscuit. At school. Sitting by a door covered in Christmas lights like he's been waiting all day.", 5.0)
+
+
+func _on_far_door(_by: Node) -> void:
+	if busy or step != Step.DREAM:
+		return
 	step = Step.END
 	busy = true
 	lock(true)
-	Audio.play_sfx("door_close", _door)
-	await hud.fade(1.0, 2.0).finished
-	await say([["", "The bus ride home is the loudest bus ride of the year. Two whole weeks. And it's snowing."]])
-	await wait(1.5)
-	go_to_chapter("res://scenes/chapter_4_winter_break.tscn")
+	await say([["", "It's warm on the other side. You can hear Christmas music, and somebody laughing in the kitchen."]])
+	await hud.fade(1.0, 2.5, Color(1.0, 0.94, 0.82)).finished
+	await hud.fade(1.0, 1.0, Color.BLACK).finished
+	Audio.stop_music(2.0)
+	await hud.chapter_card("To be continued.", "Next: Christmas Eve", 3.0)
+	await wait(1.0)
+	go_to_chapter(NEXT_CHAPTER)

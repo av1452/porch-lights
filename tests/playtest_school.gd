@@ -35,9 +35,15 @@ func _initialize():
 	ch._rug.interact(ch.player); await until_step(ch.Step.BELL)
 	print("after bell: door enabled=", ch._door.enabled, " seated=", ch.player.seated)
 	ch._door.interact(ch.player)
+	await until_step(ch.Step.DREAM, 200.0)
+	print("bench → dream: step=", ch.step, " dream hall=", ch.dream_hall != null, " real hall freed=", not is_instance_valid(ch.hall), " locked=", ch.player.input_locked)
+	ch.player.teleport(ch.DREAM_AT + ch.dream_hall.far_spot + Vector3(0, 0, 2.5), 0.0)
+	await create_timer(2.0).timeout
+	print("biscuit greeted=", ch._dog_greeted)
+	ch.dream_hall.far_door.interact(ch.player)
 	for i in 60:
 		await create_timer(1.0).timeout
-		if root.has_node("Chapter4"):
+		if root.has_node("Chapter5"):
 			break
-	print("chapter 4 loaded=", root.has_node("Chapter4"))
+	print("christmas eve loaded=", root.has_node("Chapter5"))
 	quit()
