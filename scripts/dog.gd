@@ -18,6 +18,9 @@ enum Pose { STAND, SIT, LIE }
 @export var white := Color(0.93, 0.9, 0.84)
 
 var free_roam := true
+## Riding along (on a car seat, in a lap): no walking or gravity, just
+## breathing, ears and tail.
+var parked := false
 var player: Node3D
 var pose := Pose.LIE
 
@@ -105,6 +108,10 @@ func set_active(on: bool) -> void:
 # ---------------------------------------------------------------- behavior
 
 func _physics_process(delta: float) -> void:
+	if parked:
+		_petted_t -= delta
+		_animate(delta, 0.0)
+		return
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 	else:
