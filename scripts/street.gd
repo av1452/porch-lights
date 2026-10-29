@@ -24,15 +24,11 @@ const SIDINGS := [Color(0.55, 0.6, 0.62), Color(0.7, 0.62, 0.5), Color(0.45, 0.5
 ## Porch lights in the order they go out in chapter 2: {light, material, energy}.
 var porch_lights: Array[Dictionary] = []
 var far_light: Dictionary
-## Real materials when installed (scripts/realism.gd), else the noise ones.
-var _real := {}
-var _ground_box: CSGBox3D
 
 
 func _ready() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 31
-	_real = Realism.street_materials(false)
 	_ground()
 	if build_own_roof:
 		_own_roof()
@@ -91,11 +87,10 @@ func _box(size: Vector3, pos: Vector3, mat: Material, collide := false, rot := V
 
 
 func _ground() -> void:
-	var grass: Material = _real.get("ground", _noise_mat(Color(0.1, 0.13, 0.07), Color(0.2, 0.2, 0.1), 0.08))
-	var concrete: Material = _real.get("concrete", _noise_mat(Color(0.35, 0.35, 0.34), Color(0.45, 0.44, 0.42), 0.2))
-	var asphalt: Material = _real.get("asphalt", _noise_mat(Color(0.07, 0.07, 0.08), Color(0.16, 0.16, 0.17), 0.35, 0.8))
+	var grass := _noise_mat(Color(0.1, 0.13, 0.07), Color(0.2, 0.2, 0.1), 0.08)
+	var concrete := _noise_mat(Color(0.35, 0.35, 0.34), Color(0.45, 0.44, 0.42), 0.2)
+	var asphalt := _noise_mat(Color(0.07, 0.07, 0.08), Color(0.16, 0.16, 0.17), 0.35, 0.8)
 	var ground := _box(Vector3(80, 0.2, 160), Vector3(-20, GROUND_Y - 0.1, -10), grass, true)
-	_ground_box = ground
 	ground.set_meta("surface", "porch")
 	_box(Vector3(1.5, 0.04, 160), Vector3(-12.8, GROUND_Y + 0.01, -10), concrete)
 	_box(Vector3(9, 0.04, 160), Vector3(-17.8, GROUND_Y - 0.01, -10), asphalt)
@@ -138,7 +133,7 @@ func _moon() -> void:
 
 
 func _own_roof() -> void:
-	var shingles: Material = _real.get("roof", _noise_mat(Color(0.12, 0.1, 0.1), Color(0.22, 0.18, 0.17), 0.5))
+	var shingles := _noise_mat(Color(0.12, 0.1, 0.1), Color(0.22, 0.18, 0.17), 0.5)
 	_roof(Vector3(0, 2.7, 0), 3.35, 1.6, 5.7, shingles)
 	# porch roof
 	# porch roof, sloping down away from the house
@@ -148,15 +143,10 @@ func _own_roof() -> void:
 func _house(front_x: float, z: float, facing: int, rng: RandomNumberGenerator, light_color := Color(1, 0.78, 0.5), record := true) -> Dictionary:
 	var depth := 7.0
 	var cx := front_x - facing * depth / 2.0
-	var color: Color = SIDINGS[rng.randi() % SIDINGS.size()]
-	var siding: Material
-	if _real.has("siding"):
-		siding = Realism.pbr(_real.siding, color.lightened(0.25), 2.0)
-	else:
-		siding = StandardMaterial3D.new()
-		(siding as StandardMaterial3D).albedo_color = color
-		(siding as StandardMaterial3D).roughness = 0.9
-	var roof: Material = _real.get("roof", _noise_mat(Color(0.1, 0.09, 0.09), Color(0.2, 0.17, 0.16), 0.5))
+	var siding := StandardMaterial3D.new()
+	siding.albedo_color = SIDINGS[rng.randi() % SIDINGS.size()]
+	siding.roughness = 0.9
+	var roof := _noise_mat(Color(0.1, 0.09, 0.09), Color(0.2, 0.17, 0.16), 0.5)
 	var h := 2.8
 	_box(Vector3(depth, h, 6.5), Vector3(cx, GROUND_Y + h / 2.0, z), siding)
 	_roof(Vector3(cx, GROUND_Y + h, z), depth / 2.0 + 0.3, 2.2, 6.9, roof)
@@ -306,10 +296,3 @@ func lights_out_one_by_one(gap := 0.7) -> void:
 	for e in porch_lights + [far_light]:
 		kill_light(e)
 		await get_tree().create_timer(gap).timeout
-
-
-## Winter: the yards are covered in snow.
-func set_snowy(on: bool) -> void:
-	var m: Dictionary = Realism.street_materials(on)
-	if _ground_box and m.has("ground"):
-		_ground_box.material = m.ground
