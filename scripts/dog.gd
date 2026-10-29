@@ -43,9 +43,6 @@ var _head: Node3D
 var _tail: Node3D
 var _legs: Array[Node3D] = []
 var _pet_body: Interactable
-## A real dog model (assets/animals/biscuit.*), if installed.
-var _real := false
-var _real_anim: AnimationPlayer
 
 
 func _ready() -> void:
@@ -257,10 +254,6 @@ func _pivot(parent: Node3D, pos: Vector3) -> Node3D:
 
 
 func _build_model() -> void:
-	_real_anim = RealCharacters.apply_dog(self)
-	if has_node("RealModel"):
-		_real = true
-		return
 	_model = _pivot(self, Vector3.ZERO)
 	_torso = _pivot(_model, Vector3(0, 0.32, 0))
 	# body runs along -Z (forward)
@@ -294,9 +287,6 @@ func _build_model() -> void:
 
 
 func _animate(delta: float, hspeed: float) -> void:
-	if _real:
-		_animate_real(hspeed)
-		return
 	_anim_t += delta
 	var k := clampf(6.0 * delta, 0, 1)
 	var torso_y := 0.32
@@ -342,25 +332,3 @@ func _animate(delta: float, hspeed: float) -> void:
 	var wag_speed := 10.0 + _wag * 6.0
 	_tail.rotation_degrees.z = sin(_anim_t * wag_speed) * 25.0 * _wag
 	_tail.rotation_degrees.x = lerpf(_tail.rotation_degrees.x, -10.0 if _wag > 0.4 else 35.0, k)
-
-
-## With a real model: pick the clip that matches what Biscuit is doing.
-func _animate_real(hspeed: float) -> void:
-	if _real_anim == null:
-		return
-	var words: Array
-	if hspeed > walk_speed + 0.3:
-		words = ["run", "gallop", "trot", "walk"]
-	elif hspeed > 0.1:
-		words = ["walk", "trot", "run"]
-	elif pose == Pose.SIT:
-		words = ["sit"]
-	elif pose == Pose.LIE:
-		words = ["lie", "lay", "sleep", "rest", "down"]
-	else:
-		words = ["idle", "stand", "breath", "wag"]
-	var clip := RealCharacters.animation_like(_real_anim, words)
-	if clip == "":
-		clip = RealCharacters.animation_like(_real_anim, ["idle", "stand"])
-	if clip != "" and _real_anim.current_animation != clip:
-		_real_anim.play(clip, 0.25)
