@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/chapter_1_halloween.tscn" id="house"]
+[ext_resource type="Script" path="res://scripts/winter_break_days.gd" id="ch"]
+
+[node name="WinterBreak" instance=ExtResource("house")]
+script = ExtResource("ch")

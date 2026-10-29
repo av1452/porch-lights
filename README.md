@@ -1,7 +1,7 @@
 # Porch Lights
 
 A short, first-person story game about being a kid in the early 2000s, from Halloween
-to the last day of winter break. You play Leo, an 8-year-old. Your older sibling Jamie
+to New Year's Eve. You play Leo, an 8-year-old. Your older sibling Jamie
 is 15, Mom and Dad are doing their best, Biscuit is a very good dog, and Grandma brings
 the fudge. Candy taxes, the kids' table, untangling the lights, matching pajamas, and
 the porch light you leave on so everyone can find their way home.
@@ -79,19 +79,29 @@ Christmas Eve dinner and the claymation special, cookies and milk for Santa, car
 reindeer, and the porch light on so Santa can find the house. Was that sleigh bells? You
 dream the long hallway again, strung with Christmas lights, Biscuit waiting at the door.
 
-**Chapter 6: December 25, Christmas Morning.** 5:52 a.m. He came! A stocking with an
+**Chapter 5: December 25, Christmas Morning.** 5:52 a.m. He came! A stocking with an
 orange in the toe, like every year. The Mega Robo Racer: batteries not included, but
 Grandma always brings batteries. Dad's snowman pancakes (snow blobs). A snowball ambush
 from Jamie, and an afternoon nap with everybody you love in one room.
 
-**Chapter 7: January 3, The Last Day of Winter Break.** Take down the tree, one ornament
-memory at a time. Write Grandma a thank-you note. One more round as player two, practicing
-what you'll tell everyone at school. Then the porch light that's been on since Christmas
-Eve finally clicks off. Until next Halloween.
+**Chapter 6: December 28, Winter Break.** No school, no homework, no hurry. Sleep in.
+Hot chocolate with all the marshmallows, a ham sandwich at eleven in the morning, Grandma's
+thank-you note in your best handwriting, player two on Jamie's new game, and a snowman in
+the front yard wearing Dad's good scarf while Biscuit runs laps in the new snow. A board
+game with missing pieces, and falling asleep on the couch with Biscuit on your feet.
+
+**Chapter 7: December 31, New Year's Eve.** You're allowed to stay up till midnight. The
+ornaments on the tree, one memory each. Party mix and sparkling cider in the fancy glasses.
+Jamie's mix CD for next year. Grandma calls early to say goodnight ("leave that porch light
+on"). The countdown on TV, everybody under one blanket, the last picture on the roll. Then
+the house goes quiet, and one last dream: the long hallway, snow falling inside, Christmas
+lights all the way down, Biscuit at the warm door, and on the other side the porch, every
+light on the street glowing.
 
 ## Project layout
-- `scenes/chapter_1_halloween.tscn` ... `scenes/chapter_7_last_day_of_break.tscn`: levels.
-  The interlude plays in the Chapter 1 house. Chapters 4-7 inherit that house and
+- `scenes/`: one scene per chapter part, in story order in `Game.CHAPTERS` (`scripts/game.gd`).
+  The interlude plays in the Chapter 1 house. Getting Ready, Christmas Eve, Christmas
+  Morning, Winter Break (`winter_break_days`) and New Year's Eve inherit that house and
   redecorate it in code (`scripts/house_chapter.gd`, `scripts/decorations.gd`).
 - `scripts/chapter.gd`: base class for chapters: `say()` dialogue (voiced automatically),
   `objective()`, `open_chapter()` title cards, `swing_door()`, `add_chatter()`, room-state swapping
@@ -141,8 +151,8 @@ godot --headless -s res://tests/playtest_chapter_2_getting_ready.gd
 godot --headless -s res://tests/playtest_chapter_2.gd
 godot --headless -s res://tests/playtest_chapter_3.gd
 godot --headless -s res://tests/playtest_school.gd
-godot --headless -s res://tests/playtest_chapter_4.gd
-godot --headless -s res://tests/playtest_chapter_5.gd
-godot --headless -s res://tests/playtest_chapter_6.gd
-godot --headless -s res://tests/playtest_chapter_7.gd
+godot --headless -s res://tests/playtest_chapter_5.gd      # Christmas Eve
+godot --headless -s res://tests/playtest_chapter_6.gd      # Christmas Morning
+godot --headless -s res://tests/playtest_winter_break.gd
+godot --headless -s res://tests/playtest_chapter_7.gd      # New Year's Eve
 ```

@@ -2,13 +2,15 @@ class_name TvShow
 extends Node2D
 ## Placeholder TV programs drawn live at 160x120: a Halloween cartoon special,
 ## a winter special, a toy commercial, a dream version, a broadcast sign-off,
-## static, and Thanksgiving football.
+## static, Thanksgiving football, and the New Year's Eve countdown.
 ## Replace any of them with a real video via media/<channel>.ogv.
 
 const W := 160.0
 const H := 120.0
 
 var channel := "special"
+## When the New Year's countdown started (in _t time); -1 = not yet.
+var countdown_at := -1.0
 var _t := 0.0
 var _font: Font
 
@@ -36,6 +38,8 @@ func light_color() -> Color:
 			return Color(0.8, 0.85, 0.9)
 		"football":
 			return Color(0.5, 0.9, 0.55)
+		"newyear":
+			return Color(0.6, 0.6, 1.0) if countdown_at < 0.0 or _t - countdown_at < 10.0 else Color.from_hsv(fmod(_t * 0.5, 1.0), 0.5, 1.0)
 		"off":
 			return Color.BLACK
 	return Color(0.55, 0.62, 1.0)
@@ -57,6 +61,8 @@ func _draw() -> void:
 			_draw_static(1.0)
 		"football":
 			_draw_football()
+		"newyear":
+			_draw_newyear()
 		_:
 			draw_rect(Rect2(0, 0, W, H), Color.BLACK)
 			return
@@ -193,6 +199,36 @@ func _draw_football() -> void:
 	# The score banner.
 	draw_rect(Rect2(6, 103, 148, 12), Color(0.05, 0.1, 0.3, 0.92))
 	_text("RIVERTON 14   LAKESIDE 10   4TH  8:42", Vector2(W / 2, 106), 7, Color.WHITE)
+
+
+## New Year's Eve, live: the city at night, the glowing ball, the countdown,
+## then confetti.
+func _draw_newyear() -> void:
+	draw_rect(Rect2(0, 0, W, H), Color(0.03, 0.03, 0.1))
+	for i in 14:
+		var bh := 30.0 + fmod(i * 23.0, 45.0)
+		draw_rect(Rect2(i * 12.0 - 2.0, H - bh, 11, bh), Color(0.08, 0.08, 0.16))
+		for k in 6:
+			if int(i * 7 + k * 3) % 4 != 0:
+				draw_rect(Rect2(i * 12.0 + 1.0 + (k % 2) * 4.0, H - bh + 4.0 + int(k / 2) * 7.0, 2, 3), Color(1, 0.85, 0.5, 0.8))
+	var since := _t - countdown_at if countdown_at >= 0.0 else -1.0
+	var drop := clampf(since / 10.0, 0.0, 1.0) if since >= 0.0 else 0.0
+	draw_line(Vector2(W / 2, 8), Vector2(W / 2, 80), Color(0.5, 0.5, 0.6), 1.0)
+	var ball := Vector2(W / 2, 14 + drop * 58.0)
+	draw_circle(ball, 7.0, Color(0.9, 0.95, 1.0))
+	draw_circle(ball, 4.0, Color(1, 1, 1))
+	if since < 0.0:
+		_text("NEW YEAR'S EVE LIVE", Vector2(W / 2, 96), 9, Color.WHITE)
+		_text("11:58 PM", Vector2(W / 2, 108), 7, Color(1, 0.9, 0.5))
+	elif since < 10.0:
+		_text(str(10 - int(since)), Vector2(W / 2, 92), 26, Color.WHITE)
+	else:
+		for i in 60:
+			var x := fmod(i * 37.0 + _t * (8.0 + i % 5), W)
+			var y := fmod(i * 19.0 + _t * (20.0 + i % 7), H)
+			draw_rect(Rect2(x, y, 2, 2), Color.from_hsv(fmod(i * 0.13, 1.0), 0.7, 1.0))
+		_text("HAPPY NEW YEAR!", Vector2(W / 2, 90), 14, Color(1, 0.9, 0.4))
+		_text("2004", Vector2(W / 2, 106), 12, Color.WHITE)
 
 
 func _player_dot(at: Vector2, jersey: Color) -> void:

@@ -496,7 +496,7 @@ func _enter_dream() -> void:
 	unstash(_dream_hall, self)
 	_hall_end = $House/Hallway/HallEnd
 	stash(_hall_end)
-	_string_lights()
+	string_dream_lights(_dream_hall)
 	var door := _dream_hall.get_node("DreamDoor") as Interactable
 	door.prompt = "Open the door"
 	door.used.connect(_on_dream_door)
@@ -534,27 +534,6 @@ func _enter_dream() -> void:
 	lock(false)
 	busy = false
 	hud.show_memory("The hallway is longer than it should be again. Somebody strung Christmas lights all the way down it.", 5.0)
-
-
-## Colored bulbs along both walls of the dream hallway, a few of them casting light.
-func _string_lights() -> void:
-	var i := 0
-	for z in range(9, 26):
-		for x in [1.52, 2.48]:
-			for half in 2:
-				var bulb := CSGSphere3D.new()
-				bulb.radius = 0.03
-				bulb.position = Vector3(x, 2.3 - 0.06 * half, -z - half * 0.5)
-				bulb.material = Decorations.mat(Decorations.BULB_COLORS[i % Decorations.BULB_COLORS.size()], 4.0)
-				_dream_hall.add_child(bulb)
-				i += 1
-		if z % 4 == 1:
-			var l := OmniLight3D.new()
-			l.light_color = Decorations.BULB_COLORS[z % Decorations.BULB_COLORS.size()]
-			l.light_energy = 0.35
-			l.omni_range = 2.5
-			l.position = Vector3(2.0, 2.1, -z)
-			_dream_hall.add_child(l)
 
 
 ## A little red triangle of a bandana on Biscuit's collar.

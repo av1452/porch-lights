@@ -183,8 +183,9 @@ def im_message():
     sfx("im_message", out, 0.5)
 
 
-def tv_football():
-    """A football crowd through a TV speaker: murmur, two cheers, a whistle. Loops."""
+def tv_football(name="tv_football", whistle_at=3.4):
+    """A crowd through a TV speaker: murmur, two cheers, and (for football) a
+    whistle. Loops."""
     random.seed(11)
     secs = 8.0
     crowd = highpass(lowpass(noise(secs, 1.0), 1100), 180)
@@ -195,8 +196,9 @@ def tv_football():
         out.append(s * (0.35 + cheer + 0.05 * math.sin(TAU * 0.3 * t)))
     whistle = [math.sin(TAU * (2900 + 60 * math.sin(TAU * 28 * k / SR)) * k / SR) * 0.25 * min(1, (0.45 - k / SR) * 30)
                for k in range(int(0.45 * SR))]
-    mix(out, whistle, 3.4)
-    sfx("tv_football", crossfade_loop(out, 0.5), 0.5)
+    if whistle_at is not None:
+        mix(out, whistle, whistle_at)
+    sfx(name, crossfade_loop(out, 0.5), 0.5)
 
 
 def bulb_flicker():
@@ -212,6 +214,7 @@ SOUNDS = {
     "bulb_flicker": bulb_flicker,
     "im_message": im_message,
     "tv_football": tv_football,
+    "tv_newyear": lambda: tv_football("tv_newyear", None),
 }
 
 

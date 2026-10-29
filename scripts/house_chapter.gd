@@ -80,6 +80,28 @@ func set_window_daylight(day: bool) -> void:
 			g.material = g.get_meta("night_material")
 
 
+## Christmas Eve and New Year's dreams: colored bulbs along both walls of the
+## Halloween dream hallway, a few of them casting light.
+func string_dream_lights(hall: Node3D) -> void:
+	var i := 0
+	for z in range(9, 26):
+		for x in [1.52, 2.48]:
+			for half in 2:
+				var bulb := CSGSphere3D.new()
+				bulb.radius = 0.03
+				bulb.position = Vector3(x, 2.3 - 0.06 * half, -z - half * 0.5)
+				bulb.material = Decorations.mat(Decorations.BULB_COLORS[i % Decorations.BULB_COLORS.size()], 4.0)
+				hall.add_child(bulb)
+				i += 1
+		if z % 4 == 1:
+			var l := OmniLight3D.new()
+			l.light_color = Decorations.BULB_COLORS[z % Decorations.BULB_COLORS.size()]
+			l.light_energy = 0.35
+			l.omni_range = 2.5
+			l.position = Vector3(2.0, 2.1, -z)
+			hall.add_child(l)
+
+
 func hide_node(path: String) -> void:
 	Decorations.hide(get_node(path) as Node3D)
 

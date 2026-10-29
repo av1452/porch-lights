@@ -28,7 +28,7 @@ func _initialize():
 	ch._on_porch()
 	for i in 80:
 		await create_timer(1.0).timeout
-		if root.has_node("Chapter7"):
+		if root.has_node("WinterBreak"):
 			break
-	print("chapter 7 loaded=", root.has_node("Chapter7"))
+	print("winter break loaded=", root.has_node("WinterBreak"))
 	quit()

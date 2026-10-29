@@ -7,7 +7,7 @@ extends Node
 const CHANNEL_SOUND := {
 	"special": "tv_show", "commercial": "tv_ad", "dream": "tv_show",
 	"signoff": "tv_signoff", "static": "tv_static", "off": "", "winter": "",
-	"football": "tv_football",
+	"football": "tv_football", "newyear": "tv_newyear",
 }
 
 @export var screen_path: NodePath = ^"../Screen"
@@ -80,6 +80,11 @@ func _apply_channel() -> void:
 		_sound.stream = Audio.get_stream("sfx", sound, true)
 		_sound.pitch_scale = 0.8 if channel == "dream" else 1.0
 		_sound.play()
+
+
+## New Year's Eve: start the ten-second countdown on screen.
+func start_countdown() -> void:
+	_show.countdown_at = _show._t
 
 
 ## Average screen color, so the room's TV light can match the picture.

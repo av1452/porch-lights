@@ -14,7 +14,8 @@ const CHAPTERS := [
 	# moments are being folded into Christmas Eve and Winter Break.
 	{ "scene": "res://scenes/chapter_5_christmas_eve.tscn", "date": "December 24", "title": "Christmas Eve" },
 	{ "scene": "res://scenes/chapter_6_christmas_morning.tscn", "date": "December 25", "title": "Christmas Morning" },
-	{ "scene": "res://scenes/chapter_7_last_day_of_break.tscn", "date": "January 3", "title": "The Last Day of Winter Break" },
+	{ "scene": "res://scenes/winter_break_days.tscn", "date": "December 28", "title": "Winter Break" },
+	{ "scene": "res://scenes/chapter_7_new_years_eve.tscn", "date": "December 31", "title": "New Year's Eve" },
 ]
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const SAVE_PATH := "user://save.cfg"

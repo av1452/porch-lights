@@ -104,6 +104,7 @@ func unstash(node: Node, parent: Node) -> void:
 
 ## Free anything stashed when the chapter ends, so nothing leaks.
 func free_stashed(nodes: Array) -> void:
-	for n: Node in nodes:
-		if is_instance_valid(n) and n.get_parent() == null:
-			n.free()
+	for n in nodes:
+		# Untyped, so a node that's already gone is skipped instead of erroring.
+		if is_instance_valid(n) and (n as Node).get_parent() == null:
+			(n as Node).free()

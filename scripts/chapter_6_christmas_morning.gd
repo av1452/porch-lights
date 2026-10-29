@@ -3,7 +3,7 @@ extends HouseChapter
 ## 5:52 a.m., Jamie's in your doorway → he came! → stockings → the Mega Robo
 ## Racer (batteries not included; Grandma brought batteries) → Dad's snowman
 ## pancakes → snowball ambush on the porch → afternoon nap in a room full of
-## everybody → Chapter 7.
+## everybody → Winter Break.
 
 enum Step { WAKE, STOCKING, PRESENT, DAD, OUTSIDE, PORCH, END }
 
@@ -231,4 +231,4 @@ func _on_porch() -> void:
 	await hud.fade(1.0, 3.0).finished
 	await say([["", "That afternoon you fall asleep on the couch in your reindeer pajamas, a Christmas movie on, Robo Racer on your chest, everybody you love in one room."]])
 	await wait(2.0)
-	go_to_chapter("res://scenes/chapter_7_last_day_of_break.tscn")
+	go_to_chapter("res://scenes/winter_break_days.tscn")
