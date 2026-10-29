@@ -8,7 +8,7 @@ extends Node
 
 enum Step { WAKE, LET_OUT, PORCH, END }
 
-const NEXT_CHAPTER := "res://scenes/chapter_2_thanksgiving.tscn"
+const NEXT_CHAPTER := "res://scenes/chapter_2_getting_ready.tscn"
 ## Where Leo looks when the street lights start going out.
 const STREET_POINT := Vector3(-2.1, 0.6, 18.0)
 

@@ -43,6 +43,9 @@ Everybody gets one. Then Biscuit needs to go out, and from the porch you watch t
 neighborhood's porch lights click off one by one. Goodnight, Halloween.
 
 **Chapter 2: November, Thanksgiving.**
+*Getting Ready:* Thanksgiving morning. Grab your coat, your handheld and Biscuit's leash
+while Mom guards the pies, Dad warms up the van and Jamie protests the hour. Then the
+drive: autumn trees, the parade on the radio, and "over the river..." ("Every. Single. Year.").
 *At Grandma's:* say hi to Grandma and open the canned cranberry sauce (ridges and all).
 Football's on the TV cart. Take your seat at the kids' table while Jamie moves up to the
 big table. After dinner, Mom and Dad quietly notice Grandma's moving slower this year, and
@@ -130,6 +133,7 @@ To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name i
 ## Testing
 ```
 godot --headless -s res://tests/playtest_chapter_1.gd   # Chapter 1 + the interlude
+godot --headless -s res://tests/playtest_chapter_2_getting_ready.gd
 godot --headless -s res://tests/playtest_chapter_2.gd
 godot --headless -s res://tests/playtest_chapter_3.gd
 godot --headless -s res://tests/playtest_school.gd

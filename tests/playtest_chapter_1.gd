@@ -52,5 +52,5 @@ func _initialize():
 		if root.has_node("Chapter2"):
 			break
 	print("street lights left on: ", ch.street.porch_lights.filter(func(e): return e.light.light_energy > 0.01).size(), " far light=", ch.street.far_light.light.light_energy)
-	print("chapter 2 loaded after interlude: ", root.has_node("Chapter2"))
+	print("chapter 2 loaded after interlude: ", root.has_node("Chapter2GettingReady"))
 	quit()

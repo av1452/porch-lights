@@ -6,6 +6,7 @@ extends Node
 const CHAPTERS := [
 	{ "scene": "res://scenes/chapter_1_halloween.tscn", "date": "October 31", "title": "Halloween" },
 	# Thanksgiving is one chapter in parts; each part is its own scene.
+	{ "scene": "res://scenes/chapter_2_getting_ready.tscn", "date": "November", "title": "Thanksgiving: Getting Ready" },
 	{ "scene": "res://scenes/chapter_2_thanksgiving.tscn", "date": "November", "title": "Thanksgiving: At Grandma's" },
 	{ "scene": "res://scenes/chapter_3_drive_home.tscn", "date": "November", "title": "Thanksgiving: The Drive Home" },
 	{ "scene": "res://scenes/school_class_party.tscn", "date": "December 19", "title": "The Class Party" },

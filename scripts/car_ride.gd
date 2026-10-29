@@ -1,13 +1,16 @@
 class_name CarRide
 extends Node3D
-## The family car at night, built in code. The car stays still and the road
-## slides past: lane dashes, reflector posts, sodium streetlights that sweep
-## through the cabin, and the occasional oncoming car.
+## The family car, built in code. The car stays still and the road slides
+## past: lane dashes, reflector posts, sodium streetlights that sweep through
+## the cabin at night, and the occasional oncoming car. Set `daytime` before
+## adding it for an autumn afternoon: lights off, fall trees along the road.
 ## Car faces -Z. Back seat: Leo on the right (+X), Jamie on the left.
 
 @export var speed := 24.0
 ## Seconds between oncoming cars (randomized around this).
 @export var traffic_gap := 9.0
+## Autumn daytime instead of night (set before the car enters the tree).
+@export var daytime := false
 
 const ROAD_LENGTH := 320.0
 const ROAD_Y := -0.35
@@ -17,6 +20,7 @@ var _oncoming: Array[Node3D] = []
 var _traffic_t := 3.0
 var _hum: AudioStreamPlayer
 var _cabin: Node3D
+var _beams: SpotLight3D
 
 
 func _ready() -> void:
@@ -135,6 +139,8 @@ func _build_cabin() -> void:
 	_box(_cabin, Vector3(1.6, 0.5, 1.2), Vector3(0, 0.45, -2.2), paint)
 	_box(_cabin, Vector3(1.6, 0.5, 0.8), Vector3(0, 0.45, 1.6), paint)
 	var beams := SpotLight3D.new()
+	_beams = beams
+	beams.visible = not daytime
 	beams.light_color = Color(1, 0.95, 0.8)
 	beams.light_energy = 9.0
 	beams.spot_range = 45.0
@@ -147,13 +153,13 @@ func _build_cabin() -> void:
 
 func _build_road() -> void:
 	var asphalt := _mat(Color(0.08, 0.08, 0.09), 0.85)
-	var field := _mat(Color(0.05, 0.06, 0.04))
+	var field := _mat(Color(0.42, 0.36, 0.22) if daytime else Color(0.05, 0.06, 0.04))
 	var paint := _mat(Color(0.85, 0.8, 0.5), 0.6)
 	var white := _mat(Color(0.9, 0.9, 0.9), 0.5)
 	var reflector := _mat(Color(1, 0.3, 0.2), 0.3, 2.0)
 	var pole := _mat(Color(0.35, 0.35, 0.37), 0.5)
 	var sodium := Color(1, 0.62, 0.3)
-	var lamp := _mat(sodium, 0.3, 6.0)
+	var lamp := _mat(sodium, 0.3, 0.0 if daytime else 6.0)
 	_box(self, Vector3(9, 0.02, 600), Vector3(-1.5, ROAD_Y, -250), asphalt)
 	_box(self, Vector3(400, 0.02, 600), Vector3(0, ROAD_Y - 0.03, -250), field)
 	for i in 32:
@@ -176,6 +182,7 @@ func _build_road() -> void:
 		omni.omni_range = 14.0
 		omni.light_volumetric_fog_energy = 1.5
 		omni.position = Vector3(-2.1, 6.6, 0)
+		omni.visible = not daytime
 		light.add_child(omni)
 		_movers.append(light)
 	for i in 3:
@@ -191,11 +198,64 @@ func _build_road() -> void:
 		beams.light_energy = 3.0
 		beams.omni_range = 12.0
 		beams.position = Vector3(0, 0.8, 3.0)
+		beams.visible = not daytime
 		car.add_child(beams)
 		_oncoming.append(car)
+	if daytime:
+		_autumn_trees()
+		return
 	# a town, far off
 	var town := _mat(Color(1, 0.8, 0.5), 0.3, 3.0)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
 	for i in 40:
 		_box(self, Vector3(0.6, 0.6, 0.6), Vector3(rng.randf_range(-150, 120), ROAD_Y + rng.randf_range(0.5, 6.0), rng.randf_range(-420, -300)), town)
+
+
+## Fall trees on both sides of the road: red, orange and yellow crowns, a few
+## evergreens and bare ones, and a split-rail fence. They slide past like the
+## posts.
+func _autumn_trees() -> void:
+	var colors := [Color(0.72, 0.2, 0.08), Color(0.88, 0.45, 0.08), Color(0.9, 0.7, 0.15), Color(0.62, 0.32, 0.1)]
+	var bark := _mat(Color(0.22, 0.16, 0.12))
+	var pine := _mat(Color(0.12, 0.25, 0.14))
+	var rail := _mat(Color(0.45, 0.38, 0.3))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 21
+	for i in 80:
+		var tree := Node3D.new()
+		var side := -1.0 if i % 2 == 0 else 1.0
+		tree.position = Vector3(side * rng.randf_range(7.0, 30.0) - 1.5, ROAD_Y, -i * 4.0 - rng.randf_range(0.0, 3.0))
+		add_child(tree)
+		var h := rng.randf_range(1.6, 3.2)
+		_box(tree, Vector3(0.28, h, 0.28), Vector3(0, h / 2.0, 0), bark)
+		var kind := rng.randf()
+		if kind < 0.18:
+			# An evergreen: stacked cones.
+			for k in 3:
+				var cone := CSGCylinder3D.new()
+				cone.cone = true
+				cone.radius = 1.4 - k * 0.35
+				cone.height = 1.8
+				cone.position.y = h * 0.5 + 0.9 + k * 1.0
+				cone.material = pine
+				tree.add_child(cone)
+		elif kind < 0.95:
+			# A round fall crown from a few overlapping clusters.
+			var c: Color = colors[rng.randi() % colors.size()]
+			for k in 3:
+				var crown := CSGSphere3D.new()
+				crown.radius = rng.randf_range(1.1, 1.8)
+				crown.position = Vector3(rng.randf_range(-0.7, 0.7), h + rng.randf_range(0.3, 1.3), rng.randf_range(-0.7, 0.7))
+				crown.material = _mat(c.lerp(colors[rng.randi() % colors.size()], 0.25))
+				tree.add_child(crown)
+		_movers.append(tree)
+	# A split-rail fence along the right side.
+	for i in 40:
+		var section := Node3D.new()
+		section.position = Vector3(6.2, ROAD_Y, -i * 8.0)
+		add_child(section)
+		_box(section, Vector3(0.14, 1.1, 0.14), Vector3(0, 0.55, 0), rail)
+		_box(section, Vector3(0.08, 0.1, 8.0), Vector3(0, 0.85, -4.0), rail)
+		_box(section, Vector3(0.08, 0.1, 8.0), Vector3(0, 0.45, -4.0), rail)
+		_movers.append(section)
