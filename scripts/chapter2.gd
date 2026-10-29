@@ -15,6 +15,7 @@ extends Node
 @onready var spot_door: Marker3D = $"../DogSpots/InsideDoor"
 @onready var spot_doorway: Marker3D = $"../DogSpots/Doorway"
 @onready var spot_porch: Marker3D = $"../DogSpots/Porch"
+@onready var chapter3: Node = $"../Chapter3"
 
 const STREET_POINT := Vector3(-18.0, 0.6, 0.0)
 
@@ -22,7 +23,6 @@ var active := false
 var _porch_on := false
 var _door_open := false
 var _sequence_started := false
-var _ended := false
 var _step_warned_t := 0.0
 
 
@@ -179,15 +179,6 @@ func _porch_sequence() -> void:
 	await Audio.say("dad_1")
 	await get_tree().create_timer(1.0).timeout
 	await Audio.say("leo_final")
-	await get_tree().create_timer(1.5).timeout
-	Audio.play_music("ending", 3.0)
-	await hud.show_title("End of Chapter 2", "To be continued...", 4.0).finished
-	hud.show_memory("Press E to play again.", 600.0)
-	_ended = true
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if _ended and event.is_action_pressed("interact"):
-		Audio.stop_music(0.5)
-		Audio.stop_voice()
-		get_tree().reload_current_scene()
+	await get_tree().create_timer(2.5).timeout
+	active = false
+	chapter3.call("start", false)

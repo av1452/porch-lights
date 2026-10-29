@@ -1,12 +1,13 @@
-"""Records the voice lines in data/lines.json with Piper (offline neural TTS).
+"""Records the voice lines in data/lines.json with Kokoro (free, offline neural TTS).
 
 Usage:
-    python tools/generate_voices.py --setup     # one time: download Piper + voices (~330 MB, gitignored)
+    python tools/generate_voices.py --setup     # one time: Python env + Kokoro model (~350 MB, gitignored)
     python tools/generate_voices.py             # record lines that don't have a file yet
     python tools/generate_voices.py --force     # re-record everything
     python tools/generate_voices.py leo_final   # re-record specific ids
 
-Real recordings dropped into audio/voice/<id>.wav (or .ogg) replace these.
+Real recordings go in with tools/recordings.py; ids listed in data/recorded.json
+are never re-recorded here, even with --force.
 Per-speaker in-game pitch lives in scripts/audio.gd (SPEAKERS).
 """
 import json
@@ -14,57 +15,40 @@ import os
 import subprocess
 import sys
 import urllib.request
-import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PIPER_DIR = os.path.join(ROOT, "tools", "piper")
-PIPER = os.path.join(PIPER_DIR, "piper", "piper.exe" if os.name == "nt" else "piper")
-VOICES = os.path.join(PIPER_DIR, "voices")
+KOKORO_DIR = os.path.join(ROOT, "tools", "kokoro")
+VENV = os.path.join(KOKORO_DIR, "venv")
+VENV_PY = os.path.join(VENV, "Scripts", "python.exe") if os.name == "nt" else os.path.join(VENV, "bin", "python")
+MODEL = os.path.join(KOKORO_DIR, "kokoro-v1.0.onnx")
+VOICES = os.path.join(KOKORO_DIR, "voices-v1.0.bin")
+MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 OUT = os.path.join(ROOT, "audio", "voice")
 
-PIPER_URL = "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip"
-VOICE_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/{0}/{1}/en_US-{0}-{1}.onnx"
-
-# speaker -> model, optional multi-speaker id, pace (length_scale: >1 slower),
-# and expressiveness (noise_scale / noise_w: higher = more varied delivery).
+# speaker -> Kokoro voice and pace (speed: <1 slower). Kokoro has no child voices;
+# Leo is a young male voice pitched up in-game (scripts/audio.gd).
 SPEAKERS = {
-    # Highest voice in libritts_r; pitched up a touch in-game to read as an 8-year-old.
-    "leo": {"model": "libritts_r-medium", "speaker": 517, "pace": 1.05, "noise": 0.75, "noise_w": 0.9},
-    "mom": {"model": "lessac-high", "pace": 1.05, "noise": 0.7, "noise_w": 0.85},
-    "dad": {"model": "ryan-high", "pace": 1.08, "noise": 0.7, "noise_w": 0.85},
-    "sibling": {"model": "libritts_r-medium", "speaker": 22, "pace": 0.9, "noise": 0.8, "noise_w": 0.9},
-    "tv": {"model": "libritts_r-medium", "speaker": 119, "pace": 0.88, "noise": 0.6, "noise_w": 0.7},
+    "leo": {"voice": "am_puck", "speed": 1.0},
+    "mom": {"voice": "af_heart", "speed": 1.0},
+    "dad": {"voice": "am_michael", "speed": 0.95},
+    "grandma": {"voice": "af_bella", "speed": 0.85},
+    "sibling": {"voice": "am_echo", "speed": 1.1},
+    "tv": {"voice": "am_fenrir", "speed": 1.1},
 }
 
 
 def setup():
-    os.makedirs(VOICES, exist_ok=True)
-    if not os.path.exists(PIPER):
-        zip_path = os.path.join(PIPER_DIR, "piper.zip")
-        print("downloading Piper...")
-        urllib.request.urlretrieve(PIPER_URL, zip_path)
-        with zipfile.ZipFile(zip_path) as z:
-            z.extractall(PIPER_DIR)
-    for model in sorted({s["model"] for s in SPEAKERS.values()}):
-        name, quality = model.rsplit("-", 1)
-        for ext in (".onnx", ".onnx.json"):
-            dest = os.path.join(VOICES, f"en_US-{model}{ext}")
-            if not os.path.exists(dest):
-                print("downloading", os.path.basename(dest))
-                urllib.request.urlretrieve(VOICE_URL.format(name, quality) + ext[5:], dest)
-
-
-def record(line_id, line):
-    spk = SPEAKERS[line["speaker"]]
-    cmd = [PIPER, "-m", os.path.join(VOICES, f"en_US-{spk['model']}.onnx"),
-           "-f", os.path.join(OUT, line_id + ".wav"),
-           "--length_scale", str(spk["pace"]),
-           "--noise_scale", str(spk["noise"]),
-           "--noise_w", str(spk["noise_w"]),
-           "--sentence_silence", "0.25"]
-    if "speaker" in spk:
-        cmd += ["-s", str(spk["speaker"])]
-    subprocess.run(cmd, input=line["text"].encode("utf-8"), check=True, capture_output=True)
+    os.makedirs(KOKORO_DIR, exist_ok=True)
+    if not os.path.exists(VENV_PY):
+        print("creating Python environment in tools/kokoro/venv...")
+        subprocess.run([sys.executable, "-m", "venv", VENV], check=True)
+    subprocess.run([VENV_PY, "-m", "pip", "install", "-q", "--upgrade", "pip"], check=True)
+    subprocess.run([VENV_PY, "-m", "pip", "install", "-q", "kokoro-onnx", "soundfile"], check=True)
+    for path in (MODEL, VOICES):
+        if not os.path.exists(path):
+            print("downloading", os.path.basename(path))
+            urllib.request.urlretrieve(MODEL_URL + os.path.basename(path), path)
+    print("ready")
 
 
 def main():
@@ -72,21 +56,39 @@ def main():
     if "--setup" in args:
         setup()
         return
-    if not os.path.exists(PIPER):
-        sys.exit("Piper not found. Run: python tools/generate_voices.py --setup")
+    if not (os.path.exists(VENV_PY) and os.path.exists(MODEL)):
+        sys.exit("Kokoro not set up. Run: python tools/generate_voices.py --setup\n"
+                 "(onnxruntime may need Python 3.13 or older; if setup fails, run it with that.)")
+    # Kokoro lives in its own environment; hop into it.
+    if os.path.realpath(sys.prefix) != os.path.realpath(VENV):
+        os.execv(VENV_PY, [VENV_PY, os.path.abspath(__file__)] + args)
+
+    import soundfile
+    from kokoro_onnx import Kokoro
+
     force = "--force" in args
     only = [a for a in args if not a.startswith("--")]
     with open(os.path.join(ROOT, "data", "lines.json"), encoding="utf-8") as f:
         lines = json.load(f)
+    recorded_path = os.path.join(ROOT, "data", "recorded.json")
+    recorded = set()
+    if os.path.exists(recorded_path):
+        with open(recorded_path, encoding="utf-8") as f:
+            recorded = set(json.load(f))
     os.makedirs(OUT, exist_ok=True)
+    kokoro = Kokoro(MODEL, VOICES)
     made = 0
     for line_id, line in lines.items():
-        if line_id.startswith("_") or (only and line_id not in only):
+        if line_id.startswith("_") or line_id in recorded or (only and line_id not in only):
             continue
-        if not (force or only) and os.path.exists(os.path.join(OUT, line_id + ".wav")):
+        dest = os.path.join(OUT, line_id + ".wav")
+        if not (force or only) and os.path.exists(dest):
             continue
-        record(line_id, line)
+        spk = SPEAKERS[line["speaker"]]
+        audio, rate = kokoro.create(line["text"], voice=spk["voice"], speed=spk["speed"])
+        soundfile.write(dest, audio, rate, subtype="PCM_16")
         made += 1
+        print(f"  {line_id:<20} {spk['voice']:<11} {line['text'][:50]}")
     print(f"recorded {made} line(s) into {os.path.relpath(OUT, ROOT)}")
 
 

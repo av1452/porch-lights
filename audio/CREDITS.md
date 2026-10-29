@@ -38,8 +38,8 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #1875 Music box, C# #2: https://bigsoundbank.com/s1875.html
 
 ## Voices
-Generated with Piper (https://github.com/rhasspy/piper) using the en_US lessac, ryan and
-libritts_r voices. See tools/generate_voices.py.
+Generated with Kokoro-82M (https://huggingface.co/hexgrad/Kokoro-82M, Apache-2.0) via
+kokoro-onnx (https://github.com/thewh1teagle/kokoro-onnx, MIT). See tools/generate_voices.py.
 
 ## Synthesized
 `tv_show`, `tv_ad`, `tv_signoff`, `bulb_flicker`: tools/generate_audio.py

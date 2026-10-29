@@ -39,6 +39,8 @@ func _ready() -> void:
 	far_light = _house(far_light_pos.x, far_light_pos.z, 1, rng, far_light_color, false)
 	# Grandma-orange, and bright enough to read from the far end of the street.
 	(far_light.light as OmniLight3D).light_energy = 3.0
+	far_light.energy = 3.0
+	far_light.emission = 12.0
 	(far_light.light as OmniLight3D).omni_range = 10.0
 	(far_light.material as StandardMaterial3D).emission_energy_multiplier = 12.0
 	(far_light.halo as MeshInstance3D).scale = Vector3.ONE * 2.5
@@ -142,7 +144,7 @@ func _house(front_x: float, z: float, facing: int, rng: RandomNumberGenerator, l
 	siding.roughness = 0.9
 	var roof := _noise_mat(Color(0.1, 0.09, 0.09), Color(0.2, 0.17, 0.16), 0.5)
 	var h := 2.8
-	_box(Vector3(depth, h, 6.5), Vector3(cx, GROUND_Y + h / 2.0, z), siding)
+	_box(Vector3(depth, h, 6.5), Vector3(cx, GROUND_Y + h / 2.0, z), siding, true)
 	_roof(Vector3(cx, GROUND_Y + h, z), depth / 2.0 + 0.3, 2.2, 6.9, roof)
 
 	var door := StandardMaterial3D.new()
@@ -236,6 +238,7 @@ func _tree(base: Vector3, rng: RandomNumberGenerator) -> void:
 	trunk.height = height
 	trunk.position = base + Vector3(0, height / 2.0, 0)
 	trunk.material = bark
+	trunk.use_collision = true
 	add_child(trunk)
 	for i in 5:
 		var branch := CSGCylinder3D.new()
@@ -259,3 +262,30 @@ func kill_light(entry: Dictionary, time := 0.4) -> void:
 	t.tween_property(light, "light_energy", 0.0, time * 0.5)
 	t.parallel().tween_property(mat, "emission_energy_multiplier", 0.0, time * 0.5)
 	t.parallel().tween_property(entry.halo, "transparency", 1.0, time * 0.5)
+
+
+## Brings a porch light back up (chapter 3). time 0 snaps it on.
+func relight(entry: Dictionary, time := 0.6) -> void:
+	set_level(entry, 1.0, time)
+
+
+## Snaps every porch light on the street off, except the far one.
+func kill_all() -> void:
+	for e in porch_lights:
+		set_level(e, 0.0, 0.0)
+
+
+## Sets a porch light to a fraction `k` of full brightness over `time`.
+func set_level(entry: Dictionary, k: float, time: float) -> void:
+	var light: OmniLight3D = entry.light
+	var mat: StandardMaterial3D = entry.material
+	var emission: float = entry.get("emission", 4.0)
+	if time <= 0.0:
+		light.light_energy = entry.energy * k
+		mat.emission_energy_multiplier = emission * k
+		(entry.halo as GeometryInstance3D).transparency = 1.0 - k
+		return
+	var t := create_tween().set_parallel(true)
+	t.tween_property(light, "light_energy", entry.energy * k, time)
+	t.tween_property(mat, "emission_energy_multiplier", emission * k, time)
+	t.tween_property(entry.halo, "transparency", 1.0 - k, time)

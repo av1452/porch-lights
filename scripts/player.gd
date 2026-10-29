@@ -33,6 +33,8 @@ signal target_changed(target: Interactable)
 ## Set true during cutscenes and transitions.
 var input_locked := false
 var crouching := false
+## Chapter 3 hands Leo a flashlight (give_flashlight); F toggles it.
+var flashlight: SpotLight3D
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _bob_t := 0.0
@@ -66,6 +68,30 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("interact") and not input_locked and _target:
 		_target.interact(self)
+	elif event.is_action_pressed("flashlight") and flashlight and not input_locked:
+		set_flashlight(not flashlight.visible)
+
+
+func give_flashlight() -> void:
+	if flashlight:
+		return
+	flashlight = SpotLight3D.new()
+	flashlight.light_color = Color(1, 0.93, 0.78)
+	flashlight.light_energy = 3.0
+	flashlight.spot_range = 16.0
+	flashlight.spot_angle = 22.0
+	flashlight.spot_attenuation = 0.8
+	flashlight.light_volumetric_fog_energy = 0.6
+	flashlight.shadow_enabled = true
+	flashlight.position = Vector3(0.12, -0.12, 0.0)
+	flashlight.visible = false
+	camera.add_child(flashlight)
+
+
+func set_flashlight(on: bool) -> void:
+	if flashlight and flashlight.visible != on:
+		flashlight.visible = on
+		Audio.play_sfx("switch_click", null, -12.0, 0.1)
 
 
 func _physics_process(delta: float) -> void:
@@ -166,6 +192,7 @@ func _setup_inputs() -> void:
 		"sprint": [KEY_SHIFT],
 		"crouch": [KEY_C, KEY_CTRL],
 		"interact": [KEY_E],
+		"flashlight": [KEY_F],
 	}
 	for action: String in map:
 		if InputMap.has_action(action):

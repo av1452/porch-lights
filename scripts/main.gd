@@ -1,8 +1,8 @@
 extends Node3D
 ## Chapter 1: Halloween night in the living room.
 ## Lie on the couch to fall asleep. In the dream, the hallway keeps going.
-## Waking up hands off to Chapter 2 (scripts/chapter2.gd).
-## Debug: run with `-- --chapter=2` to skip straight to chapter 2.
+## Waking up hands off to Chapter 2 (scripts/chapter2.gd), then Chapter 3
+## (scripts/chapter3.gd). Debug: run with `-- --chapter=2` or `-- --chapter=3`.
 
 @onready var player: Player = $Player
 @onready var hud: GameHud = $HUD
@@ -23,6 +23,7 @@ extends Node3D
 @onready var front_door: Interactable = $Interactables/FrontDoorHinge/FrontDoor
 @onready var porch_switch: Interactable = $Interactables/PorchSwitch
 @onready var chapter2: Node = $Chapter2
+@onready var chapter3: Node = $Chapter3
 
 var chapter := 1
 var dreaming := false
@@ -34,6 +35,9 @@ var _crickets: AudioStreamPlayer3D
 
 
 func _ready() -> void:
+	# Chapters change fog, sky and light; work on a copy so a restart starts clean.
+	env = env.duplicate(true)
+	$WorldEnvironment.environment = env
 	player.target_changed.connect(hud.set_target)
 	couch.used.connect(_on_couch_used)
 	dream_door.used.connect(_on_dream_door_used)
@@ -61,9 +65,13 @@ func _ready() -> void:
 	_crickets.unit_size = 8.0
 	Audio.make_loop("wind", $Porch/Ambience, -14.0)
 
-	if _start_chapter() == 2:
-		chapter2.call("start", true)
-		return
+	match _start_chapter():
+		2:
+			chapter2.call("start", true)
+			return
+		3:
+			chapter3.call("start", true)
+			return
 
 	_lock(true)
 	await hud.show_title("PORCH LIGHTS", "Chapter 1 - Halloween Night", 2.5).finished
@@ -126,6 +134,8 @@ func set_porch_light(on: bool) -> void:
 
 
 func _on_tv_used(_by: Node) -> void:
+	if chapter == 3:
+		Audio.say("ch3_tv")
 	if dreaming or chapter != 1:
 		return
 	if tv.times_used == 1:
@@ -154,7 +164,7 @@ func _on_couch_used(_by: Node) -> void:
 	if dreaming or _busy:
 		return
 	if chapter != 1:
-		Audio.say("couch_ch2")
+		Audio.say("couch_ch2" if chapter == 2 else "ch3_couch")
 		return
 	_busy = true
 	_lock(true)

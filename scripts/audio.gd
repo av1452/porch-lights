@@ -4,20 +4,25 @@ extends Node
 ## data/lines.json. Swap any WAV/OGG for a real recording with the same name.
 
 const LINES_PATH := "res://data/lines.json"
+## Line ids with real recordings (written by tools/recordings.py). They play
+## at natural pitch; the per-speaker pitch below only nudges TTS voices.
+const RECORDED_PATH := "res://data/recorded.json"
 
 ## Per-speaker subtitle name, color and playback pitch. Leo's generated voice
-## is nudged up so he reads as an 8-year-old; set 1.0 for real recordings.
+## is nudged up so he reads as an 8-year-old (not applied to real recordings).
 const SPEAKERS := {
 	"leo": { "name": "", "color": Color(1, 0.97, 0.9), "pitch": 1.07, "bus": "Voice" },
 	"mom": { "name": "Mom", "color": Color(1, 0.8, 0.75), "pitch": 1.0, "bus": "Voice" },
 	"dad": { "name": "Dad", "color": Color(0.75, 0.85, 1), "pitch": 1.0, "bus": "Voice" },
 	"sibling": { "name": "Through the door", "color": Color(0.85, 1, 0.75), "pitch": 1.0, "bus": "Muffled" },
+	"grandma": { "name": "Grandma", "color": Color(1, 0.8, 0.55), "pitch": 1.0, "bus": "Voice" },
 	"tv": { "name": "TV", "color": Color(0.7, 0.85, 1), "pitch": 1.0, "bus": "TV" },
 }
 
 signal line_finished(id: String)
 
 var lines := {}
+var recorded := {}
 var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer
 var _music_name := ""
@@ -91,6 +96,11 @@ func _load_lines() -> void:
 	var data = JSON.parse_string(f.get_as_text())
 	if data is Dictionary:
 		lines = data
+	if FileAccess.file_exists(RECORDED_PATH):
+		var ids = JSON.parse_string(FileAccess.get_file_as_string(RECORDED_PATH))
+		if ids is Array:
+			for id in ids:
+				recorded[id] = true
 
 
 func _make_player(bus: String) -> AudioStreamPlayer:
@@ -253,6 +263,7 @@ func say(id: String, at: Node3D = null) -> void:
 		var text: String = line.get("text", "")
 		var stream := get_stream("voice", current)
 		var length := 1.2 + text.length() * 0.06
+		var pitch: float = 1.0 if recorded.has(current) else spk.pitch
 		_voice.stop()
 		_voice_3d.stop()
 		if stream:
@@ -262,9 +273,9 @@ func say(id: String, at: Node3D = null) -> void:
 				player = _voice_3d
 			player.set("stream", stream)
 			player.set("bus", spk.bus)
-			player.set("pitch_scale", spk.pitch)
+			player.set("pitch_scale", pitch)
 			player.call("play")
-			length = stream.get_length() / spk.pitch
+			length = stream.get_length() / pitch
 		get_tree().call_group("hud", "show_line", spk.name, text, spk.color, length + 1.5)
 		await get_tree().create_timer(length + 0.35).timeout
 		if serial != _line_serial:
