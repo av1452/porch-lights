@@ -62,6 +62,24 @@ func _process(delta: float) -> void:
 	tv.light_color = tv.light_color.lerp(tv_screen.light_color(), 0.5)
 
 
+## Every window in the house shares a night-sky glass. For daytime scenes,
+## swap in daylight glass (and back again at dusk).
+func set_window_daylight(day: bool) -> void:
+	for glass in find_children("Glass", "CSGBox3D", true, false):
+		var g := glass as CSGBox3D
+		if not g.has_meta("night_material"):
+			g.set_meta("night_material", g.material)
+		if day:
+			var m := StandardMaterial3D.new()
+			m.albedo_color = Color(0.72, 0.8, 0.9)
+			m.emission_enabled = true
+			m.emission = Color(0.72, 0.8, 0.9)
+			m.emission_energy_multiplier = 0.9
+			g.material = m
+		else:
+			g.material = g.get_meta("night_material")
+
+
 func hide_node(path: String) -> void:
 	Decorations.hide(get_node(path) as Node3D)
 

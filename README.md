@@ -70,10 +70,14 @@ Christmas lights. *To be continued. Next: Christmas Eve.*
 *(Home for Winter Break, the old December 19 evening at home, is out of the chapter order
 while its cookies, tree lights and snow day are folded into Christmas Eve and Winter Break.)*
 
-**Chapter 5: December 24, Christmas Eve.** Grandma's here with her fudge. One present
-tonight: matching reindeer pajamas for everybody, even Dad, and a bandana for Biscuit.
-The disposable-camera family picture. Cookies and milk for Santa, carrots for the
-reindeer, and the porch light on so Santa can find the house. Was that sleigh bells?
+**Chapter 4: December 24, Christmas Eve.** The afternoon, in any order: decorate sugar
+cookies with Mom (one is just all sprinkles), wrap Grandma's present with Dad (way too much
+tape; "rustic"), and help Jamie find the one dead bulb so the whole tree lights up. At six,
+Grandma's car honks twice. Her fudge. One present tonight: matching reindeer pajamas for
+everybody, even Dad, and a bandana for Biscuit. The disposable-camera family picture,
+Christmas Eve dinner and the claymation special, cookies and milk for Santa, carrots for the
+reindeer, and the porch light on so Santa can find the house. Was that sleigh bells? You
+dream the long hallway again, strung with Christmas lights, Biscuit waiting at the door.
 
 **Chapter 6: December 25, Christmas Morning.** 5:52 a.m. He came! A stocking with an
 orange in the toe, like every year. The Mega Robo Racer: batteries not included, but

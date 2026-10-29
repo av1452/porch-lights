@@ -18,7 +18,16 @@ func _initialize():
 	ch = load("res://scenes/chapter_5_christmas_eve.tscn").instantiate()
 	root.add_child(ch)
 	await create_timer(9.0).timeout
-	print("start porch light=", ch.porch_light.light_energy, " mom visible=", ch.mom.visible)
+	print("start porch light=", ch.porch_light.light_energy, " mom visible=", ch.mom.visible, " step=", ch.step, " grandma here=", ch.grandma.is_inside_tree())
+	# Afternoon: cookies, wrapping, and the dead bulb.
+	ch._sugar_cookies.interact(ch.player); await idle()
+	ch._wrapping.interact(ch.player); await idle()
+	ch.jamie.interact(ch.player); await idle()
+	for i in ch._checks.size():
+		ch._checks[i].interact(ch.player); await idle()
+	print("afternoon done=", ch._day_done.keys(), " tree lit=", ch._tree_glow.light_energy > 0.0)
+	await until_step(ch.Step.GRANDMA, 60.0)
+	print("evening: grandma here=", ch.grandma.is_inside_tree(), " fudge=", ch._fudge.is_inside_tree())
 	ch.jamie.interact(ch.player); await idle()
 	ch.grandma.interact(ch.player); await until_step(ch.Step.PRESENT)
 	ch._present.interact(ch.player); await until_step(ch.Step.PICTURE)
@@ -30,6 +39,12 @@ func _initialize():
 	print("porch light on=", ch.porch_light.light_energy > 0.0)
 	ch.front_door.interact(ch.player); await until_step(ch.Step.PORCH)
 	ch._on_porch()
+	await until_step(ch.Step.DREAM, 150.0)
+	print("dream: hall in tree=", ch._dream_hall.is_inside_tree(), " locked=", ch.player.input_locked)
+	ch.player.teleport(ch.DREAM_DOG + Vector3(0, 0, 3.0), 0.0)
+	await create_timer(2.0).timeout
+	print("biscuit greeted=", ch._dream_dog_greeted)
+	ch._dream_hall.get_node("DreamDoor").interact(ch.player)
 	for i in 80:
 		await create_timer(1.0).timeout
 		if root.has_node("Chapter6"):

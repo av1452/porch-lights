@@ -94,6 +94,7 @@ func _morning() -> void:
 	sun.light_energy = 0.9
 	for e in street.porch_lights + [street.far_light]:
 		street.kill_light(e, 0.01)
+	set_window_daylight(true)
 
 
 # --- Step 0: gathering your things ---------------------------------------
