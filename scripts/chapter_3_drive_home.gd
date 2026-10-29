@@ -1,5 +1,5 @@
 extends Chapter
-## Chapter 3 — November. The long drive home from Grandma's.
+## Thanksgiving, final part — November. The long drive home from Grandma's.
 ## Back seat → share Jamie's headphones → Mom and the Black Friday ads, and
 ## the first Christmas song on the radio → lean on the window and fall asleep
 ## → the dream street, where every porch light turns into Christmas lights as
@@ -62,7 +62,7 @@ func _ready() -> void:
 
 	player.sit(LEO_SEAT, 0.0)
 	Audio.play_sfx("blinker", null, -14.0)
-	await open_chapter("November", "The Long Drive Home")
+	await open_chapter("November", "Thanksgiving: The Drive Home")
 	hud.show_memory("Leftovers on your lap. The heater smells like burnt dust. Jamie has their headphones on.", 5.0)
 	await wait(3.0)
 	objective("Ask Jamie what they're listening to")

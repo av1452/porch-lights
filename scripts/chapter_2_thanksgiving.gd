@@ -1,5 +1,5 @@
 extends Chapter
-## Chapter 2 — November. Thanksgiving at Grandma's.
+## Thanksgiving, at Grandma's — November.
 ## Say hi to Grandma → kids' table → dinner (time skip) → pie with Grandma →
 ## Chapter 3, the drive home.
 
@@ -58,7 +58,7 @@ func _ready() -> void:
 	add_chatter(cousins.get_node("Ben"), "Ben", ["I'm four and three-quarters."])
 
 	Audio.make_loop("room_tone", self, -22.0, "SFX", false)
-	await open_chapter("November", "Thanksgiving at Grandma's")
+	await open_chapter("November", "Thanksgiving: At Grandma's")
 	hud.show_memory("The car ride took forever. Grandma's house smells exactly the same as last year.", 5.0)
 	await wait(2.5)
 	objective("Say hi to Grandma")

@@ -5,8 +5,9 @@ extends Node
 ## The story in order. Chapter scripts don't need to know their number.
 const CHAPTERS := [
 	{ "scene": "res://scenes/chapter_1_halloween.tscn", "date": "October 31", "title": "Halloween" },
-	{ "scene": "res://scenes/chapter_2_thanksgiving.tscn", "date": "November", "title": "Thanksgiving at Grandma's" },
-	{ "scene": "res://scenes/chapter_3_drive_home.tscn", "date": "November", "title": "The Long Drive Home" },
+	# Thanksgiving is one chapter in parts; each part is its own scene.
+	{ "scene": "res://scenes/chapter_2_thanksgiving.tscn", "date": "November", "title": "Thanksgiving: At Grandma's" },
+	{ "scene": "res://scenes/chapter_3_drive_home.tscn", "date": "November", "title": "Thanksgiving: The Drive Home" },
 	{ "scene": "res://scenes/school_class_party.tscn", "date": "December 19", "title": "The Class Party" },
 	{ "scene": "res://scenes/chapter_4_winter_break.tscn", "date": "December 19", "title": "Home for Winter Break" },
 	{ "scene": "res://scenes/chapter_5_christmas_eve.tscn", "date": "December 24", "title": "Christmas Eve" },

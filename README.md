@@ -42,15 +42,17 @@ too. Flashlight in hand, you catch Mom and Dad in the kitchen eating your Hallow
 Everybody gets one. Then Biscuit needs to go out, and from the porch you watch the
 neighborhood's porch lights click off one by one. Goodnight, Halloween.
 
-**Chapter 2: November, Thanksgiving at Grandma's.** Say hi to Grandma and open the
-canned cranberry sauce (ridges and all). Take your seat at the kids' table while Jamie
-moves up to the big table. After dinner, Grandma saves you the first slice of pie.
-
-**Chapter 3: November, The Long Drive Home.** The back seat, leftovers on your lap,
-streetlights sliding over the ceiling. Jamie lends you one earbud. Mom circles things in
-the Black Friday ads ("nobody look"), and the first Christmas song of the year comes on
-the radio. You fall asleep, and in your dream every porch light you pass turns into
-Christmas lights, all the way to Grandma's porch.
+**Chapter 2: November, Thanksgiving.**
+*At Grandma's:* say hi to Grandma and open the canned cranberry sauce (ridges and all).
+Football's on the TV cart. Take your seat at the kids' table while Jamie moves up to the
+big table. After dinner, Mom and Dad quietly notice Grandma's moving slower this year, and
+Grandma saves you the first slice of pie.
+*The Drive Home:* the back seat, leftovers on your lap, Biscuit's head in your lap too,
+streetlights sliding over the ceiling. Jamie lends you one earbud: Static Parade. Mom and
+Dad talk low about Grandma. Mom circles things in the Black Friday ads ("nobody look"),
+and the first Christmas song of the year comes on the radio. You fall asleep as the first
+snow starts falling in the headlights, and in your dream every porch light you pass turns
+into Christmas lights, all the way to Grandma's porch.
 
 **School: December 19, The Class Party.** Mrs. Patterson's third grade, last day before
 break. The handprint turkeys and paper bats are still up. Put your letter in the North Pole
