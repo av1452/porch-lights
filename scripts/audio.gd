@@ -8,7 +8,12 @@ extends Node
 ## tools/generate_voices.py finds every line in the scripts and records them.
 
 ## Per-speaker playback pitch (1.0 for real recordings).
-const PITCH := { "ben": 1.08 }
+## Kokoro has no child voices: the kids are young-sounding voices nudged up.
+## Set a kid to 1.0 if you drop in a real recording of them.
+const PITCH := {
+	"ben": 1.2, "maddie": 1.15, "tyler": 1.12,
+	"maya": 1.12, "tyler_b.": 1.12, "marcus": 1.15, "emily": 1.12, "josh": 1.12,
+}
 
 var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer

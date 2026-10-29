@@ -13,5 +13,6 @@ screenshots/
 
 # Downloaded tools and caches (see tools/)
 tools/piper/
+tools/kokoro/
 tools/.audio_cache/
 __pycache__/

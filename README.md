@@ -129,10 +129,12 @@ rounded ones with hands, shoes and faces. Geometry is still CSG, ready for real 
 
 ## Audio
 - **Voices**: every character line in `say()` and `add_chatter()` is voiced with
-  [Piper](https://github.com/rhasspy/piper), offline and free. Narration stays silent text.
-  `python tools/generate_voices.py --setup` once (downloads Piper + voices into the gitignored
-  `tools/piper/`), then `python tools/generate_voices.py` records any new or changed lines
-  (`--prune` removes unused ones, `--list` shows every line). Voice casting is `SPEAKERS` in that script.
+  [Kokoro](https://github.com/thewh1teagle/kokoro-onnx), offline and free. Narration stays silent text.
+  `python tools/generate_voices.py --setup` once (Python environment + model into the gitignored
+  `tools/kokoro/`), then `python tools/generate_voices.py` records any new or changed lines
+  (`--force` re-records all, `--prune` removes unused ones, `--list` shows every line). Voice casting
+  is `SPEAKERS` in that script; Kokoro has no child voices, so the kids are pitched up in-game
+  (`PITCH` in `scripts/audio.gd`).
 - **Music and sound effects**: real CC0 recordings from BigSoundBank, Kenney and OpenGameArt, cut
   by `python tools/fetch_audio.py` (credits in `audio/CREDITS.md`). The Kenney packs must be
   downloaded by hand; the script tells you where to put them.
