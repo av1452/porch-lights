@@ -15,12 +15,17 @@ enum Step { HI_GRANDMA, FIND_SEAT, DINNER, FIND_GRANDMA, END }
 @onready var cousins: Node3D = $Story/Cousins
 @onready var seat: Interactable = $Story/YourSeat
 @onready var window_day: Node3D = $House/Furniture/WindowDay
+@onready var tv_cart: Node3D = $House/Furniture/TVCart
+
+var _tv: TvScreen
+var _tv_flicker_t := 0.0
 
 
 func _ready() -> void:
 	super._ready()
 	stash(grandma_stool)
 	stash(grandma_table)
+	_install_tv()
 
 	grandma_standing.used.connect(_on_grandma_hi)
 	(grandma_stool.get_node("Grandma") as Interactable).used.connect(_on_grandma_stool)
@@ -57,6 +62,36 @@ func _ready() -> void:
 	hud.show_memory("The car ride took forever. Grandma's house smells exactly the same as last year.", 5.0)
 	await wait(2.5)
 	objective("Say hi to Grandma")
+
+
+## The game's on all day: put a live picture on Grandma's TV cart. Drop a
+## real clip in as media/football.ogv and it plays instead (TvScreen).
+func _install_tv() -> void:
+	var old := tv_cart.get_node("Screen") as Node3D
+	var picture := MeshInstance3D.new()
+	picture.name = "Picture"
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.44, 0.32)
+	picture.mesh = quad
+	picture.position = old.position + Vector3(0, 0, 0.012)
+	tv_cart.add_child(picture)
+	old.visible = false
+	_tv = TvScreen.new()
+	_tv.screen_path = ^"../Picture"
+	_tv.channel = "football"
+	tv_cart.add_child(_tv)
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	# The TV light flickers with the picture, like a real one.
+	_tv_flicker_t -= delta
+	if _tv_flicker_t > 0.0 or _tv == null:
+		return
+	_tv_flicker_t = randf_range(0.08, 0.25)
+	var glow := lights.get_node("TVGlow") as OmniLight3D
+	glow.light_energy = 0.5 * randf_range(0.75, 1.15)
+	glow.light_color = glow.light_color.lerp(_tv.light_color(), 0.5)
 
 
 func _exit_tree() -> void:
@@ -144,7 +179,14 @@ func _after_dinner() -> void:
 	busy = false
 	step = Step.FIND_GRANDMA
 	hud.show_memory("Everyone's in the den watching the game. The house got quiet all at once.", 5.0)
-	await wait(2.0)
+	await wait(5.5)
+	# Through the wall, under the game: Mom and Dad, quietly.
+	await say([
+		["Mom (den)", "She's moving slower this year."],
+		["Dad (den)", "She's allowed to slow down a little, hon."],
+		["Mom (den)", "I know. I just noticed, that's all."],
+	])
+	await wait(1.0)
 	objective("Find Grandma")
 
 

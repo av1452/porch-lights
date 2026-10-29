@@ -1,8 +1,8 @@
 class_name TvShow
 extends Node2D
 ## Placeholder TV programs drawn live at 160x120: a Halloween cartoon special,
-## a winter special, a toy commercial, a dream version, a broadcast sign-off
-## and static.
+## a winter special, a toy commercial, a dream version, a broadcast sign-off,
+## static, and Thanksgiving football.
 ## Replace any of them with a real video via media/<channel>.ogv.
 
 const W := 160.0
@@ -34,6 +34,8 @@ func light_color() -> Color:
 			return Color(0.9, 0.9, 1.0)
 		"static":
 			return Color(0.8, 0.85, 0.9)
+		"football":
+			return Color(0.5, 0.9, 0.55)
 		"off":
 			return Color.BLACK
 	return Color(0.55, 0.62, 1.0)
@@ -53,6 +55,8 @@ func _draw() -> void:
 			_draw_signoff()
 		"static":
 			_draw_static(1.0)
+		"football":
+			_draw_football()
 		_:
 			draw_rect(Rect2(0, 0, W, H), Color.BLACK)
 			return
@@ -154,6 +158,46 @@ func _draw_commercial() -> void:
 	if fmod(_t, 0.8) < 0.55:
 		_text("MEGA ROBO RACER!", Vector2(W / 2, 22), 13, Color.YELLOW)
 	_text("batteries not included", Vector2(W / 2, 112), 7, Color.WHITE)
+
+
+## Thanksgiving football: the stands, the field, a play every few seconds,
+## and the score banner. Made-up teams.
+func _draw_football() -> void:
+	var pan := sin(_t * 0.25) * 24.0
+	draw_rect(Rect2(0, 0, W, H), Color(0.15, 0.42, 0.17))
+	# The stands, a blur of coats.
+	draw_rect(Rect2(0, 0, W, 20), Color(0.18, 0.16, 0.2))
+	for i in 90:
+		var x := fmod(i * 37.0 - pan * 0.5, W + 10.0)
+		var y := 2.0 + fmod(i * 13.0, 15.0)
+		draw_rect(Rect2(x, y, 2, 2), Color.from_hsv(fmod(i * 0.17, 1.0), 0.4, 0.6))
+	draw_rect(Rect2(0, 20, W, 2), Color(0.9, 0.9, 0.9))
+	# Mowed stripes and yard lines, leaning for a broadcast angle.
+	for i in range(-1, 12):
+		var x := fmod(i * 20.0 - pan + 400.0, 240.0) - 40.0
+		draw_colored_polygon(PackedVector2Array([Vector2(x, 22), Vector2(x + 10, 22), Vector2(x + 2, H), Vector2(x - 8, H)]), Color(0.17, 0.47, 0.19))
+		draw_line(Vector2(x, 22), Vector2(x - 8, H), Color(1, 1, 1, 0.75), 1.0)
+	# A play: line up, snap, run, tackle, line up again.
+	var p := fmod(_t, 7.0) / 7.0
+	var go := clampf((p - 0.3) / 0.5, 0.0, 1.0)
+	var line := 78.0 - pan
+	var runner := Vector2(line - 12.0 + go * 46.0, 70.0 + sin(go * 5.0) * 8.0)
+	for i in 7:
+		var y := 40.0 + i * 10.0
+		var o := Vector2(line - 4.0 + go * 10.0, y)
+		var d := Vector2(line + 5.0 + go * 6.0, y).lerp(runner + Vector2(4, (i - 3) * 3.0), go * 0.8)
+		_player_dot(o, Color(0.8, 0.12, 0.12))
+		_player_dot(d, Color(0.95, 0.95, 0.95))
+	_player_dot(runner, Color(0.8, 0.12, 0.12))
+	draw_circle(runner + Vector2(2, -1), 1.2, Color(0.45, 0.25, 0.1))
+	# The score banner.
+	draw_rect(Rect2(6, 103, 148, 12), Color(0.05, 0.1, 0.3, 0.92))
+	_text("RIVERTON 14   LAKESIDE 10   4TH  8:42", Vector2(W / 2, 106), 7, Color.WHITE)
+
+
+func _player_dot(at: Vector2, jersey: Color) -> void:
+	draw_rect(Rect2(at.x - 2, at.y - 3, 4, 5), jersey)
+	draw_circle(at + Vector2(0, -4), 1.6, Color(0.85, 0.85, 0.85))
 
 
 func _draw_signoff() -> void:

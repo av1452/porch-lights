@@ -7,6 +7,7 @@ extends Node
 const CHANNEL_SOUND := {
 	"special": "tv_show", "commercial": "tv_ad", "dream": "tv_show",
 	"signoff": "tv_signoff", "static": "tv_static", "off": "", "winter": "",
+	"football": "tv_football",
 }
 
 @export var screen_path: NodePath = ^"../Screen"
@@ -30,6 +31,7 @@ func _ready() -> void:
 	add_child(_viewport)
 
 	_show = TvShow.new()
+	_show.channel = channel # already on: no channel-change click at the start
 	_viewport.add_child(_show)
 
 	_video = VideoStreamPlayer.new()
