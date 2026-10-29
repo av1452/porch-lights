@@ -2,11 +2,21 @@ extends Chapter
 ## December 19 — The Class Party. The last day of school before winter break,
 ## in Mrs. Patterson's third-grade classroom (scripts/classroom.gd).
 ## Letter to Santa in the North Pole mailbox → cut a paper snowflake →
-## Secret Santa (you get a Slinky, you give Maya glitter gel pens) → cupcakes,
-## juice boxes, candy canes and the class picture → the claymation special on
-## the TV cart and one last concert practice → the bell → Chapter 4 (home).
+## Secret Santa (you get a mood ring, you give Maya glitter gel pens) → pass
+## out the cupcakes, juice boxes, candy canes and the class picture → the
+## claymation special on the TV cart, until somebody yells "IT'S SNOWING!" →
+## one last concert practice → the bell.
 
-enum Step { LETTER, SNOWFLAKE, GIFT, MAYA, PARTY, RUG, BELL, END }
+enum Step { LETTER, SNOWFLAKE, GIFT, MAYA, PARTY, CUPCAKES, RUG, BELL, END }
+
+## What each kid says when you hand them a cupcake.
+const CUPCAKE_THANKS := {
+	"Maya": "Thank you! I'm saving the sprinkles for last.",
+	"Tyler B.": "My mom's cupcakes! Can I have two? ...Fine. One.",
+	"Marcus": "Is the green frosting mint? ...Doesn't matter. Thanks.",
+	"Emily": "Can I have the one with the most sprinkles? That one. Thank you!",
+	"Josh": "Is it three o'clock yet? ...Oh. Cupcake! Thanks!",
+}
 
 const TEACHER := { "legs": Color(0.25, 0.22, 0.3), "shirt": Color(0.75, 0.15, 0.18), "hair": Color(0.45, 0.3, 0.2), "long_hair": true }
 const KIDS := {
@@ -28,6 +38,8 @@ var _gifts: Interactable
 var _snacks: Interactable
 var _rug: Interactable
 var _door: Interactable
+var _unserved: Array = []
+var _window: Interactable
 
 
 func _ready() -> void:
@@ -43,6 +55,7 @@ func _ready() -> void:
 	for kid_name in spots:
 		var s: Array = spots[kid_name]
 		kids[kid_name] = Figure.person(self, kid_name, s[0], s[1], 1.3, KIDS[kid_name], s[2])
+		(kids[kid_name] as Interactable).used.connect(_on_kid_cupcake.bind(kid_name))
 	add_chatter(kids["Tyler B."], "Tyler B.", [
 		"My mom made the cupcakes. The sprinkles are the crunchy kind. You're welcome.",
 		"I'm getting the new game system for Christmas. My cousin said. My cousin knows everything.",
@@ -74,7 +87,9 @@ func _ready() -> void:
 	board.memory_text = "Your handprint turkey is up there from November. And the paper bats from October. Mrs. Patterson never takes anything down."
 	board.repeat_text = "Your turkey says 'I am thankful for Biscuit and pie.' Correct."
 	var window := _spot("Window", Vector3(-4.85, 1.75, 0.0), Vector3(0.1, 1.3, 1.8), "Look outside")
-	window.memory_text = "It's starting to snow. The whole class saw it at the same time. Nobody can sit still now."
+	window.memory_text = "Gray sky, the heavy kind. Mrs. Patterson says it smells like snow. Nobody knows what that means."
+	window.repeat_text = "Still gray. Josh has checked it six times."
+	_window = window
 
 	_mailbox.used.connect(_on_mailbox)
 	_crafts.used.connect(_on_crafts)
@@ -154,8 +169,8 @@ func _on_gifts(_by: Node) -> void:
 	_gifts.enabled = false
 	Audio.play_sfx("candy_rustle", _gifts, -2.0)
 	await say([
-		["", "A little box with your name on it in somebody's best handwriting. A Slinky!"],
-		["", "You stretch it across two desks. It tangles immediately. Perfect."],
+		["", "A little box with your name on it in somebody's best handwriting. A mood ring!"],
+		["", "It goes dark blue the second it's on your finger. You check the little card. Dark blue means 'happy.' Obviously."],
 	])
 	objective("Give Maya her Secret Santa gift")
 
@@ -173,19 +188,50 @@ func _on_maya(_by: Node) -> void:
 		["Maya", "GLITTER GEL PENS. Okay. You're officially the best Secret Santa."],
 	])
 	_snacks.enabled = true
-	objective("Get a cupcake from the party table")
+	objective("Get the cupcakes from the party table")
 
 
-# --- Step 4: the party, and the class picture ---------------------------
+# --- Step 4: passing out cupcakes, then the party and the class picture ---
 
 func _on_snacks(_by: Node) -> void:
 	if busy or step != Step.PARTY:
 		return
+	step = Step.CUPCAKES
+	_snacks.enabled = false
+	await say([["Mrs. Patterson", "Leo, you're my cupcake helper. One for everybody, and then one for you."]])
+	_unserved = kids.keys()
+	for kid_name in _unserved:
+		var kid := kids[kid_name] as Interactable
+		kid.set_meta("mute_chatter", true)
+		kid.prompt = "Give %s a cupcake" % kid_name
+	_cupcake_objective()
+
+
+func _cupcake_objective() -> void:
+	objective("Pass out the cupcakes (%d left)" % _unserved.size())
+
+
+func _on_kid_cupcake(_by: Node, kid_name: String) -> void:
+	if step != Step.CUPCAKES or busy or not kid_name in _unserved:
+		return
+	_unserved.erase(kid_name)
+	var kid := kids[kid_name] as Interactable
+	kid.remove_meta("mute_chatter")
+	kid.prompt = "Talk to " + kid_name
+	Audio.play_sfx("candy_rustle", kid, -10.0)
+	await say([[kid_name, CUPCAKE_THANKS[kid_name]]])
+	if _unserved.is_empty():
+		await _party()
+	else:
+		_cupcake_objective()
+
+
+func _party() -> void:
 	step = Step.RUG
 	busy = true
-	_snacks.enabled = false
+	objective("")
 	await say([
-		["", "Green frosting, the crunchy sprinkles. A juice box with a tiny straw you have to stab in exactly right."],
+		["", "The last one's yours. Green frosting, the crunchy sprinkles. A juice box with a tiny straw you have to stab in exactly right."],
 		["Tyler B.", "Told you. Crunchy sprinkles. Best cupcakes in the whole third grade."],
 		["Mrs. Patterson", "Candy canes for everyone! And everybody squish together for a picture. Say 'winter break!'"],
 	])
@@ -219,6 +265,10 @@ func _on_rug(_by: Node) -> void:
 	await say([
 		["", "Mrs. Patterson rolls in the TV cart. Everybody cheers like it's a rocket launch. The claymation reindeer special, on VHS."],
 		["", "Halfway through, the tape goes fuzzy and Mrs. Patterson whacks the side of the TV. It works. Everybody cheers again."],
+	])
+	await _first_snow()
+	await say([
+		["", "Everybody drifts back to the rug, still looking over their shoulders."],
 		["Mrs. Patterson", "Okay! One more practice for tonight's concert. From the top. Jingle bells..."],
 	])
 	room.tv_screen.channel = "off"
@@ -237,6 +287,34 @@ func _on_rug(_by: Node) -> void:
 	_door.enabled = true
 	busy = false
 	objective("Go home for winter break!")
+
+
+## Somebody looks out the window and yells. The whole class runs to see.
+func _first_snow() -> void:
+	await wait(1.5)
+	await say([["Josh", "IT'S SNOWING!"]])
+	room.start_snow()
+	# Everybody at the windows, Leo too.
+	var spots := [Vector3(-4.3, 0, -2.0), Vector3(-4.3, 0, -0.6), Vector3(-4.3, 0, 0.6), Vector3(-4.2, 0, 1.9), Vector3(-4.0, 0, 2.9)]
+	var i := 0
+	for kid_name in kids:
+		var kid := kids[kid_name] as Node3D
+		kid.position = spots[i]
+		kid.rotation.y = deg_to_rad(-90.0) # facing the windows
+		i += 1
+	player.stand(Vector3(-3.9, 0.05, -1.3), 90.0)
+	await player.tween_look_at(Vector3(Classroom.WINDOW_X, 1.6, -0.6), 0.8).finished
+	await say([
+		["", "Everybody's at the windows before Mrs. Patterson can say a word. Big, slow flakes. The real kind."],
+		["Emily", "It's sticking! It's sticking on the bike rack!"],
+		["Marcus", "Two weeks of snow. TWO WEEKS."],
+		["Mrs. Patterson", "Okay, okay. One minute of snow watching. Then concert practice."],
+	])
+	_window.memory_text = "Real snow, already sticking to the top of the bike rack. The flakes look gray against the sky, then white when they get close."
+	_window.repeat_text = ""
+	await wait(4.0)
+	player.sit(Classroom.RUG + Vector3(0.3, -0.25, 0.3), -150.0)
+	await player.tween_look_at(Classroom.TV_CART + Vector3(0, 1.5, 0), 0.8).finished
 
 
 func _on_door(_by: Node) -> void:

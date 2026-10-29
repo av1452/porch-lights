@@ -26,7 +26,11 @@ func _initialize():
 	ch.kids["Maya"].interact(ch.player); await until_step(ch.Step.PARTY)
 	var game = root.get_node("Game")
 	var photos_before: int = game.photos.size()
-	ch._snacks.interact(ch.player); await until_step(ch.Step.RUG)
+	ch._snacks.interact(ch.player); await until_step(ch.Step.CUPCAKES)
+	for kid_name in ch.kids.keys():
+		ch.kids[kid_name].interact(ch.player); await idle()
+	await until_step(ch.Step.RUG)
+	print("cupcakes left=", ch._unserved.size())
 	print("class photo saved=", game.photos.any(func(p): return p.caption == "Mrs. Patterson's class party"), " (", photos_before, " before)")
 	ch._rug.interact(ch.player); await until_step(ch.Step.BELL)
 	print("after bell: door enabled=", ch._door.enabled, " seated=", ch.player.seated)

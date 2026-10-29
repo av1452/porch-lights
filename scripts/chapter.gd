@@ -83,7 +83,8 @@ func go_to_chapter(scene_path: String) -> void:
 func add_chatter(who: Interactable, speaker: String, lines: Array) -> void:
 	var state := {"i": 0}
 	who.used.connect(func(_by: Node) -> void:
-		if busy or lines.is_empty():
+		# A chapter can mute someone while they're part of a scene.
+		if busy or lines.is_empty() or who.has_meta("mute_chatter"):
 			return
 		var text: String = lines[state.i % lines.size()]
 		state.i += 1

@@ -19,6 +19,7 @@ const GIFT_PILE := Vector3(1.2, 0.0, -3.2)
 const WINDOW_X := -4.94
 
 var tv_screen: TvScreen
+var _sky: StandardMaterial3D
 
 
 func _ready() -> void:
@@ -85,8 +86,9 @@ func _room() -> void:
 	_box(Vector3(W, 0.12, 0.02), Vector3(0, 1.0, -D / 2 + 0.01), stripe)
 	_box(Vector3(W, 0.12, 0.02), Vector3(0, 1.0, D / 2 - 0.01), stripe)
 	_box(Vector3(0.02, 0.12, D), Vector3(W / 2 - 0.01, 1.0, 0), stripe)
-	# windows, with snow outside and paper snowflakes taped on
-	var sky := _mat(Color(0.82, 0.88, 0.95), 1.4)
+	# windows: a heavy gray December sky, and paper snowflakes taped on
+	var sky := _mat(Color(0.5, 0.54, 0.6), 0.55)
+	_sky = sky
 	var frame := _mat(Color(0.85, 0.85, 0.82))
 	var paper := _mat(Color(0.98, 0.98, 1.0))
 	for z in [-2.4, 0.0, 2.4]:
@@ -101,6 +103,15 @@ func _room() -> void:
 	_box(Vector3(0.08, 2.1, 0.95), DOOR + Vector3(0, 1.05, 0), door)
 	_box(Vector3(0.02, 0.5, 0.3), DOOR + Vector3(-0.05, 1.5, 0), _mat(Color(0.8, 0.9, 1.0), 0.6))
 	_text("ROOM 12", DOOR + Vector3(-0.06, 1.95, 0), 24, Color(0.2, 0.2, 0.2), -90.0)
+
+
+## The first snow, falling just past the glass of every window.
+func start_snow() -> void:
+	for z in [-2.4, 0.0, 2.4]:
+		var s := Decorations.snow(Vector3(WINDOW_X + 0.07, 1.75, z), Vector3(0.03, 0.62, 0.86), 160)
+		s.preprocess = 0.0
+		add_child(s)
+	create_tween().tween_property(_sky, "emission_energy_multiplier", 0.7, 3.0)
 
 
 ## A paper snowflake: two crossed six-sided paper cutouts. Public so the
