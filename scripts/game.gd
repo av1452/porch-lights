@@ -10,8 +10,6 @@ const CHAPTERS := [
 	{ "scene": "res://scenes/chapter_2_thanksgiving.tscn", "date": "November", "title": "Thanksgiving: At Grandma's" },
 	{ "scene": "res://scenes/chapter_3_drive_home.tscn", "date": "November", "title": "Thanksgiving: The Drive Home" },
 	{ "scene": "res://scenes/school_class_party.tscn", "date": "December 19", "title": "The Last Day Before Winter Break" },
-	# "Home for Winter Break" (chapter_4_winter_break) is out of the order; its
-	# moments are being folded into Christmas Eve and Winter Break.
 	{ "scene": "res://scenes/chapter_5_christmas_eve.tscn", "date": "December 24", "title": "Christmas Eve" },
 	{ "scene": "res://scenes/chapter_6_christmas_morning.tscn", "date": "December 25", "title": "Christmas Morning" },
 	{ "scene": "res://scenes/winter_break_days.tscn", "date": "December 28", "title": "Winter Break" },

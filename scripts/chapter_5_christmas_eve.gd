@@ -8,7 +8,8 @@ extends HouseChapter
 ## porch light on so Santa can find the house → out on the porch in the snow →
 ## bed, listening for hooves → the dream: the long hallway strung with
 ## Christmas lights, Biscuit at the glowing door → Christmas morning.
-## (The cookies and the tree lights came from the old "Home for Winter Break".)
+## (The cookies, the tree lights and the toy catalog came from the old
+## "Home for Winter Break".)
 
 enum Step { DAY, GRANDMA, PRESENT, PICTURE, COOKIES, CARROTS, PORCH_LIGHT, OUTSIDE, PORCH, DREAM, END }
 
@@ -74,6 +75,9 @@ func _ready() -> void:
 	_wrapped.enabled = false
 	_sugar_cookies.used.connect(_on_sugar_cookies)
 	_wrapping.used.connect(_on_wrapping)
+	box_thing("Catalog", Vector3(0.15, 0.42, 0.45), Vector3(0.24, 0.02, 0.3), Color(0.85, 0.2, 0.2), "Toy catalog",
+		"The big toy catalog. You've circled the Mega Robo Racer three times, in three different markers.",
+		"Page 47 is folded down. Page 47 is everything.")
 	box_thing("Advent", Vector3(6.27, 1.45, -1.55), Vector3(0.03, 0.32, 0.24), Color(0.7, 0.12, 0.15), "Advent calendar",
 		"Door 24, the last one. A chocolate Santa. Jamie hasn't eaten it. A Christmas miracle.",
 		"All twenty-four doors open. It looks like a little building with every light on.")

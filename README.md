@@ -67,9 +67,6 @@ the hallway bench for Mom while the school empties out. You fall asleep, and the
 stretches on and on, snow falling indoors, Biscuit waiting by a door glowing with
 Christmas lights. *To be continued. Next: Christmas Eve.*
 
-*(Home for Winter Break, the old December 19 evening at home, is out of the chapter order
-while its cookies, tree lights and snow day are folded into Christmas Eve and Winter Break.)*
-
 **Chapter 4: December 24, Christmas Eve.** The afternoon, in any order: decorate sugar
 cookies with Mom (one is just all sprinkles), wrap Grandma's present with Dad (way too much
 tape; "rustic"), and help Jamie find the one dead bulb so the whole tree lights up. At six,
