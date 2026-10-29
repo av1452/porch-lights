@@ -18,13 +18,14 @@ const HALL_AT := Vector3(40.0, 0.0, 0.0)
 const DREAM_AT := Vector3(80.0, 0.0, 0.0)
 const NEXT_CHAPTER := "res://scenes/chapter_5_christmas_eve.tscn"
 
-## What each kid says when you hand them a cupcake.
+## What each kid says when you hand them a cupcake. Written as [speaker, line]
+## pairs so tools/generate_voices.py finds and records them.
 const CUPCAKE_THANKS := {
-	"Maya": "Thank you! I'm saving the sprinkles for last.",
-	"Tyler B.": "My mom's cupcakes! Can I have two? ...Fine. One.",
-	"Marcus": "Is the green frosting mint? ...Doesn't matter. Thanks.",
-	"Emily": "Can I have the one with the most sprinkles? That one. Thank you!",
-	"Josh": "Is it three o'clock yet? ...Oh. Cupcake! Thanks!",
+	"Maya": ["Maya", "Thank you! I'm saving the sprinkles for last."],
+	"Tyler B.": ["Tyler B.", "My mom's cupcakes! Can I have two? ...Fine. One."],
+	"Marcus": ["Marcus", "Is the green frosting mint? ...Doesn't matter. Thanks."],
+	"Emily": ["Emily", "Can I have the one with the most sprinkles? That one. Thank you!"],
+	"Josh": ["Josh", "Is it three o'clock yet? ...Oh. Cupcake! Thanks!"],
 }
 
 const TEACHER := { "legs": Color(0.25, 0.22, 0.3), "shirt": Color(0.75, 0.15, 0.18), "hair": Color(0.45, 0.3, 0.2), "long_hair": true }
@@ -232,7 +233,7 @@ func _on_kid_cupcake(_by: Node, kid_name: String) -> void:
 	kid.remove_meta("mute_chatter")
 	kid.prompt = "Talk to " + kid_name
 	Audio.play_sfx("candy_rustle", kid, -10.0)
-	await say([[kid_name, CUPCAKE_THANKS[kid_name]]])
+	await say([CUPCAKE_THANKS[kid_name]])
 	if _unserved.is_empty():
 		await _party()
 	else:
