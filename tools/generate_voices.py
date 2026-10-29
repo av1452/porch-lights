@@ -34,6 +34,10 @@ SPEAKERS = {
     "grandma": {"voice": "af_bella", "speed": 0.85},
     "sibling": {"voice": "am_echo", "speed": 1.1},
     "tv": {"voice": "am_fenrir", "speed": 1.1},
+    # Chapter 5 trick-or-treaters, pitched up in-game like Leo.
+    "kids": {"voice": "af_sky", "speed": 1.15},
+    "sammy": {"voice": "af_nicole", "speed": 0.95},
+    "brother": {"voice": "am_liam", "speed": 1.1},
 }
 
 

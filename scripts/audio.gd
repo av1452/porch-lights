@@ -16,6 +16,9 @@ const SPEAKERS := {
 	"dad": { "name": "Dad", "color": Color(0.75, 0.85, 1), "pitch": 1.0, "bus": "Voice" },
 	"sibling": { "name": "Through the door", "color": Color(0.85, 1, 0.75), "pitch": 1.0, "bus": "Muffled" },
 	"grandma": { "name": "Grandma", "color": Color(1, 0.8, 0.55), "pitch": 1.0, "bus": "Voice" },
+	"kids": { "name": "Kids", "color": Color(1, 0.9, 0.55), "pitch": 1.15, "bus": "Voice" },
+	"sammy": { "name": "Little ghost", "color": Color(0.85, 0.9, 1), "pitch": 1.2, "bus": "Voice" },
+	"brother": { "name": "Big kid", "color": Color(0.8, 1, 0.8), "pitch": 1.08, "bus": "Voice" },
 	"tv": { "name": "TV", "color": Color(0.7, 0.85, 1), "pitch": 1.0, "bus": "TV" },
 }
 

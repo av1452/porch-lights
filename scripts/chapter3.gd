@@ -9,7 +9,7 @@ extends Node
 @onready var hud: GameHud = $"../HUD"
 @onready var dog: Dog = $"../Biscuit"
 @onready var street: Street = $"../Street"
-@onready var moon: DirectionalLight3D = $"../Lights/Moon"
+@onready var chapter4: Node = $"../Chapter4"
 @onready var hall_light: OmniLight3D = $"../Lights/HallLight"
 @onready var door_hinge: Node3D = $"../Interactables/FrontDoorHinge"
 @onready var front_door: Interactable = $"../Interactables/FrontDoorHinge/FrontDoor"
@@ -52,7 +52,8 @@ var _bounds: StaticBody3D
 var _candy_bars: Node3D
 var _knocked := false
 var _bars_taken := false
-var _ended := false
+var _morning_props: Node3D
+var _gma_root: Node3D
 
 
 func _ready() -> void:
@@ -125,17 +126,8 @@ func _reline(path: String, first: String, repeats: PackedStringArray) -> void:
 
 
 func _make_pickup(prompt: String, pos: Vector3, size: Vector3, callback: Callable) -> Interactable:
-	var it := Interactable.new()
-	it.prompt = prompt
-	it.speak = false
+	var it := Build.interactable(self, pos, size, prompt)
 	it.one_shot = true
-	var shape := CollisionShape3D.new()
-	var box := BoxShape3D.new()
-	box.size = size
-	shape.shape = box
-	it.add_child(shape)
-	add_child(it)
-	it.global_position = pos
 	it.used.connect(func(_by): callback.call(it))
 	return it
 
@@ -329,27 +321,6 @@ func _wall(pos: Vector3, size: Vector3) -> void:
 
 # ---------------------------------------------------------------- Grandma's
 
-func _mat(c: Color, emission := 0.0) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_color = c
-	m.roughness = 0.9
-	if emission > 0.0:
-		m.emission_enabled = true
-		m.emission = c
-		m.emission_energy_multiplier = emission
-	return m
-
-
-func _csg(size: Vector3, pos: Vector3, mat: Material, parent: Node, rot := Vector3.ZERO) -> CSGBox3D:
-	var b := CSGBox3D.new()
-	b.size = size
-	b.position = pos
-	b.rotation_degrees = rot
-	b.material = mat
-	parent.add_child(b)
-	return b
-
-
 ## Her porch sits on the far house (street.far_light_pos, facing the street).
 func _build_grandma_porch() -> void:
 	var front_x := street.far_light_pos.x
@@ -357,43 +328,43 @@ func _build_grandma_porch() -> void:
 	var root := Node3D.new()
 	root.position = Vector3(front_x, G, z)
 	add_child(root)
+	_gma_root = root
 
-	var boards := _mat(Color(0.32, 0.24, 0.17))
-	var white := _mat(Color(0.85, 0.82, 0.75))
-	_csg(Vector3(1.9, 0.08, 5.0), Vector3(0.95, 0.04, 0.0), boards, root)
-	_csg(Vector3(0.6, 0.05, 0.9), Vector3(0.4, 0.09, 0.0), _mat(Color(0.35, 0.18, 0.1)), root) # mat
+	var boards := Build.mat(Color(0.32, 0.24, 0.17))
+	var white := Build.mat(Color(0.85, 0.82, 0.75))
+	Build.box(root, Vector3(1.9, 0.08, 5.0), Vector3(0.95, 0.04, 0.0), boards)
+	Build.box(root, Vector3(0.6, 0.05, 0.9), Vector3(0.4, 0.09, 0.0), Build.mat(Color(0.35, 0.18, 0.1))) # mat
 	for pz in [-2.4, 2.4]:
-		_csg(Vector3(0.1, 2.3, 0.1), Vector3(1.85, 1.15, pz), white, root)
-	_csg(Vector3(2.0, 0.1, 5.1), Vector3(0.95, 2.35, 0.0), _mat(Color(0.15, 0.13, 0.12)), root, Vector3(0, 0, -8))
+		Build.box(root, Vector3(0.1, 2.3, 0.1), Vector3(1.85, 1.15, pz), white)
+	Build.box(root, Vector3(2.0, 0.1, 5.1), Vector3(0.95, 2.35, 0.0), Build.mat(Color(0.15, 0.13, 0.12)), false, Vector3(0, 0, -8))
 
 	# The rocking chair.
 	var chair := _make_static(root, Vector3(0.7, 0.0, -1.6), Vector3(0.55, 1.0, 0.55), "Look at rocking chair", "ch3_chair")
-	var wood := _mat(Color(0.4, 0.26, 0.15))
-	_csg(Vector3(0.5, 0.06, 0.5), Vector3(0, 0.45, 0), wood, chair)
-	_csg(Vector3(0.06, 0.6, 0.5), Vector3(-0.22, 0.78, 0), wood, chair, Vector3(0, 0, 10))
+	var wood := Build.mat(Color(0.4, 0.26, 0.15))
+	Build.box(chair, Vector3(0.5, 0.06, 0.5), Vector3(0, 0.45, 0), wood)
+	Build.box(chair, Vector3(0.06, 0.6, 0.5), Vector3(-0.22, 0.78, 0), wood, false, Vector3(0, 0, 10))
 	for sz in [-0.22, 0.22]:
-		_csg(Vector3(0.7, 0.05, 0.04), Vector3(0, 0.08, sz), wood, chair)
-		_csg(Vector3(0.04, 0.4, 0.04), Vector3(0.2, 0.26, sz), wood, chair)
-		_csg(Vector3(0.04, 0.4, 0.04), Vector3(-0.2, 0.26, sz), wood, chair)
-	var blanket := _csg(Vector3(0.45, 0.04, 0.46), Vector3(0.02, 0.5, 0), _mat(Color(0.55, 0.16, 0.12)), chair)
+		Build.box(chair, Vector3(0.7, 0.05, 0.04), Vector3(0, 0.08, sz), wood)
+		Build.box(chair, Vector3(0.04, 0.4, 0.04), Vector3(0.2, 0.26, sz), wood)
+		Build.box(chair, Vector3(0.04, 0.4, 0.04), Vector3(-0.2, 0.26, sz), wood)
+	var blanket := Build.box(chair, Vector3(0.45, 0.04, 0.46), Vector3(0.02, 0.5, 0), Build.mat(Color(0.55, 0.16, 0.12)))
 	blanket.rotation_degrees.z = -6.0
 
 	# Table with the candy bowl. Full-size bars, orange wrappers.
 	_gma_bowl = _make_static(root, Vector3(0.6, 0.0, 1.5), Vector3(0.5, 0.75, 0.5), "Look in the bowl", "ch3_bowl")
 	_gma_bowl.used.connect(_on_bowl_used)
-	_csg(Vector3(0.45, 0.5, 0.45), Vector3(0, 0.25, 0), white, _gma_bowl)
+	Build.box(_gma_bowl, Vector3(0.45, 0.5, 0.45), Vector3(0, 0.25, 0), white)
 	var bowl := CSGCylinder3D.new()
 	bowl.radius = 0.18
 	bowl.height = 0.12
 	bowl.position.y = 0.56
-	bowl.material = _mat(Color(0.2, 0.3, 0.55))
+	bowl.material = Build.mat(Color(0.2, 0.3, 0.55))
 	_gma_bowl.add_child(bowl)
 	_candy_bars = Node3D.new()
 	_candy_bars.position.y = 0.63
 	_gma_bowl.add_child(_candy_bars)
 	for i in 5:
-		var bar := _csg(Vector3(0.18, 0.025, 0.06), Vector3(randf_range(-0.06, 0.06), i * 0.012, randf_range(-0.08, 0.08)),
-			_mat(Color(0.95, 0.45, 0.08)), _candy_bars, Vector3(0, randf_range(0, 180), 0))
+		var bar := Build.candy_bar(_candy_bars, Vector3(randf_range(-0.06, 0.06), i * 0.012, randf_range(-0.08, 0.08)), randf_range(0, 180))
 		bar.name = "Bar%d" % i
 
 	# Her door. Inside is nothing but warm light.
@@ -432,12 +403,12 @@ func _build_grandma_porch() -> void:
 	shape.shape = box
 	_gma_door.add_child(shape)
 	_gma_door_hinge.add_child(_gma_door)
-	_csg(Vector3(0.06, 2.0, 0.9), Vector3.ZERO, _mat(Color(0.2, 0.32, 0.25)), _gma_door)
-	_csg(Vector3(0.02, 0.9, 0.6), Vector3(0.03, 0.3, 0), _mat(Color(0.95, 0.7, 0.4), 1.5), _gma_door) # lit window
+	Build.box(_gma_door, Vector3(0.06, 2.0, 0.9), Vector3.ZERO, Build.mat(Color(0.2, 0.32, 0.25)))
+	Build.box(_gma_door, Vector3(0.02, 0.9, 0.6), Vector3(0.03, 0.3, 0), Build.mat(Color(0.95, 0.7, 0.4), 1.5)) # lit window
 	var knob := CSGSphere3D.new()
 	knob.radius = 0.035
 	knob.position = Vector3(0.06, -0.05, 0.36)
-	knob.material = _mat(Color(0.8, 0.65, 0.3))
+	knob.material = Build.mat(Color(0.8, 0.65, 0.3))
 	_gma_door.add_child(knob)
 	_gma_door.used.connect(_on_gma_door_used)
 
@@ -447,18 +418,7 @@ func _build_grandma_porch() -> void:
 
 
 func _make_static(parent: Node3D, pos: Vector3, size: Vector3, prompt: String, line: String) -> Interactable:
-	var it := Interactable.new()
-	it.prompt = prompt
-	it.line_id = line
-	it.position = pos
-	var shape := CollisionShape3D.new()
-	var box := BoxShape3D.new()
-	box.size = size
-	shape.shape = box
-	shape.position.y = size.y / 2.0
-	it.add_child(shape)
-	parent.add_child(it)
-	return it
+	return Build.interactable(parent, pos, size, prompt, line, Vector3(0, size.y / 2.0, 0))
 
 
 func _on_gma_door_used(_by: Node) -> void:
@@ -560,25 +520,14 @@ func _morning() -> void:
 	street.set_level(street.far_light, 0.0, 0.0)
 	main.tv_screen.channel = "off"
 	main.fade_crickets(-60.0, 0.1)
-	var env: Environment = main.env
-	env.fog_density = _base_fog * 0.4
-	env.ambient_light_color = Color(0.9, 0.85, 0.75)
-	env.ambient_light_energy = 0.9
-	var sky := env.sky.sky_material as ProceduralSkyMaterial
-	if sky:
-		sky.sky_top_color = Color(0.35, 0.5, 0.75)
-		sky.sky_horizon_color = Color(0.85, 0.78, 0.65)
-	moon.light_color = Color(1, 0.88, 0.7)
-	moon.light_energy = 1.4
-	# Low sun through the front window.
-	moon.global_transform = Transform3D.IDENTITY.looking_at(Vector3(1.0, -0.35, 0.35), Vector3.UP)
-	main.lamp.light_energy = 0.0
+	main.set_daylight(true)
 	hall_light.light_energy = 0.35
 
 	# Two full-size bars on the coffee table.
+	_morning_props = Node3D.new()
+	add_child(_morning_props)
 	for i in 2:
-		_csg(Vector3(0.18, 0.025, 0.06), Vector3(0.1 - i * 0.05, 0.415 + i * 0.026, 0.45 + i * 0.04),
-			_mat(Color(0.95, 0.45, 0.08)), self, Vector3(0, 20 - i * 35, 0))
+		Build.candy_bar(_morning_props, Vector3(0.1 - i * 0.05, 0.415 + i * 0.026, 0.45 + i * 0.04), 20 - i * 35)
 	main.blanket.visible = true
 	shoes_prop.visible = false
 	dog.go_to([Vector3(2.05, 0.05, 1.0)], false)
@@ -591,17 +540,12 @@ func _morning() -> void:
 	await get_tree().create_timer(1.0).timeout
 	await hud.fade(0.0, 3.0, Color(1.0, 0.94, 0.82)).finished
 	await get_tree().create_timer(1.5).timeout
-	await Audio.say("mom_morning_1", $"../Lights/HallLight")
+	await Audio.say("mom_morning_1")
 	await get_tree().create_timer(1.5).timeout
 	Audio.play_music("ch1_living_room", 3.0)
 	await hud.fade(1.0, 3.0).finished
-	await hud.show_title("End of Chapter 3", "The Last Light", 4.0).finished
-	hud.show_memory("Press E to play again.", 600.0)
-	_ended = true
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if _ended and event.is_action_pressed("interact"):
-		Audio.stop_music(0.5)
-		Audio.stop_voice()
-		get_tree().reload_current_scene()
+	await get_tree().create_timer(1.0).timeout
+	active = false
+	_morning_props.queue_free()
+	_gma_root.queue_free()
+	chapter4.call("start", false)

@@ -73,6 +73,14 @@ func go_to(points: Array[Vector3], run := false, face: Vector3 = Vector3.INF) ->
 	pose = Pose.STAND
 
 
+## Back to free mode: follow Leo around on his own.
+func release() -> void:
+	_path.clear()
+	_face_point = Vector3.INF
+	free_roam = true
+	pose = Pose.STAND
+
+
 func set_pose(p: Pose) -> void:
 	pose = p
 

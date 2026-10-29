@@ -1,8 +1,8 @@
 extends Node3D
 ## Chapter 1: Halloween night in the living room.
 ## Lie on the couch to fall asleep. In the dream, the hallway keeps going.
-## Waking up hands off to Chapter 2 (scripts/chapter2.gd), then Chapter 3
-## (scripts/chapter3.gd). Debug: run with `-- --chapter=2` or `-- --chapter=3`.
+## Waking up hands off to Chapter 2 (scripts/chapter2.gd), and each chapter
+## to the next through Chapter 5. Debug: run with `-- --chapter=N` to start there.
 
 @onready var player: Player = $Player
 @onready var hud: GameHud = $HUD
@@ -24,11 +24,15 @@ extends Node3D
 @onready var porch_switch: Interactable = $Interactables/PorchSwitch
 @onready var chapter2: Node = $Chapter2
 @onready var chapter3: Node = $Chapter3
+@onready var chapter4: Node = $Chapter4
+@onready var chapter5: Node = $Chapter5
+@onready var moon: DirectionalLight3D = $Lights/Moon
 
 var chapter := 1
 var dreaming := false
 var _busy := false
 var _awake_state := {}
+var _night := {}
 var _flicker_t := 0.0
 var _jingle_done := false
 var _crickets: AudioStreamPlayer3D
@@ -38,6 +42,17 @@ func _ready() -> void:
 	# Chapters change fog, sky and light; work on a copy so a restart starts clean.
 	env = env.duplicate(true)
 	$WorldEnvironment.environment = env
+	var sky := env.sky.sky_material as ProceduralSkyMaterial
+	_night = {
+		"fog_density": env.fog_density,
+		"ambient_light_color": env.ambient_light_color,
+		"ambient_light_energy": env.ambient_light_energy,
+		"sky_top": sky.sky_top_color,
+		"sky_horizon": sky.sky_horizon_color,
+		"moon_transform": moon.global_transform,
+		"moon_color": moon.light_color,
+		"moon_energy": moon.light_energy,
+	}
 	player.target_changed.connect(hud.set_target)
 	couch.used.connect(_on_couch_used)
 	dream_door.used.connect(_on_dream_door_used)
@@ -65,13 +80,11 @@ func _ready() -> void:
 	_crickets.unit_size = 8.0
 	Audio.make_loop("wind", $Porch/Ambience, -14.0)
 
-	match _start_chapter():
-		2:
-			chapter2.call("start", true)
-			return
-		3:
-			chapter3.call("start", true)
-			return
+	var start_at := _start_chapter()
+	if start_at >= 2:
+		var ch: Node = [chapter2, chapter3, chapter4, chapter5][clampi(start_at, 2, 5) - 2]
+		ch.call("start", true)
+		return
 
 	_lock(true)
 	await hud.show_title("PORCH LIGHTS", "Chapter 1 - Halloween Night", 2.5).finished
@@ -134,8 +147,8 @@ func set_porch_light(on: bool) -> void:
 
 
 func _on_tv_used(_by: Node) -> void:
-	if chapter == 3:
-		Audio.say("ch3_tv")
+	if chapter == 3 or chapter == 5:
+		Audio.say("ch3_tv" if chapter == 3 else "ch5_tv")
 	if dreaming or chapter != 1:
 		return
 	if tv.times_used == 1:
@@ -164,7 +177,7 @@ func _on_couch_used(_by: Node) -> void:
 	if dreaming or _busy:
 		return
 	if chapter != 1:
-		Audio.say("couch_ch2" if chapter == 2 else "ch3_couch")
+		Audio.say({2: "couch_ch2", 3: "ch3_couch", 5: "ch5_couch"}.get(chapter, "couch_ch2"))
 		return
 	_busy = true
 	_lock(true)
@@ -245,6 +258,32 @@ func _exit_dream() -> void:
 	lamp.light_energy = _awake_state.lamp_energy
 	tv_glow.light_color = _awake_state.tv_color
 	player.camera.fov = player.base_fov
+
+
+## Daytime (chapter 3's morning, chapter 4) or back to night. The moon light
+## doubles as the sun; `sun_dir` is the direction the light travels.
+func set_daylight(on: bool, sun_dir := Vector3(1.0, -0.35, 0.35)) -> void:
+	var sky := env.sky.sky_material as ProceduralSkyMaterial
+	if on:
+		env.fog_density = _night.fog_density * 0.4
+		env.ambient_light_color = Color(0.9, 0.85, 0.75)
+		env.ambient_light_energy = 0.9
+		sky.sky_top_color = Color(0.35, 0.5, 0.75)
+		sky.sky_horizon_color = Color(0.85, 0.78, 0.65)
+		moon.light_color = Color(1, 0.88, 0.7)
+		moon.light_energy = 1.4
+		moon.global_transform = Transform3D.IDENTITY.looking_at(sun_dir, Vector3.UP)
+		lamp.light_energy = 0.0
+	else:
+		env.fog_density = _night.fog_density
+		env.ambient_light_color = _night.ambient_light_color
+		env.ambient_light_energy = _night.ambient_light_energy
+		sky.sky_top_color = _night.sky_top
+		sky.sky_horizon_color = _night.sky_horizon
+		moon.global_transform = _night.moon_transform
+		moon.light_color = _night.moon_color
+		moon.light_energy = _night.moon_energy
+		lamp.light_energy = _awake_state.lamp_energy
 
 
 ## Crickets outside, faded in/out by chapter 2.

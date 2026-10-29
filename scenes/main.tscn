@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://vksqwmmac5gt"]
+[gd_scene load_steps=75 format=3 uid="uid://vksqwmmac5gt"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://scripts/street.gd" id="7_street"]
 [ext_resource type="Script" path="res://scripts/chapter2.gd" id="8_ch2"]
 [ext_resource type="Script" path="res://scripts/chapter3.gd" id="9_ch3"]
+[ext_resource type="Script" path="res://scripts/chapter4.gd" id="10_ch4"]
+[ext_resource type="Script" path="res://scripts/chapter5.gd" id="11_ch5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
 sky_top_color = Color(0.01, 0.015, 0.045, 1)
@@ -1176,3 +1178,9 @@ script = ExtResource("8_ch2")
 
 [node name="Chapter3" type="Node" parent="."]
 script = ExtResource("9_ch3")
+
+[node name="Chapter4" type="Node" parent="."]
+script = ExtResource("10_ch4")
+
+[node name="Chapter5" type="Node" parent="."]
+script = ExtResource("11_ch5")

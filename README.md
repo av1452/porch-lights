@@ -1,4 +1,4 @@
-# Porch Lights — Chapters 1–3 prototype (Halloween night)
+# Porch Lights (Halloween night) — all five chapters
 
 You play **Leo**, an 8-year-old, on Halloween night.
 Open in **Godot 4.3+** (Import → select `project.godot`), then press F5.
@@ -15,6 +15,10 @@ E or left click: interact · F: flashlight (chapter 3) · Esc: free the mouse (c
   door. Turn the porch light back on, let him out, and watch the street.
 - **Chapter 3 — The Last Light**: later that night. Get your shoes and Dad's flashlight and follow
   Biscuit down the dark street to the one light still on. It's Grandma's. Then it's morning.
+- **Chapter 4 — Grandma's House**: a week later, packing up her real house (`scripts/grandma_house.gd`).
+  Find what she kept for Leo; take home her orange porch-light bulb.
+- **Chapter 5 — Porch Lights**: one year later. Put Grandma's bulb in your own porch light, hand out
+  full-size bars to trick-or-treaters (`scripts/trick_or_treater.gd`), help a lost little ghost. Credits.
 - **Biscuit** (`scripts/dog.gd`): the family dog. Naps, follows Leo, sits, wags, whines, barks.
 - **Voices**: every line is in `data/lines.json` with a matching file in `audio/voice/`.
 - **Music & sound**: `audio/music/` and `audio/sfx/` (footsteps, doors, TV, crickets, dog, clock).
@@ -49,7 +53,9 @@ Subtitle color and TTS pitch per speaker are in `SPEAKERS` in `scripts/audio.gd`
 - `scripts/hud.gd`: crosshair, prompt, subtitles, objective, title cards, fades
 - `scripts/audio.gd`: autoload `Audio` — music, sound effects, voiced lines
 - `scripts/main.gd`: chapter 1 logic (TV, dream in/out); `scripts/chapter2.gd`: chapter 2;
-  `scripts/chapter3.gd`: chapter 3 (street walk, Biscuit's route, Grandma's porch, morning)
+  `scripts/chapter3.gd`: chapter 3 (street walk, Biscuit's route, Grandma's porch, morning);
+  `scripts/chapter4.gd` and `scripts/chapter5.gd`: the last two. Each chapter hands off to the next.
+- `scripts/build.gd`: helpers for building props in code (boxes, materials, lights, interactables)
 - `scenes/main.tscn`: the level
 
-Debug: run with `-- --chapter=2` or `-- --chapter=3` (Project → Project Settings → Run → Main Run Args) to start at that chapter.
+Debug: run with `-- --chapter=N` (2 to 5) (Project → Project Settings → Run → Main Run Args) to start at that chapter.
