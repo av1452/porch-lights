@@ -6,6 +6,9 @@ extends Chapter
 
 enum Step { SORT_CANDY, CANDY_TAX, PORCH_LIGHT, SHOW_JAMIE, TALK_JAMIE, HANG_OUT, BEDTIME, DREAM }
 
+## Where Biscuit waits in the dream: the far end of the hallway, by the door.
+const DREAM_DOG := Vector3(2.0, 0.05, -24.4)
+
 @onready var env: Environment = $WorldEnvironment.environment
 @onready var lights: Node3D = $Lights
 @onready var story: Node3D = $Story
@@ -38,6 +41,7 @@ var _dad_i := 0
 var _flicker_t := 0.0
 var _tv_energy := 0.0
 var _crickets: AudioStreamPlayer3D
+var _dog_greeted := false
 
 
 func _ready() -> void:
@@ -83,6 +87,11 @@ func _process(delta: float) -> void:
 	_flicker_t = randf_range(0.05, 0.22)
 	var tv := lights.get_node("TVGlow") as OmniLight3D
 	var dreaming := step == Step.DREAM
+	if dreaming and not _dog_greeted and dream_hall.is_inside_tree() \
+			and player.global_position.distance_to(dog.global_position) < 6.0:
+		_dog_greeted = true
+		dog.greet()
+		hud.show_memory("Biscuit is waiting at the end of the hallway, tail going, like this is the most normal thing in the world.", 5.0)
 	var on := 0.0 if tv_screen.channel == "off" else 1.0
 	tv.light_energy = _tv_energy * on * (0.6 if dreaming else 1.0) * randf_range(0.7, 1.15)
 	tv.light_color = tv.light_color.lerp(tv_screen.light_color(), 0.5)
@@ -288,7 +297,7 @@ func _on_bed(_by: Node) -> void:
 
 func _enter_dream() -> void:
 	unstash(dream_hall, self)
-	dog.set_active(false)
+	_dog_waits_in_dream()
 	tv_screen.channel = "dream"
 	Audio.set_dreaming(true)
 	Audio.play_music("dream_hall", 3.0)
@@ -309,6 +318,24 @@ func _enter_dream() -> void:
 	env.fog_density = 0.05
 	player.camera.fov = 90.0
 	player.teleport(Vector3(4.3, 0.05, -6.8), 90.0)
+
+
+## Biscuit waits at the far end of the dream hallway, by the warm door.
+func _dog_waits_in_dream() -> void:
+	_dog_greeted = false
+	dog.set_active(true)
+	dog.global_position = DREAM_DOG
+	dog.go_to([DREAM_DOG], false, DREAM_DOG + Vector3(0, 0, 4.0))
+	dog.arrived.connect(func() -> void: dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
+	# A little warm light on her, so she reads as Biscuit, not a silhouette.
+	if not dream_hall.has_node("BiscuitGlow"):
+		var glow := OmniLight3D.new()
+		glow.name = "BiscuitGlow"
+		glow.light_color = Color(1.0, 0.78, 0.55)
+		glow.light_energy = 0.7
+		glow.omni_range = 2.2
+		glow.position = DREAM_DOG + Vector3(0, 0.7, 1.2)
+		dream_hall.add_child(glow)
 
 
 func _on_dream_door(_by: Node) -> void:

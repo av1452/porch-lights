@@ -5,6 +5,7 @@ class_name Look
 ## - flat-color materials get subtle surface grain and bumpiness (plaster,
 ##   fabric, wood) from two shared noise textures
 ## - block people get rounded bodies, real legs, hands, shoes and faces
+## - shadow-casting lights get soft, lamp-sized shadows instead of hard edges
 ## Safe to run more than once: anything already upgraded is skipped.
 
 static var _grain: NoiseTexture2D
@@ -31,12 +32,29 @@ static func _walk(n: Node) -> void:
 		var t := n as CSGTorus3D
 		t.sides = maxi(t.sides, 20)
 		t.ring_sides = maxi(t.ring_sides, 8)
+	if n is Light3D:
+		_soften(n as Light3D)
 	if n is CSGShape3D:
 		_material((n as CSGShape3D).get("material"))
 	elif n is MeshInstance3D:
 		_material((n as MeshInstance3D).material_override)
 	for c in n.get_children():
 		_walk(c)
+
+
+## Real lamps are lampshades and bulbs, not points: give their shadows a
+## soft edge that widens with distance (Forward+), plus a little blur.
+static func _soften(l: Light3D) -> void:
+	if not l.shadow_enabled or l.has_meta("look_soft"):
+		return
+	l.set_meta("look_soft", true)
+	if l is DirectionalLight3D:
+		l.light_angular_distance = maxf(l.light_angular_distance, 1.5)
+		l.shadow_blur = maxf(l.shadow_blur, 1.5)
+	else:
+		l.light_size = maxf(l.light_size, 0.25)
+		l.shadow_blur = maxf(l.shadow_blur, 2.0)
+		l.shadow_bias = maxf(l.shadow_bias, 0.04)
 
 
 static func _make_textures() -> void:

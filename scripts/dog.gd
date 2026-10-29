@@ -180,6 +180,11 @@ func _free_roam(delta: float) -> void:
 				pose = Pose.STAND
 
 
+## Tail going, tags jingling, looking at Leo (like being petted, from afar).
+func greet() -> void:
+	_on_petted(null)
+
+
 func _on_petted(_by: Node) -> void:
 	_petted_t = 2.5
 	_wag = 3.0
