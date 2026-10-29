@@ -327,7 +327,7 @@ func _dog_waits_in_dream() -> void:
 	dog.global_position = DREAM_DOG
 	dog.go_to([DREAM_DOG], false, DREAM_DOG + Vector3(0, 0, 4.0))
 	dog.arrived.connect(func() -> void: dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
-	# A little warm light on her, so she reads as Biscuit, not a silhouette.
+	# A little warm light on him, so he reads as Biscuit, not a silhouette.
 	if not dream_hall.has_node("BiscuitGlow"):
 		var glow := OmniLight3D.new()
 		glow.name = "BiscuitGlow"
