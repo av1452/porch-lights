@@ -6,6 +6,10 @@ extends Chapter
 
 enum Step { SORT_CANDY, CANDY_TAX, PORCH_LIGHT, SHOW_JAMIE, TALK_JAMIE, HANG_OUT, BEDTIME, DREAM }
 
+## Screen names in Jamie's instant messages.
+const JAMIE_SN := "staticjamie88"
+const FRIEND_SN := "kaybear0315"
+
 ## Where Biscuit waits in the dream: the far end of the hallway, by the door.
 const DREAM_DOG := Vector3(2.0, 0.05, -24.4)
 
@@ -254,6 +258,9 @@ func _on_jamie_pc(_by: Node) -> void:
 	await say([
 		["", "Jamie's typing to three people at once. Every time the door-creak sound plays, they type faster."],
 		["", "Their away message is a song lyric you don't understand yet."],
+	])
+	await _read_jamie_im()
+	await say([
 		["Jamie", "Okay, you're reading over my shoulder."],
 	])
 	await wait(1.0)
@@ -265,6 +272,28 @@ func _on_jamie_pc(_by: Node) -> void:
 	])
 	busy = false
 	objective("Get ready for bed")
+
+
+## One of Jamie's chats, read over their shoulder. Jamie is talking about
+## Static Parade, then about Leo.
+func _read_jamie_im() -> void:
+	lock(true)
+	var im := IMWindow.new()
+	add_child(im)
+	await im.play(JAMIE_SN, FRIEND_SN, [
+		[FRIEND_SN, "did u see the static parade video on tv tonite"],
+		[JAMIE_SN, "YES. taped it. watched it 4 times"],
+		[FRIEND_SN, "they r coming to the civic center in march!!!"],
+		[JAMIE_SN, "my mom will never let me go"],
+		[JAMIE_SN, "brb my brother is here"],
+		[FRIEND_SN, "lol what does he want"],
+		[JAMIE_SN, "to show me his candy. all of it. one piece at a time"],
+		[FRIEND_SN, "aww"],
+		[FRIEND_SN, "is he annoying"],
+		[JAMIE_SN, "hes ok i guess"],
+	])
+	im.queue_free()
+	lock(false)
 
 
 # --- Step 6: sleep and dream --------------------------------------------

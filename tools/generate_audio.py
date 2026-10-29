@@ -1,10 +1,13 @@
 """Synthesizes the few sounds that are meant to sound electronic: the TV
-cartoon and toy-ad jingles, the broadcast sign-off tone and the bulb buzz.
+cartoon and toy-ad jingles, the broadcast sign-off tone, the bulb buzz and
+the instant-message chime.
 Everything else is real recordings from tools/fetch_audio.py (which also
 borrows reverb() from here).
 
-Usage:  python tools/generate_audio.py
+Usage:  python tools/generate_audio.py            # all of them
+        python tools/generate_audio.py im_message  # just the named ones
 """
+import sys
 import math
 import os
 import random
@@ -168,13 +171,39 @@ def tv_tune(name, notes, step, wave_kind, seconds):
     sfx(name, out, 0.6)
 
 
-def main():
-    tv_tune("tv_show", [69, 72, 76, 75, 74, 72, 69, 68, 69, 76, 77, 76], 0.33, "theremin", 7.92)
-    tv_tune("tv_ad", [72, 76, 79, 84, 79, 76, 72, 76, 77, 81, 84, 81], 0.15, "square", 5.4)
-    sfx("tv_signoff", [math.sin(TAU * 1000 * k / SR) * 0.3 for k in range(int(4.0 * SR))], 0.3)
+def im_message():
+    """A soft two-note chime for an incoming instant message (original, not any real app's)."""
+    out = buf(0.5)
+    for at, note in ((0.0, 88), (0.09, 93)):
+        n = int(0.35 * SR)
+        f = midi(note)
+        tone = [(math.sin(TAU * f * k / SR) + 0.25 * math.sin(TAU * 2 * f * k / SR)) * math.exp(-k / SR * 11)
+                for k in range(n)]
+        mix(out, [a * e for a, e in zip(tone, env_ar(n, 0.003, 0.05))], at, 0.5)
+    sfx("im_message", out, 0.5)
+
+
+def bulb_flicker():
     random.seed(18)
     buzz = [(math.sin(TAU * 120 * k / SR) + random.uniform(-0.6, 0.6) * (random.random() < 0.3)) * 0.6 for k in range(int(0.5 * SR))]
     sfx("bulb_flicker", buzz)
+
+
+SOUNDS = {
+    "tv_show": lambda: tv_tune("tv_show", [69, 72, 76, 75, 74, 72, 69, 68, 69, 76, 77, 76], 0.33, "theremin", 7.92),
+    "tv_ad": lambda: tv_tune("tv_ad", [72, 76, 79, 84, 79, 76, 72, 76, 77, 81, 84, 81], 0.15, "square", 5.4),
+    "tv_signoff": lambda: sfx("tv_signoff", [math.sin(TAU * 1000 * k / SR) * 0.3 for k in range(int(4.0 * SR))], 0.3),
+    "bulb_flicker": bulb_flicker,
+    "im_message": im_message,
+}
+
+
+def main():
+    names = sys.argv[1:] or list(SOUNDS)
+    for name in names:
+        if name not in SOUNDS:
+            sys.exit(f"unknown sound '{name}'. Known: {', '.join(SOUNDS)}")
+        SOUNDS[name]()
 
 
 if __name__ == "__main__":
