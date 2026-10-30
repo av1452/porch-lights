@@ -21,8 +21,17 @@ The title screen has Continue, New Game, Chapters (every chapter you've reached)
 Photo Album and Settings (volumes, mouse sensitivity, subtitles, fullscreen). Progress,
 settings and photos save automatically.
 
-WASD / arrows: move · Mouse: look · Shift: run · C or Ctrl: crouch
-E or left click: interact · Esc: pause menu
+| | Keyboard and mouse | Controller |
+|---|---|---|
+| Move | WASD / arrows | Left stick |
+| Look | Mouse | Right stick |
+| Interact | E / left click | A (or X) |
+| Run | Shift | Click left stick (or LB) |
+| Crouch | C / Ctrl | B (or click right stick) |
+| Pause | Esc | Start (B closes the menu) |
+
+Menus work with the D-pad or left stick, A to choose and B to go back. Look sensitivity
+in Settings applies to both the mouse and the right stick. All of it lives in `scripts/controls.gd`.
 
 **Photo album:** whenever somebody pulls out a disposable camera, the picture really
 gets taken and saved as a "developed print" with the orange date stamp in the corner.
@@ -160,4 +169,5 @@ godot --headless -s res://tests/playtest_chapter_5.gd      # Christmas Eve
 godot --headless -s res://tests/playtest_chapter_6.gd      # Christmas Morning
 godot --headless -s res://tests/playtest_winter_break.gd
 godot --headless -s res://tests/playtest_chapter_7.gd      # New Year's Eve
+godot --headless -s res://tests/playtest_controller.gd     # sticks, buttons, pause menu
 ```

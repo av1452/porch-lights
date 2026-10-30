@@ -37,6 +37,7 @@ var _testing := DisplayServer.get_name() == "headless"
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	Controls.setup()
 	load_game()
 	apply_settings()
 
@@ -163,13 +164,16 @@ func clear_photos() -> void:
 
 # ---------------------------------------------------------------- pause
 
+## Esc or Start pauses; Esc, Start or B closes the pause menu again.
 func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed("ui_cancel"):
+	var paused_open := _pause != null and _pause.visible
+	var pause := event.is_action_pressed("pause")
+	if not (pause or (paused_open and event.is_action_pressed("ui_cancel"))):
 		return
 	var scene := get_tree().current_scene
 	if scene == null or not scene is Chapter:
 		return
-	if _pause and _pause.visible:
+	if paused_open:
 		resume()
 	else:
 		_open_pause()

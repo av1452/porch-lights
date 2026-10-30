@@ -13,6 +13,8 @@ signal target_changed(target: Interactable)
 
 @export_group("Look")
 @export var mouse_sensitivity := 0.0022
+## Right stick, full tilt, in radians per second (times the sensitivity setting).
+@export var stick_look_speed := 2.6
 @export var base_fov := 75.0
 
 @export_group("Body")
@@ -63,13 +65,27 @@ func _unhandled_input(event: InputEvent) -> void:
 		rotate_y(-motion.relative.x * sens)
 		head.rotate_x(-motion.relative.y * sens)
 		head.rotation.x = clampf(head.rotation.x, deg_to_rad(-80), deg_to_rad(80))
-	elif event.is_action_pressed("ui_cancel"):
+	elif event.is_action_pressed("pause") and not Controls.is_pad(event):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and event.pressed and not captured:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("interact") and not input_locked and _target:
 		_target.interact(self)
+
+
+func _process(delta: float) -> void:
+	# Right stick look, eased so small tilts are precise and full tilt turns fast.
+	if input_locked or get_tree().paused:
+		return
+	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down")
+	if look == Vector2.ZERO:
+		return
+	look *= look.length()
+	var speed: float = stick_look_speed * Game.settings.sensitivity * delta
+	rotate_y(-look.x * speed)
+	head.rotate_x(-look.y * speed * 0.8)
+	head.rotation.x = clampf(head.rotation.x, deg_to_rad(-80), deg_to_rad(80))
 
 
 func _physics_process(delta: float) -> void:
@@ -185,23 +201,4 @@ func stand(pos: Vector3, yaw_degrees: float) -> void:
 
 
 func _setup_inputs() -> void:
-	var map := {
-		"move_forward": [KEY_W, KEY_UP],
-		"move_back": [KEY_S, KEY_DOWN],
-		"move_left": [KEY_A, KEY_LEFT],
-		"move_right": [KEY_D, KEY_RIGHT],
-		"sprint": [KEY_SHIFT],
-		"crouch": [KEY_C, KEY_CTRL],
-		"interact": [KEY_E],
-	}
-	for action: String in map:
-		if InputMap.has_action(action):
-			continue
-		InputMap.add_action(action)
-		for key: Key in map[action]:
-			var ev := InputEventKey.new()
-			ev.physical_keycode = key
-			InputMap.action_add_event(action, ev)
-	var click := InputEventMouseButton.new()
-	click.button_index = MOUSE_BUTTON_LEFT
-	InputMap.action_add_event("interact", click)
+	Controls.setup()

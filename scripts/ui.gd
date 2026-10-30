@@ -64,8 +64,9 @@ static func settings_panel(on_back: Callable) -> Control:
 	box.add_theme_constant_override("separation", 6)
 	p.add_child(box)
 	box.add_child(label("Settings", 16, GOLD))
+	var first: Control = null
 	for row in [["Master volume", "master"], ["Music", "music"], ["Voices", "voice"], ["Sound effects", "sfx"],
-			["Mouse sensitivity", "sensitivity"]]:
+			["Look sensitivity", "sensitivity"]]:
 		var h := HBoxContainer.new()
 		var name := label(row[0], 11)
 		name.custom_minimum_size.x = 120
@@ -83,6 +84,8 @@ static func settings_panel(on_back: Callable) -> Control:
 			Game.apply_settings())
 		h.add_child(s)
 		box.add_child(h)
+		if first == null:
+			first = s
 	for row in [["Subtitles", "subtitles"], ["Fullscreen", "fullscreen"]]:
 		var c := CheckBox.new()
 		c.text = row[0]
@@ -97,7 +100,13 @@ static func settings_panel(on_back: Callable) -> Control:
 	box.add_child(button("Back", func() -> void:
 		Game.save_game()
 		on_back.call()))
+	_focus_when_shown(p, first)
 	return p
+
+
+## Controllers need something selected the moment a screen opens.
+static func _focus_when_shown(screen: Control, target: Control) -> void:
+	screen.tree_entered.connect(func() -> void: target.grab_focus.call_deferred(), CONNECT_ONE_SHOT)
 
 
 # ---------------------------------------------------------------- album
@@ -172,9 +181,15 @@ static func album(on_back: Callable, heading := "Photo Album") -> Control:
 		grid.columns = 3
 		grid.add_theme_constant_override("h_separation", 18)
 		grid.add_theme_constant_override("v_separation", 14)
+		scroll.follow_focus = true
 		for photo in Game.photos:
-			grid.add_child(print_card(photo))
+			var card := print_card(photo)
+			# Focusable, so a controller can scroll through the prints.
+			card.focus_mode = Control.FOCUS_ALL
+			grid.add_child(card)
 		scroll.add_child(grid)
 		box.add_child(scroll)
-	box.add_child(button("Back", on_back))
+	var back := button("Back", on_back)
+	box.add_child(back)
+	_focus_when_shown(p, back)
 	return p
