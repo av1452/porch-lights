@@ -115,6 +115,7 @@ func _ready() -> void:
 	teacher.used.connect(_on_teacher)
 
 	Audio.make_loop("classroom", self, -20.0, "SFX", false)
+	Audio.play_music("class_party", 4.0, -16.0)
 	await open_chapter("December 19", "The Last Day Before Winter Break")
 	hud.show_memory("Last day of school before winter break. Nobody's doing any work. Mrs. Patterson isn't even pretending.", 5.5)
 	await wait(3.0)
@@ -408,7 +409,7 @@ func _enter_dream() -> void:
 	add_child(dream_hall)
 	dream_hall.far_door.used.connect(_on_far_door)
 	Audio.set_dreaming(true)
-	Audio.play_music("dream_hall", 3.0)
+	Audio.play_music("snow_dream", 3.0)
 	env.ambient_light_color = Color(0.3, 0.25, 0.5)
 	env.ambient_light_energy = 0.45
 	env.background_color = Color(0.03, 0.02, 0.07)

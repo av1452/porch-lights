@@ -139,6 +139,10 @@ rounded ones with hands, shoes and faces. Geometry is still CSG, ready for real 
   by `python tools/fetch_audio.py` (credits in `audio/CREDITS.md`). The Kenney packs must be
   downloaded by hand; the script tells you where to put them.
 - `python tools/generate_audio.py` makes the few deliberately electronic sounds (TV jingles, sign-off tone, bulb buzz).
+- `python tools/compose_music.py` composes original stand-ins for the story bible's themes that
+  don't have a recording yet: Grandma's house, the drive home, the classroom party, the snow
+  dream, and Jamie's band Static Parade. Drop the real track into `audio/music/` with the same
+  name (and delete the stand-in `.wav`) to replace one.
 
 To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name into
 `audio/voice/`, `audio/music/` or `audio/sfx/`.

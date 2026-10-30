@@ -9,6 +9,9 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
 - `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
 - `audio/music/school_jingle_bells.wav`: "Jingle Bells" (James Lord Pierpont, 1857, public domain) on the same music-box notes
+- `audio/music/grandma_house.wav`, `drive_home.wav`, `class_party.wav`, `snow_dream.wav`,
+  `static_parade.wav`: original stand-in themes composed and synthesized for this game by
+  `tools/compose_music.py` (no samples). Replace any with the real track of the same name.
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl

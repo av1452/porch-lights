@@ -62,6 +62,7 @@ func _ready() -> void:
 
 	player.sit(LEO_SEAT, 0.0)
 	Audio.play_sfx("blinker", null, -14.0)
+	Audio.play_music("drive_home", 4.0, -12.0)
 	await open_chapter("November", "Thanksgiving: The Drive Home")
 	hud.show_memory("Leftovers on your lap. The heater smells like burnt dust. Jamie has their headphones on.", 5.0)
 	await wait(3.0)

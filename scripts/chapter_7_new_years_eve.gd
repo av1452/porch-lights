@@ -267,7 +267,7 @@ func _final_dream() -> void:
 	door.prompt = "Open the door"
 	door.used.connect(_on_dream_door)
 	Audio.set_dreaming(true)
-	Audio.play_music("dream_hall", 3.0)
+	Audio.play_music("snow_dream", 3.0)
 	env.ambient_light_color = Color(0.3, 0.25, 0.5)
 	env.ambient_light_energy = 0.5
 	env.background_color = Color(0.03, 0.02, 0.07)

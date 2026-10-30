@@ -58,6 +58,7 @@ func _ready() -> void:
 	add_chatter(cousins.get_node("Ben"), "Ben", ["I'm four and three-quarters."])
 
 	Audio.make_loop("room_tone", self, -22.0, "SFX", false)
+	Audio.play_music("grandma_house", 5.0, -14.0)
 	await open_chapter("November", "Thanksgiving: At Grandma's")
 	hud.show_memory("The car ride took forever. Grandma's house smells exactly the same as last year.", 5.0)
 	await wait(2.5)
@@ -155,6 +156,7 @@ func _on_seat(_by: Node) -> void:
 func _after_dinner() -> void:
 	busy = true
 	lock(true)
+	Audio.stop_music(2.0)
 	await hud.fade(1.0, 2.0).finished
 	hud.show_line("", "Turkey. Too many rolls. Somebody knocks over the cranberry sauce.")
 	await wait(3.5)
