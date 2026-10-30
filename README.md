@@ -46,7 +46,7 @@ Objectives in the top-left corner always tell you the next step, but you're neve
 ### Getting the game
 1. Go to **<https://aidanbuilds.itch.io/porch-lights>** and download the version for your computer.
 2. Unzip it and run **Porch Lights**.
-   - **macOS:** if it says the app "can't be opened", right-click it and choose **Open**, then **Open** again. You only need to do this the first time.
+   - **macOS** (one universal build for Intel and Apple Silicon): the game isn't notarized by Apple yet, so the first time macOS will say it "can't be opened". Click **Done**, open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to Porch Lights. You only need to do this once. (On older macOS, right-click the app and choose **Open** instead. Installing with the [itch.io app](https://itch.io/app) avoids the warning entirely.)
    - **Windows:** if SmartScreen appears, choose **More info**, then **Run anyway**.
 
 **System requirements:** a computer with graphics that support Vulkan (Windows/Linux) or Metal (Mac), which covers most computers from roughly the last eight years. Keyboard and mouse, or a controller.
@@ -215,6 +215,18 @@ without Godot on your PATH, you can also run:
 - `scripts/audio.gd`: autoload `Audio`: music, sound effects, voices, sound captions.
 
 Rendering is 854×480 (480p, the PS2/DVD era) with MSAA, soft shadows, SSAO/SSIL and volumetric fog.
+
+### Building for itch.io
+```
+sh tools/build.sh             # Mac, Windows and Linux zips in builds/
+sh tools/build.sh Windows     # just one
+```
+Needs Godot 4.3's export templates (**Editor → Manage Export Templates → Download**). The presets
+are in `export_presets.cfg`: Mac is a universal build with an ad-hoc signature (not notarized);
+Windows and Linux are x86_64 with the game data embedded in the executable. `tests/`, `tools/`,
+`docs/` and `screenshots/` are left out of the builds. There's no web build: the game uses
+Godot's Forward+ renderer (soft shadows, fog, SSAO), which doesn't run in browsers. Upload each zip
+to itch.io and mark its platform, or push with [butler](https://itch.io/docs/butler/).
 
 ### Audio tools
 - **Voices:** every character line is voiced with Kokoro, offline and free. Run

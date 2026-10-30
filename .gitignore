@@ -2,7 +2,6 @@
 .godot/
 /android/
 *.translation
-export_presets.cfg
 
 # OS
 .DS_Store
@@ -16,3 +15,6 @@ tools/piper/
 tools/kokoro/
 tools/.audio_cache/
 __pycache__/
+
+# Exported game builds (tools/build.sh)
+builds/
