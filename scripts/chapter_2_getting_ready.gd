@@ -1,8 +1,8 @@
 extends HouseChapter
 ## Thanksgiving, getting ready — November. Thanksgiving morning at home, then
 ## the drive to Grandma's.
-## Wake up → gather your things (coat and shoes, something for the car,
-## Biscuit's leash) while Mom guards the pies, Dad loads the van and Jamie
+## Wake up → get Biscuit's leash (your coat and handheld are there too, if
+## you want them) while Mom guards the pies, Dad loads the van and Jamie
 ## protests the hour → out the front door → the drive: autumn trees, the parade
 ## on the radio, "over the river" → Thanksgiving at Grandma's.
 
@@ -19,7 +19,7 @@ var jamie: Interactable
 var car: CarRide
 var _things := {}
 ## What each thing is called in the checklist, in the order it's listed.
-const THING_NAMES := { "coat": "your coat", "game": "something for the car", "leash": "Biscuit's leash" }
+const THING_NAMES := { "leash": "Biscuit's leash" }
 ## Where Biscuit waits once he's on his leash: by the front door, out of its swing.
 const DOOR_WAIT := Vector3(-1.5, 0.05, 1.25)
 
@@ -62,10 +62,13 @@ func _ready() -> void:
 	box_thing("Pies", Vector3(4.6, 0.8, 0.4), Vector3(0.5, 0.06, 0.32), Color(0.85, 0.75, 0.6), "Pies",
 		"Two pumpkin pies and a pecan, under foil. Mom wrote DO NOT TOUCH on the foil. Mostly on the pecan.",
 		"You can smell the cinnamon through the foil. It's a trap. You walk away.")
-	_things["coat"] = box_thing("Coat", Vector3(-1.4, 1.2, 2.42), Vector3(0.4, 0.55, 0.12), Color(0.2, 0.35, 0.6),
-		"Coat and shoes")
-	_things["game"] = box_thing("Handheld", Vector3(5.2, 0.55, -7.15), Vector3(0.14, 0.04, 0.09), Color(0.45, 0.3, 0.6),
-		"Your handheld game")
+	# Optional: nice to look at, not needed to leave.
+	box_thing("Coat", Vector3(-1.4, 1.2, 2.42), Vector3(0.4, 0.55, 0.12), Color(0.2, 0.35, 0.6), "Coat and shoes",
+		"Your puffy coat, the one that swishes. Shoes on the wrong feet, then the right ones.",
+		"You zip the coat all the way up. Now you can't turn your head. Worth it.")
+	box_thing("Handheld", Vector3(5.2, 0.55, -7.15), Vector3(0.14, 0.04, 0.09), Color(0.45, 0.3, 0.6), "Your handheld game",
+		"Your handheld. Fresh batteries from the junk drawer. Two hours is a long time.",
+		"You check the batteries again. Still fresh. Still two hours.")
 	_things["leash"] = box_thing("Leash", Vector3(3.0, 1.25, 2.44), Vector3(0.12, 0.35, 0.05), Color(0.8, 0.15, 0.15),
 		"Biscuit's leash")
 	for id in _things:
@@ -111,13 +114,8 @@ func _on_thing(_by: Node, id: String) -> void:
 	var it := _things[id] as Interactable
 	it.enabled = false
 	it.visible = false
-	match id:
-		"coat":
-			hud.show_memory("Your puffy coat, the one that swishes. Shoes on the wrong feet, then the right ones.", 4.5)
-		"game":
-			hud.show_memory("Your handheld. Fresh batteries from the junk drawer. Two hours is a long time.", 4.5)
-		"leash":
-			_leash_biscuit()
+	if id == "leash":
+		_leash_biscuit()
 	_things.erase(id)
 	_checklist()
 	if _things.is_empty():
@@ -140,7 +138,7 @@ func _on_front_door(_by: Node) -> void:
 func _checklist() -> void:
 	if step != Step.GATHER or _things.is_empty():
 		return
-	objective("Get ready: " + "  ·  ".join(_things.keys().map(func(k: String) -> String: return THING_NAMES[k])))
+	objective("Get " + "  ·  ".join(_things.keys().map(func(k: String) -> String: return THING_NAMES[k])))
 
 
 func _missing() -> String:

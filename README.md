@@ -131,8 +131,8 @@ gets one. Then Biscuit needs to go out, and from the porch you watch the neighbo
 lights click off one by one.
 
 **Chapter 2: November, Thanksgiving.**
-*Getting Ready:* grab your coat, your handheld and Biscuit's leash while Mom guards the pies,
-Dad warms up the van and Jamie protests the hour. Then the drive: autumn trees, the parade on
+*Getting Ready:* get Biscuit's leash (he comes running) while Mom guards the pies, Dad warms
+up the van and Jamie protests the hour from the couch. Then the drive: autumn trees, the parade on
 the radio, and "over the river..." ("Every. Single. Year.").
 *At Grandma's:* open the canned cranberry sauce (ridges and all), football on the TV cart, and
 the kids' table while Jamie moves up to the big table. After dinner, Mom and Dad quietly notice
