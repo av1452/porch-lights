@@ -18,6 +18,10 @@ var mom: Interactable
 var jamie: Interactable
 var car: CarRide
 var _things := {}
+## What each thing is called in the checklist, in the order it's listed.
+const THING_NAMES := { "coat": "your coat", "game": "something for the car", "leash": "Biscuit's leash" }
+## Where Biscuit waits once he's on his leash: by the front door, out of its swing.
+const DOOR_WAIT := Vector3(-1.5, 0.05, 1.25)
 
 
 func _ready() -> void:
@@ -32,8 +36,9 @@ func _ready() -> void:
 	mom.enabled = true
 	mom.position = Vector3(5.4, 0.0, 1.5)
 	mom.rotation.y = deg_to_rad(150.0)
-	dad.position = Vector3(-0.9, 0.0, 1.7)
-	dad.rotation.y = deg_to_rad(200.0)
+	# On open floor by the kitchen doorway, arms full of folding chairs (not in the couch).
+	dad.position = Vector3(2.0, 0.0, 1.3)
+	dad.rotation.y = deg_to_rad(-120.0)
 	# Slumped on the couch, protesting the hour (not in the hallway, which is one kid wide).
 	jamie = Figure.person(self, "Jamie", Vector3(0.5, 0.0, 2.05), 180.0, 1.62, Figure.JAMIE, true)
 
@@ -76,7 +81,7 @@ func _ready() -> void:
 	await open_chapter("November", "Thanksgiving: Getting Ready")
 	hud.show_memory("Thanksgiving. The whole house smells like the pies Mom baked last night.", 5.0)
 	await wait(3.0)
-	objective("Get ready to go to Grandma's")
+	_checklist()
 
 
 ## A gray late-November morning; the street's porch lights are off.
@@ -112,24 +117,65 @@ func _on_thing(_by: Node, id: String) -> void:
 		"game":
 			hud.show_memory("Your handheld. Fresh batteries from the junk drawer. Two hours is a long time.", 4.5)
 		"leash":
-			hud.show_memory("Biscuit hears the leash jingle from across the house.", 4.0)
-			dog.greet()
-			dog.bark(2)
+			_leash_biscuit()
 	_things.erase(id)
+	_checklist()
 	if _things.is_empty():
 		step = Step.LEAVE
+		objective("Head out to the van")
 		await wait(2.0)
 		await say([["Dad", "Van's warmed up! Let's roll, everybody. Jamie, that means you."]])
-		objective("Head out to the van")
 
 
 func _on_front_door(_by: Node) -> void:
 	if step == Step.GATHER:
-		say([["Dad", "Coat, shoes, and something for the car. Then van."]])
+		hud.show_memory("Not yet. You still need %s." % _missing(), 4.0)
 		return
 	if step != Step.LEAVE or not front_door.enabled:
 		return
 	open_front_door()
+
+
+## The objective lists what you still need, so you always know what's left.
+func _checklist() -> void:
+	if step != Step.GATHER or _things.is_empty():
+		return
+	objective("Get ready: " + "  ·  ".join(_things.keys().map(func(k: String) -> String: return THING_NAMES[k])))
+
+
+func _missing() -> String:
+	var names: Array = _things.keys().map(func(k: String) -> String: return THING_NAMES[k])
+	if names.size() == 1:
+		return names[0]
+	return ", ".join(names.slice(0, names.size() - 1)) + " and " + names[-1]
+
+
+## Biscuit hears the leash, comes running, gets clipped on, and waits by the
+## front door with his leash on.
+func _leash_biscuit() -> void:
+	hud.show_memory("Biscuit hears the leash jingle from across the house. He's ready before you are.", 4.5)
+	dog.greet()
+	dog.bark(2)
+	_put_leash_on(dog)
+	dog.go_to([DOOR_WAIT], true, front_door.global_position)
+	dog.arrived.connect(func() -> void: dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
+
+
+## A red leash, clipped to the collar and trailing on the floor.
+func _put_leash_on(d: Node3D) -> void:
+	var red := Decorations.mat(Color(0.75, 0.12, 0.12))
+	var strap := CSGBox3D.new()
+	strap.size = Vector3(0.025, 0.012, 0.42)
+	strap.position = Vector3(0.0, 0.2, -0.22)
+	strap.rotation_degrees.x = 55.0
+	strap.material = red
+	d.add_child(strap)
+	var trail := CSGBox3D.new()
+	trail.size = Vector3(0.025, 0.012, 0.5)
+	trail.position = Vector3(0.05, 0.01, 0.05)
+	trail.rotation_degrees.y = 20.0
+	trail.material = red
+	d.add_child(trail)
 
 
 func _on_porch() -> void:
