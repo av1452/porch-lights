@@ -34,7 +34,8 @@ func _ready() -> void:
 	mom.rotation.y = deg_to_rad(150.0)
 	dad.position = Vector3(-0.9, 0.0, 1.7)
 	dad.rotation.y = deg_to_rad(200.0)
-	jamie = Figure.person(self, "Jamie", Vector3(2.1, 0.0, -3.3), 0.0, 1.62, Figure.JAMIE)
+	# Slumped on the couch, protesting the hour (not in the hallway, which is one kid wide).
+	jamie = Figure.person(self, "Jamie", Vector3(0.5, 0.0, 2.05), 180.0, 1.62, Figure.JAMIE, true)
 
 	add_chatter(mom, "Mom", [
 		"Do not touch the pies. I counted them. I'll know.",

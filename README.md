@@ -262,5 +262,6 @@ godot --headless -s res://tests/playtest_winter_break.gd
 godot --headless -s res://tests/playtest_chapter_7.gd              # New Year's Eve
 godot --headless -s res://tests/playtest_controller.gd             # sticks, buttons, pause menu
 godot --headless -s res://tests/playtest_settings.gd               # accessibility and settings
+godot --headless -s res://tests/playtest_paths.gd                  # nobody blocks the hallway
 ```
 `tests/screenshots.gd` renders screenshots (needs a window, not `--headless`).

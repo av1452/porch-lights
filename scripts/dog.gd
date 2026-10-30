@@ -6,6 +6,9 @@ extends CharacterBody3D
 
 signal arrived
 
+## Physics layer for "Pet Biscuit": seen by the player's interact ray only.
+const PET_LAYER := 4
+
 enum Pose { STAND, SIT, LIE }
 
 @export var walk_speed := 1.5
@@ -62,6 +65,8 @@ func _ready() -> void:
 	_pet_body = get_node_or_null("PetBody") as Interactable
 	if _pet_body:
 		add_collision_exception_with(_pet_body)
+		# Its own layer: Leo's look-ray finds it, but it never blocks his way.
+		_pet_body.collision_layer = PET_LAYER
 		_pet_body.used.connect(_on_petted)
 
 
@@ -102,7 +107,7 @@ func set_active(on: bool) -> void:
 	process_mode = Node.PROCESS_MODE_INHERIT if on else Node.PROCESS_MODE_DISABLED
 	collision_layer = 2 if on else 0
 	if _pet_body:
-		_pet_body.collision_layer = 1 if on else 0
+		_pet_body.collision_layer = PET_LAYER if on else 0
 
 
 # ---------------------------------------------------------------- behavior

@@ -58,6 +58,7 @@ func _ready() -> void:
 	base_fov = Game.settings.fov
 	camera.fov = base_fov
 	ray.add_exception(self)
+	ray.collision_mask |= Dog.PET_LAYER # so Biscuit can be petted without being a wall
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 

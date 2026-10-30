@@ -34,7 +34,8 @@ func _ready() -> void:
 	mom.position = Vector3(1.6, 0.0, -0.4)
 	mom.rotation.y = deg_to_rad(-60.0)
 	grandma = Figure.person(self, "Grandma", Vector3(0.5, 0.0, 2.05), 180.0, 1.6, Figure.GRANDMA, true)
-	jamie = Figure.person(self, "Jamie", Vector3(3.2, 0.0, -6.4), 90.0, 1.62, Figure.JAMIE)
+	# Inside your room by the door, facing the bed, but beside the way out.
+	jamie = Figure.person(self, "Jamie", Vector3(3.3, 0.0, -5.3), -37.0, 1.62, Figure.JAMIE)
 
 	_stocking = box_thing("Stocking", Vector3(0.7, 1.1, -2.46), Vector3(0.2, 0.36, 0.06), Color(0.75, 0.1, 0.12), "Stocking")
 	_stocking.enabled = false
