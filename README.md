@@ -142,7 +142,9 @@ rounded ones with hands, shoes and faces. Geometry is still CSG, ready for real 
 - `python tools/compose_music.py` composes original stand-ins for the story bible's themes that
   don't have a recording yet: Grandma's house, the drive home, the classroom party, the snow
   dream, and Jamie's band Static Parade. Drop the real track into `audio/music/` with the same
-  name (and delete the stand-in `.wav`) to replace one.
+  name (and delete the stand-in `.wav`) to replace one. It also arranges the public-domain holiday
+  songs (`radio_*`) that play on the kitchen radio (`scripts/radio.gd`; use it to change songs
+  or turn it off), the car radio, and the TV at midnight on New Year's Eve.
 
 To use your own recordings, drop a `.wav`, `.ogg` or `.mp3` with the same name into
 `audio/voice/`, `audio/music/` or `audio/sfx/`.

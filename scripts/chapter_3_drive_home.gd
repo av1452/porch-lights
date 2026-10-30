@@ -248,6 +248,9 @@ func _overhear() -> void:
 		["Mom", "Okay. I'm circling things. Nobody look."],
 		["Dad", "Is it the robot car? It's the robot car."],
 		["Mom", "I said nobody look!"],
+	])
+	Audio.play_music("radio_deck_the_halls", 2.0, -10.0)
+	await say([
 		["", "The radio plays the first Christmas song of the year. Dad turns it up. Mom pretends to be annoyed, then sings anyway."],
 		["Dad", "It's not even December!"],
 		["Mom", "It's after Thanksgiving. It counts."],

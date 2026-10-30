@@ -8,11 +8,24 @@ note lists and synthesized (no samples, no outside music).
     snow_dream      the snowy school dream: soft pad, falling celesta notes
     static_parade   Jamie's band, through one earbud: 2000s pop-punk
 
+And the radio songs: public-domain holiday music (the compositions are
+traditional or 100+ years old), arranged and synthesized here, so there are
+no recording rights to worry about. They play on the kitchen radio, the car
+radio, and the TV at midnight (scripts/radio.gd).
+
+    radio_mountain_king   Grieg, "In the Hall of the Mountain King" (1875)   Halloween
+    radio_toccata         Bach, Toccata in D minor (opening)                 Halloween
+    radio_deck_the_halls  "Deck the Halls" (traditional Welsh)              Christmas
+    radio_we_wish_you     "We Wish You a Merry Christmas" (traditional)     Christmas
+    radio_wenceslas       "Good King Wenceslas" (1853)                      Christmas
+    radio_auld_lang_syne  "Auld Lang Syne" (traditional Scottish)           New Year's
+
 To use the real track, drop it in audio/music/ with the same name (.ogg,
 .mp3 or .wav); delete the stand-in .wav so the real one isn't shadowed.
 
 Usage:  python tools/compose_music.py               # all of them
         python tools/compose_music.py drive_home    # just the named ones
+        python tools/compose_music.py radio_toccata
 """
 import math
 import os
@@ -272,6 +285,159 @@ def static_parade():
     finish("static_parade", out, 0.12, 0.7, 0.85)
 
 
+# ---------------------------------------------------------------- radio songs
+
+def organ(f, dur, vel=1.0):
+    """Church organ: stacked harmonics, steady, with a little tremolo."""
+    k = int(dur * SR)
+    out = []
+    for i in range(k):
+        t = i / SR
+        s = 0.0
+        for h, a in ((1, 1.0), (2, 0.6), (3, 0.3), (4, 0.25), (6, 0.12), (8, 0.08)):
+            s += a * math.sin(TAU * f * h * t)
+        env = min(1.0, t * 40) * min(1.0, (dur - t) * 20) * (1 + 0.04 * math.sin(TAU * 5.5 * t))
+        out.append(s * env * vel * 0.12)
+    return out
+
+
+def bells(f, dur, vel=1.0):
+    """Sleigh-bell-bright melody voice: glockenspiel over a soft piano."""
+    a = glock(f, dur, vel * 0.6)
+    b = piano(f, dur, vel * 0.8)
+    return [x + y for x, y in zip(a, b)]
+
+
+def song(melody, chords, bpm, beats_per_bar, voice=bells, bass=pluck, comp=piano, swing_bells=True, pickup=0.0):
+    """A carol arrangement: melody, bass on the downbeats, chords on the off-beats,
+    sleigh bells on every beat. `chords` is one chord (list of names) per bar."""
+    beat = 60 / bpm
+    total = pickup + len(chords) * beats_per_bar
+    out = buf(total * beat + 2.0)
+    for b, ch in enumerate(chords):
+        start = pickup + b * beats_per_bar
+        root = midi(n(ch[0]) - 12)
+        mix(out, bass(root, beat * 0.9, 0.9), start * beat)
+        if beats_per_bar == 4:
+            mix(out, bass(midi(n(ch[0]) - 5), beat * 0.9, 0.7), (start + 2) * beat)
+        for off in range(1, beats_per_bar):
+            for name in ch[1:]:
+                mix(out, comp(midi(n(name)), beat * 0.8, 0.35), (start + off) * beat)
+    place(out, voice, melody, 0, beat, 1.0)
+    if swing_bells:
+        rnd = random.Random(7)
+        bell = [rnd.uniform(-1, 1) * math.exp(-i / SR * 22) * 0.1 for i in range(int(0.15 * SR))]
+        for k in range(int(total)):
+            mix(out, bell, k * beat)
+    return out
+
+
+def deck_the_halls():
+    a = [("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 1), ("D4", 1), ("E4", 1), ("C4", 1),
+         ("D4", 0.5), ("E4", 0.5), ("F4", 0.5), ("D4", 0.5), ("E4", 1.5), ("D4", 0.5), ("C4", 1), ("B3", 1), ("C4", 2)]
+    b = [("D4", 1.5), ("E4", 0.5), ("F4", 1), ("D4", 1), ("E4", 1.5), ("F4", 0.5), ("G4", 1), ("D4", 1),
+         ("E4", 0.5), ("F#4", 0.5), ("G4", 1), ("A4", 0.5), ("B4", 0.5), ("C5", 1), ("B4", 1), ("A4", 1), ("G4", 2)]
+    c = [("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 1), ("D4", 1), ("E4", 1), ("C4", 1),
+         ("A4", 0.5), ("A4", 0.5), ("A4", 0.5), ("A4", 0.5), ("G4", 1.5), ("F4", 0.5), ("E4", 1), ("D4", 1), ("C4", 2)]
+    C, G, F, D = ["C4", "E4", "G4"], ["G3", "B3", "D4"], ["F3", "A3", "C4"], ["D4", "F#4", "A4"]
+    chords_a = [C, C, G, C]
+    melody = [(x, y) for x, y in a + a + b + c]
+    out = song([(nm.replace("4", "5").replace("3", "4"), d) for nm, d in melody], chords_a * 2 + [G, C, D, G] + [C, C, F, C], 112, 4)
+    finish("radio_deck_the_halls", out, 0.2, 0.9)
+
+
+def we_wish_you():
+    m = [("D4", 1), ("G4", 1), ("G4", 0.5), ("A4", 0.5), ("G4", 0.5), ("F#4", 0.5), ("E4", 1), ("E4", 1), ("E4", 1),
+         ("A4", 1), ("A4", 0.5), ("B4", 0.5), ("A4", 0.5), ("G4", 0.5), ("F#4", 1), ("D4", 1), ("D4", 1),
+         ("B4", 1), ("B4", 0.5), ("C5", 0.5), ("B4", 0.5), ("A4", 0.5), ("G4", 1), ("E4", 1), ("D4", 0.5), ("D4", 0.5),
+         ("E4", 1), ("A4", 1), ("F#4", 1), ("G4", 2), ("-", 1)]
+    G, Cc, A7, D, B7, Em = ["G3", "B3", "D4"], ["C4", "E4", "G4"], ["A3", "C#4", "G4"], ["D4", "F#4", "A4"], ["B3", "D#4", "A4"], ["E3", "G3", "B3"]
+    melody = [(nm if nm == "-" else nm[:-1] + str(int(nm[-1]) + 1), d) for nm, d in m]
+    out = song(melody, [G, Cc, A7, D, B7, Em, D, G], 132, 3, pickup=1.0)
+    finish("radio_we_wish_you", out, 0.2, 0.9)
+
+
+def wenceslas():
+    v = [("G4", 1), ("G4", 1), ("G4", 1), ("A4", 1), ("G4", 1), ("G4", 1), ("D4", 2),
+         ("E4", 1), ("D4", 1), ("E4", 1), ("F#4", 1), ("G4", 2), ("G4", 2)]
+    w = [("D5", 1), ("C5", 1), ("B4", 1), ("A4", 1), ("B4", 1), ("A4", 1), ("G4", 2),
+         ("E4", 1), ("D4", 1), ("E4", 1), ("F#4", 1), ("G4", 2), ("G4", 2),
+         ("D4", 1), ("D4", 1), ("E4", 1), ("F#4", 1), ("G4", 1), ("G4", 1), ("A4", 2),
+         ("D5", 1), ("C5", 1), ("B4", 1), ("A4", 1), ("G4", 2), ("C5", 2), ("G4", 4)]
+    G, D, Cc = ["G3", "B3", "D4"], ["D3", "F#3", "A3"], ["C4", "E4", "G4"]
+    chords = [G, G, Cc, G] * 2 + [G, G, Cc, G, D, G, G, Cc, G]
+    out = song(v + v + w, chords, 100, 4, voice=bells)
+    finish("radio_wenceslas", out, 0.25, 1.0)
+
+
+def auld_lang_syne():
+    verse = [("C4", 1), ("F4", 1.5), ("F4", 0.5), ("F4", 1), ("A4", 1), ("G4", 1.5), ("F4", 0.5), ("G4", 1), ("A4", 1),
+             ("F4", 1.5), ("F4", 0.5), ("A4", 1), ("C5", 1), ("D5", 3), ("D5", 1),
+             ("C5", 1.5), ("A4", 0.5), ("A4", 1), ("F4", 1), ("G4", 1.5), ("F4", 0.5), ("G4", 1), ("A4", 0.5), ("G4", 0.5),
+             ("F4", 1.5), ("D4", 0.5), ("D4", 1), ("C4", 1), ("F4", 3), ("D5", 1),
+             ("C5", 1.5), ("A4", 0.5), ("A4", 1), ("F4", 1), ("G4", 1.5), ("F4", 0.5), ("G4", 1), ("D5", 1),
+             ("C5", 1.5), ("A4", 0.5), ("A4", 1), ("C5", 1), ("D5", 3), ("F5", 1),
+             ("C5", 1.5), ("A4", 0.5), ("A4", 1), ("F4", 1), ("G4", 1.5), ("F4", 0.5), ("G4", 1), ("A4", 0.5), ("G4", 0.5),
+             ("F4", 1.5), ("D4", 0.5), ("D4", 1), ("C4", 1), ("F4", 4)]
+    F, C, Bb, Dm = ["F3", "A3", "C4"], ["C3", "E3", "G3"], ["Bb3", "D4", "F4"], ["D3", "F3", "A3"]
+    chords = [F, C, F, Bb, F, C, Dm, F, F, C, F, Bb, F, C, Dm, F]
+    out = song(verse, chords, 76, 4, voice=piano, comp=pad_note, swing_bells=False, pickup=1.0)
+    finish("radio_auld_lang_syne", out, 0.35, 1.2)
+
+
+def pad_note(f, dur, vel=1.0):
+    return pad([f], dur, vel * 2.0, 0.2)
+
+
+def mountain_king():
+    """Starts low and quiet, and keeps getting faster and louder."""
+    phrase = [("B3", 0.5), ("C#4", 0.5), ("D4", 0.5), ("E4", 0.5), ("F#4", 0.5), ("D4", 0.5), ("F#4", 1),
+              ("F4", 0.5), ("C#4", 0.5), ("F4", 1), ("E4", 0.5), ("C4", 0.5), ("E4", 1),
+              ("B3", 0.5), ("C#4", 0.5), ("D4", 0.5), ("E4", 0.5), ("F#4", 0.5), ("D4", 0.5), ("F#4", 0.5), ("B4", 0.5),
+              ("A4", 0.5), ("F#4", 0.5), ("D4", 0.5), ("F#4", 0.5), ("A4", 2)]
+    parts = []
+    for rep, (bpm, shift, vel) in enumerate([(100, -12, 0.5), (112, -12, 0.65), (126, 0, 0.8), (142, 0, 0.95), (160, 12, 1.0)]):
+        beat = 60 / bpm
+        seg = buf(16 * beat)
+        mel = [(nm if nm == "-" else nm[:-1] + str(int(nm[-1]) + shift // 12), d) for nm, d in phrase]
+        place(seg, pluck if rep < 2 else bells, mel, 0, beat, vel)
+        for q in range(16):
+            mix(seg, pluck(midi(n("B1") if q % 2 == 0 else n("F#1")), beat * 0.8, vel), q * beat)
+        if rep >= 3:
+            k_ = kick()
+            for q in range(16):
+                mix(seg, k_, q * beat, gain=0.5)
+        parts.extend(seg)
+    finish("radio_mountain_king", parts, 0.2, 1.0)
+
+
+def toccata():
+    """The famous opening flourish, on organ, with a low pedal underneath."""
+    beat = 60 / 72
+    out = buf(16 * beat + 3)
+    t = 0.0
+    for grp in ([("A5", 0.15), ("G5", 0.15), ("A5", 1.7)], [("G5", 0.25), ("F5", 0.25), ("E5", 0.25), ("D5", 0.25), ("C#5", 1.0), ("D5", 2.0)],
+                [("A4", 0.15), ("G4", 0.15), ("A4", 1.7)], [("E4", 0.5), ("F4", 0.5), ("C#4", 0.5), ("D4", 2.0)],
+                [("A3", 0.15), ("G3", 0.15), ("A3", 1.7)], [("G3", 0.25), ("F3", 0.25), ("E3", 0.25), ("D3", 0.25), ("C#3", 1.0), ("D3", 2.0)]):
+        t = place(out, organ, grp, t, beat, 1.0, 1.0)
+    mix(out, organ(midi(n("D2")), 4 * beat, 1.2), t * beat)
+    for name in ("C#3", "E3", "G3", "Bb3"):
+        mix(out, organ(midi(n(name)), 3 * beat, 0.8), (t + 1) * beat)
+    for name in ("D3", "F#3", "A3", "D4"):
+        mix(out, organ(midi(n(name)), 3 * beat, 0.9), (t + 4) * beat)
+    finish("radio_toccata", out, 0.45, 1.8)
+
+
+RADIO = {
+    "radio_mountain_king": mountain_king,
+    "radio_toccata": toccata,
+    "radio_deck_the_halls": deck_the_halls,
+    "radio_we_wish_you": we_wish_you,
+    "radio_wenceslas": wenceslas,
+    "radio_auld_lang_syne": auld_lang_syne,
+}
+
+
 THEMES = {
     "grandma_house": grandma_house,
     "drive_home": drive_home,
@@ -282,11 +448,12 @@ THEMES = {
 
 
 def main():
-    names = sys.argv[1:] or list(THEMES)
+    every = {**THEMES, **RADIO}
+    names = sys.argv[1:] or list(every)
     for name in names:
-        if name not in THEMES:
-            sys.exit(f"unknown theme '{name}'. Known: {', '.join(THEMES)}")
-        THEMES[name]()
+        if name not in every:
+            sys.exit(f"unknown theme '{name}'. Known: {', '.join(every)}")
+        every[name]()
 
 
 if __name__ == "__main__":

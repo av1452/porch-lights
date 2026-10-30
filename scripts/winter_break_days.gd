@@ -32,6 +32,7 @@ func _ready() -> void:
 	tv_screen.channel = "winter"
 	set_porch_light(true)
 	_snow_day()
+	Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -16.0)
 	mom = $Story/Mom
 	mom.visible = true
 	mom.collision_layer = 1

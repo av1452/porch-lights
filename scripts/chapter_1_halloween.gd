@@ -46,6 +46,7 @@ var _flicker_t := 0.0
 var _tv_energy := 0.0
 var _crickets: AudioStreamPlayer3D
 var _dog_greeted := false
+var _radio: Radio
 
 
 func _ready() -> void:
@@ -72,6 +73,7 @@ func _ready() -> void:
 	_crickets.unit_size = 8.0
 	Audio.make_loop("wind", $Exterior/Ambience, -16.0)
 	Audio.play_music("ch1_living_room", 4.0)
+	_radio = Radio.on_kitchen_counter(self, PackedStringArray(["radio_mountain_king", "radio_toccata"]), -16.0)
 
 	await open_chapter("October 31", "Halloween")
 	hud.show_memory("Home from trick-or-treating. Your pillowcase is so heavy the handle's stretched out.", 5.0)
@@ -326,6 +328,8 @@ func _on_bed(_by: Node) -> void:
 
 func _enter_dream() -> void:
 	unstash(dream_hall, self)
+	if _radio:
+		_radio.turn_off()
 	_dog_waits_in_dream()
 	tv_screen.channel = "dream"
 	Audio.set_dreaming(true)

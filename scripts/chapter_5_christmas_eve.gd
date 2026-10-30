@@ -39,6 +39,7 @@ var _window: Interactable
 var _fudge: Interactable
 var _bulb_hunt := false
 var _night_look := {}
+var _radio: Radio
 
 
 func _ready() -> void:
@@ -116,6 +117,7 @@ func _ready() -> void:
 
 	Audio.make_loop("wind", $Exterior/Ambience, -12.0)
 	Audio.play_music("ch4_silent_night", 4.0, -8.0)
+	_radio = Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -14.0)
 	await open_chapter("December 24", "Christmas Eve")
 	hud.show_memory("Christmas Eve. The tree's up, the presents are under it, and the whole house smells like sugar cookies.", 5.5)
 	await wait(3.0)
@@ -497,6 +499,7 @@ func _on_porch() -> void:
 ## lights all the way down. Biscuit waits at the warm door at the end.
 func _enter_dream() -> void:
 	step = Step.DREAM
+	_radio.turn_off()
 	unstash(_dream_hall, self)
 	_hall_end = $House/Hallway/HallEnd
 	stash(_hall_end)

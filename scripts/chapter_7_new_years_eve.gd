@@ -34,6 +34,7 @@ var _done := {}
 var _looked := {}
 var _hall_end: Node3D
 var _dream_dog_greeted := false
+var _radio: Radio
 
 
 func _ready() -> void:
@@ -41,6 +42,7 @@ func _ready() -> void:
 	Decorations.christmas_tree(self, true)
 	tv_screen.channel = "newyear"
 	set_porch_light(true)
+	_radio = Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -16.0)
 	mom = $Story/Mom
 	mom.visible = true
 	mom.collision_layer = 1
@@ -176,12 +178,16 @@ func _countdown() -> void:
 		["Dad", "Here it comes. Here it comes!"],
 		["Jamie", "Dad is awake. Everybody, Dad is awake. Historic."],
 	])
+	_radio.turn_off()
+	Audio.stop_music(1.0)
 	tv_screen.start_countdown()
 	for n in range(10, 0, -1):
 		hud.show_line("", str(n) + "...")
 		await wait(1.0)
 	hud.show_line("", "HAPPY NEW YEAR!")
 	Audio.play_sfx("title_sting", null, -4.0)
+	# The TV crowd starts singing.
+	Audio.play_music("radio_auld_lang_syne", 2.0, -8.0)
 	await wait(1.5)
 	await say([
 		["", "Everybody yells it at once. Dad kisses Mom. Mom kisses Jamie, who lets her. Biscuit barks at all of it."],

@@ -24,6 +24,7 @@ func _ready() -> void:
 	_before_dawn()
 	tv_screen.channel = "winter"
 	set_porch_light(true)
+	Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -14.0)
 	dad.position = Vector3(6.0, 0.0, -0.6)
 	dad.rotation.y = deg_to_rad(90.0)
 	mom = $Story/Mom

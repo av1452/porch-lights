@@ -12,6 +12,10 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - `audio/music/grandma_house.wav`, `drive_home.wav`, `class_party.wav`, `snow_dream.wav`,
   `static_parade.wav`: original stand-in themes composed and synthesized for this game by
   `tools/compose_music.py` (no samples). Replace any with the real track of the same name.
+- `audio/music/radio_*.wav`: public-domain compositions arranged and synthesized for this game by
+  `tools/compose_music.py`: Grieg, "In the Hall of the Mountain King" (1875); Bach, Toccata in
+  D minor; "Deck the Halls", "We Wish You a Merry Christmas", "Good King Wenceslas" and "Auld
+  Lang Syne" (traditional).
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
