@@ -15,6 +15,7 @@ extends Chapter
 @onready var porch_switch: Interactable = $Story/PorchSwitch
 @onready var porch_light: OmniLight3D = $Lights/PorchLight
 @onready var street: Street = $Street
+var tv: Interactable
 
 var _flicker_t := 0.0
 var _tv_energy := 0.0
@@ -43,6 +44,11 @@ func _ready() -> void:
 		it.repeat_text = ""
 	phone.prompt = "Phone"
 	couch.prompt = "Sit down"
+	# The TV's lines in the house scene are about Halloween; chapters set their own.
+	var tv := $House/LivingRoom/Things/TV as Interactable
+	tv.memory_text = "Somebody left the TV on. A holiday special, the one with the snow."
+	tv.repeat_text = "Commercials. Every single one of them is for a toy."
+	self.tv = tv
 	Audio.make_loop("clock_tick", $House/LivingRoom/Things/Clock, -14.0)
 	Audio.make_loop("room_tone", $House/Kitchen/Things/Fridge, -10.0)
 
