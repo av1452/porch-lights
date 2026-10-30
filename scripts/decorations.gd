@@ -5,6 +5,8 @@ class_name Decorations
 const BULB_COLORS := [Color(1, 0.2, 0.2), Color(0.2, 1, 0.3), Color(0.3, 0.5, 1), Color(1, 0.85, 0.2), Color(1, 0.5, 0.1)]
 ## Where the tree goes in the living room (the jack-o'-lantern's corner).
 const TREE_POS := Vector3(-2.35, 0.0, -0.65)
+## Which of the tree's 18 bulbs face into the room (the tree is in a corner).
+const CHECK_BULBS := [1, 6, 7, 12, 13]
 
 
 static func mat(c: Color, glow := 0.0) -> StandardMaterial3D:
@@ -94,8 +96,9 @@ static func christmas_tree(parent: Node3D, lit: bool, checkable := false) -> Dic
 		bulb.position = pos
 		bulb.material = m
 		tree.add_child(bulb)
-		# Every third bulb is one you can check, when the string is dead.
-		if checkable and i % 3 == 1 and checks.size() < 5:
+		# The bulbs you can check, when the string is dead: all on the room
+		# side of the tree, so none of them hide against the walls.
+		if checkable and i in CHECK_BULBS:
 			var check := Interactable.new()
 			check.name = "Bulb%d" % checks.size()
 			check.prompt = "Check bulb"

@@ -59,18 +59,22 @@ func _ready() -> void:
 	])
 
 	# Thanksgiving things around the house.
-	box_thing("Pies", Vector3(4.6, 0.8, 0.4), Vector3(0.5, 0.06, 0.32), Color(0.85, 0.75, 0.6), "Pies",
+	var pies := box_thing("Pies", Vector3(4.6, 0.8, 0.4), Vector3(0.5, 0.06, 0.32), Color(0.85, 0.75, 0.6), "Pies",
 		"Two pumpkin pies and a pecan, under foil. Mom wrote DO NOT TOUCH on the foil. Mostly on the pecan.",
 		"You can smell the cinnamon through the foil. It's a trap. You walk away.")
+	dress(pies, Props.pies())
 	# Optional: nice to look at, not needed to leave.
-	box_thing("Coat", Vector3(-1.4, 1.2, 2.42), Vector3(0.4, 0.55, 0.12), Color(0.2, 0.35, 0.6), "Coat and shoes",
+	var coat := box_thing("Coat", Vector3(-1.4, 1.2, 2.42), Vector3(0.4, 0.55, 0.12), Color(0.2, 0.35, 0.6), "Coat and shoes",
 		"Your puffy coat, the one that swishes. Shoes on the wrong feet, then the right ones.",
 		"You zip the coat all the way up. Now you can't turn your head. Worth it.")
-	box_thing("Handheld", Vector3(5.2, 0.55, -7.15), Vector3(0.14, 0.04, 0.09), Color(0.45, 0.3, 0.6), "Your handheld game",
+	dress(coat, Props.coat_on_hook(0.95), 180.0)
+	var handheld := box_thing("Handheld", Vector3(5.2, 0.55, -7.15), Vector3(0.14, 0.04, 0.09), Color(0.45, 0.3, 0.6), "Your handheld game",
 		"Your handheld. Fresh batteries from the junk drawer. Two hours is a long time.",
 		"You check the batteries again. Still fresh. Still two hours.")
+	dress(handheld, Props.handheld(), 200.0)
 	_things["leash"] = box_thing("Leash", Vector3(3.0, 1.25, 2.44), Vector3(0.12, 0.35, 0.05), Color(0.8, 0.15, 0.15),
 		"Biscuit's leash")
+	dress(_things["leash"], Props.leash_on_hook(), 180.0)
 	for id in _things:
 		(_things[id] as Interactable).used.connect(_on_thing.bind(id))
 	front_door.used.connect(_on_front_door)
@@ -79,6 +83,17 @@ func _ready() -> void:
 	var window := $House/LivingRoom/Things/Window as Interactable
 	window.memory_text = "Leaves all over the yard. Dad says he'll rake them this weekend. He said that last weekend."
 	window.repeat_text = "The neighbors' van is already gone. Everybody's going somewhere today."
+	($House/Kitchen/Furniture/CalendarMonth as Label3D).text = "NOVEMBER"
+	house_text({
+		"Clock": ["9:05 in the morning. On a holiday. Jamie's right, it's a crime.",
+			"Dad wanted to leave at nine. Dad always wants to leave at nine."],
+		"Fridge": ["No room for anything. It's all whipped cream, a bag of rolls, and the green bean casserole for Grandma's.",
+			"You're not allowed to touch anything in here. Mom has a list."],
+		"CalendarI": ["NOVEMBER. Today's box just says GRANDMA'S in Mom's handwriting, underlined twice."],
+		"Coats": ["Everybody's coat is off the hooks and on the arm of the couch, ready to go."],
+		"KidWindow": ["Gray out. The neighbors' inflatable ghost is finally gone. There's a paper turkey in their window now."],
+		"Backpack": ["No school till Monday. The backpack can wait. The backpack can always wait."],
+	})
 
 	player.teleport(Vector3(4.6, 0.05, -7.0), 90.0)
 	await open_chapter("November", "Thanksgiving: Getting Ready")

@@ -49,6 +49,17 @@ func _ready() -> void:
 	tv.memory_text = "Somebody left the TV on. A holiday special, the one with the snow."
 	tv.repeat_text = "Commercials. Every single one of them is for a toy."
 	self.tv = tv
+	# Halloween-night lines on the rest of the house. Chapters replace the
+	# ones that depend on the day with house_text(); these fit any of them.
+	house_text({
+		"Clock": ["Tick, tick, tick. It's the loudest clock in the world when you're waiting for something."],
+		"Coats": ["Your winter coat, your hat, and the mittens on a string Mom swears you'll grow out of."],
+		"Fridge": ["Leftovers, and a lot of mustard."],
+		"CalendarI": ["DECEMBER. Mom writes everything on it. Everything."],
+		"KidWindow": ["Snow on the windowsill, and on every roof down the street."],
+		"Backpack": ["No school for two whole weeks. The backpack is in the corner, being ignored."],
+		"Posters": ["Bands you've never heard of. Jamie says you'll get it when you're older."],
+	})
 	Audio.make_loop("clock_tick", $House/LivingRoom/Things/Clock, -14.0)
 	Audio.make_loop("room_tone", $House/Kitchen/Things/Fridge, -10.0)
 
@@ -112,6 +123,17 @@ func string_dream_lights(hall: Node3D) -> void:
 			hall.add_child(l)
 
 
+## What the house's own things say today: { "Clock": [first, again], ... },
+## by node name (the clock, fridge, calendar, coats, windows and so on).
+## Leave out `again` to say the same thing every time.
+func house_text(lines: Dictionary) -> void:
+	for thing_name: String in lines:
+		var thing := $House.find_child(thing_name, true, false) as Interactable
+		thing.memory_text = lines[thing_name][0]
+		thing.repeat_text = lines[thing_name][1] if lines[thing_name].size() > 1 else ""
+		thing.times_used = 0
+
+
 func hide_node(path: String) -> void:
 	Decorations.hide(get_node(path) as Node3D)
 
@@ -141,6 +163,24 @@ func box_thing(node_name: String, pos: Vector3, size: Vector3, color: Color, pro
 	mesh.material = Decorations.mat(color)
 	it.add_child(mesh)
 	add_child(it)
+	return it
+
+
+## Swaps a box_thing()'s plain box for a modeled prop (scripts/props.gd),
+## keeping its collision so it's just as easy to look at and use.
+## `yaw` turns the prop; returns `it`. Dress it again to swap the prop
+## (the stocking emptying, the present opened).
+func dress(it: Interactable, model: Node3D, yaw := 0.0) -> Interactable:
+	for child in it.get_children():
+		if child is CSGBox3D or child.has_meta("prop"):
+			it.remove_child(child)
+			child.queue_free()
+	var shape := (it.get_child(0) as CollisionShape3D).shape as BoxShape3D
+	model.position.y = -shape.size.y / 2.0
+	model.rotation_degrees.y = yaw
+	model.set_meta("prop", true)
+	it.add_child(model)
+	Look.upgrade(model)
 	return it
 
 

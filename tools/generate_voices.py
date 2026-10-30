@@ -60,7 +60,7 @@ STRING = r'"((?:[^"\\]|\\.)*)"'
 # A speaker is a short name, optionally with a place: "Uncle Ray", "Mom (kitchen)".
 SPEAKER = r'"([A-Z][A-Za-z .]{0,20}(?: \([a-z ]+\))?)"'
 # Story scripts only (chapters and interludes).
-SCRIPTS = ["chapter*.gd", "interlude*.gd", "school*.gd"]
+SCRIPTS = ["chapter*.gd", "interlude*.gd", "school*.gd", "winter*.gd"]
 
 
 def setup():

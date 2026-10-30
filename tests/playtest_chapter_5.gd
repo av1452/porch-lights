@@ -19,6 +19,14 @@ func _initialize():
 	root.add_child(ch)
 	await create_timer(9.0).timeout
 	print("start porch light=", ch.porch_light.light_energy, " mom visible=", ch.mom.visible, " step=", ch.step, " grandma here=", ch.grandma.is_inside_tree())
+	await create_timer(3.0).timeout
+	print("objective: ", ch.hud._objective.text.replace("\n", " | "))
+	# Every bulb you can check faces into the room, and Jamie isn't standing in front of them.
+	var room_side := true
+	for c in ch._checks:
+		var off: Vector3 = c.global_position - ch.get_node("ChristmasTree").global_position
+		room_side = room_side and off.x + off.z > 0.0 and c.global_position.distance_to(ch.jamie.global_position) > 0.6
+	print("bulbs on the room side=", room_side, " checks=", ch._checks.size())
 	# Afternoon: cookies, wrapping, and the dead bulb.
 	ch._sugar_cookies.interact(ch.player); await idle()
 	ch._wrapping.interact(ch.player); await idle()
@@ -30,7 +38,9 @@ func _initialize():
 	print("evening: grandma here=", ch.grandma.is_inside_tree(), " fudge=", ch._fudge.is_inside_tree())
 	ch.jamie.interact(ch.player); await idle()
 	ch.grandma.interact(ch.player); await until_step(ch.Step.PRESENT)
-	ch._present.interact(ch.player); await until_step(ch.Step.PICTURE)
+	ch._present.interact(ch.player); await until_step(ch.Step.BANDANA)
+	ch.dog.get_node("PetBody").interact(ch.player); await until_step(ch.Step.PICTURE)
+	print("bandana on biscuit=", ch.dog._torso.has_node("Bandana"))
 	ch.mom.interact(ch.player); await until_step(ch.Step.COOKIES)
 	ch._santa_plate.interact(ch.player); await until_step(ch.Step.CARROTS)
 	print("plate moved to living room=", ch._santa_plate.position.z < 1.0 and ch._santa_plate.position.x < 1.0)

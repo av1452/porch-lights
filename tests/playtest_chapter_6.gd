@@ -20,12 +20,22 @@ func _initialize():
 	await create_timer(12.0).timeout
 	print("start pos=", ch.player.global_position, " porch light on=", ch.porch_light.light_energy > 0.0)
 	ch._on_see_tree(); await until_step(ch.Step.STOCKING)
-	ch._stocking.interact(ch.player); await until_step(ch.Step.PRESENT)
+	for i in ch.STOCKING.size():
+		ch._stocking.interact(ch.player); await idle()
+	print("stocking emptied=", ch._pulled, " on the floor=", ch.get_children().filter(func(n): return n.name in ["Candy", "Yoyo", "Cards", "Toothbrush", "Orange"]).size())
+	await until_step(ch.Step.PRESENT)
 	ch._present.interact(ch.player); await until_step(ch.Step.DAD)
+	print("racer unboxed=", ch._present.find_child("RoboRacer", true, false) != null)
 	ch.grandma.interact(ch.player); await idle()
-	ch.dad.interact(ch.player); await until_step(ch.Step.OUTSIDE)
+	ch.dad.interact(ch.player); await until_step(ch.Step.FLIP)
+	for i in ch.FLIPS.size():
+		ch._pan.interact(ch.player); await idle()
+	await until_step(ch.Step.OUTSIDE)
+	print("pancakes flipped=", ch._flips, " jamie in yard=", ch.jamie.position.z > 6.0)
 	ch.front_door.interact(ch.player); await until_step(ch.Step.PORCH)
-	ch._on_porch()
+	ch._on_porch(); await until_step(ch.Step.THROW)
+	print("can reach jamie=", ch.player.ray.target_position.length() > Vector3(-1.55, 1.15, 4.3).distance_to(ch.jamie.global_position + Vector3(0, 1.3, 0)), " prompt=", ch.jamie.prompt)
+	ch.jamie.interact(ch.player)
 	for i in 80:
 		await create_timer(1.0).timeout
 		if root.has_node("WinterBreak"):

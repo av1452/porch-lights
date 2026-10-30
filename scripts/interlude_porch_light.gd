@@ -104,6 +104,10 @@ func _set_up_night() -> void:
 	ch.mom.used.connect(_on_parents)
 	ch.dad.used.connect(_on_parents)
 
+	var clock := $"../House/LivingRoom/Things/Clock" as Interactable
+	clock.memory_text = "2:14. You've never been awake at 2:14 before. The numbers look wrong."
+	clock.repeat_text = "Still the middle of the night. Every tick sounds like a crinkle."
+	clock.times_used = 0
 	front_door.memory_text = ""
 	front_door.repeat_text = ""
 	front_door.prompt = "Front door"

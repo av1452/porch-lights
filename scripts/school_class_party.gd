@@ -452,6 +452,15 @@ func _on_far_door(_by: Node) -> void:
 	await hud.fade(1.0, 2.5, Color(1.0, 0.94, 0.82)).finished
 	await hud.fade(1.0, 1.0, Color.BLACK).finished
 	Audio.stop_music(2.0)
+	Audio.set_dreaming(false)
+	# Waking up: it was a dream, and Mom's here.
+	await wait(1.5)
+	await say([
+		["Mom", "Leo. Hey, sleepyhead. I'm so sorry I'm late. The roads are a mess."],
+		["", "You wake up on the bench with Mom's cold hand on your cheek. No Biscuit, no lights. Just the real hallway, and Mr. Ruiz waving goodbye."],
+		["", "Outside, the whole parking lot is white. You hold Mom's hand all the way to the van, and you don't even care who sees."],
+	])
+	await wait(1.0)
 	await hud.chapter_card("To be continued.", "Next: Christmas Eve", 3.0)
 	await wait(1.0)
 	go_to_chapter(NEXT_CHAPTER)

@@ -11,13 +11,19 @@ extends HouseChapter
 ## (The cookies, the tree lights and the toy catalog came from the old
 ## "Home for Winter Break".)
 
-enum Step { DAY, GRANDMA, PRESENT, PICTURE, COOKIES, CARROTS, PORCH_LIGHT, OUTSIDE, PORCH, DREAM, END }
+enum Step { DAY, GRANDMA, PRESENT, BANDANA, PICTURE, COOKIES, CARROTS, PORCH_LIGHT, OUTSIDE, PORCH, DREAM, END }
 
 const STREET_POINT := Vector3(-2.1, 0.6, 18.0)
 ## Which of the bulbs you can check is the dead one.
 const DEAD_CHECK := 3
 ## The dream: Chapter 1's long hallway, and where Biscuit waits by its door.
 const DREAM_DOG := Vector3(2.0, 0.05, -24.4)
+## The afternoon jobs: [id, what the objective calls it].
+const DAY_TASKS := [
+	["cookies", "Decorate cookies with Mom (kitchen)"],
+	["wrapping", "Wrap Grandma's present with Dad (coffee table)"],
+	["tree", "Fix the tree lights with Jamie (by the tree)"],
+]
 
 var mom: Interactable
 var jamie: Interactable
@@ -65,40 +71,58 @@ func _ready() -> void:
 	mom.rotation.y = deg_to_rad(90.0)
 	dad.position = Vector3(0.9, 0.0, 1.1)
 	dad.rotation.y = deg_to_rad(-120.0)
-	jamie = Figure.person(self, "Jamie", Vector3(-1.5, 0.0, 0.35), -140.0, 1.62, Figure.JAMIE)
+	# Beside the tree, not in front of the bulbs you'll be checking.
+	jamie = Figure.person(self, "Jamie", Vector3(-1.55, 0.0, -1.25), -55.0, 1.62, Figure.JAMIE)
 	grandma = Figure.person(self, "Grandma", Vector3(0.9, 0.0, 1.0), -150.0, 1.6, Figure.GRANDMA)
 	stash(grandma)
 	_sugar_cookies = box_thing("SugarCookies", Vector3(6.55, 0.95, 1.5), Vector3(0.4, 0.04, 0.3), Color(0.9, 0.75, 0.5), "Decorate cookies")
+	dress(_sugar_cookies, Props.cookie_tray(), 90.0)
 	_wrapping = box_thing("Wrapping", Vector3(-0.1, 0.45, 0.4), Vector3(0.5, 0.08, 0.35), Color(0.15, 0.45, 0.25), "Help wrap Grandma's present")
+	dress(_wrapping, Props.wrapping_station())
 	_wrapped = box_thing("WrappedPresent", Decorations.TREE_POS + Vector3(-0.5, 0.11, 0.7), Vector3(0.3, 0.2, 0.25),
 		Color(0.15, 0.45, 0.25), "Grandma's present",
 		"'TO GRANDMA, FROM LEO.' The corners are rustic. Dad's word.",
 		"You shake it. It doesn't rattle. Good. The tape is holding everything together.")
+	dress(_wrapped, Props.rustic_present(Vector3(0.3, 0.2, 0.25)), 20.0)
 	_wrapped.visible = false
 	_wrapped.enabled = false
 	_sugar_cookies.used.connect(_on_sugar_cookies)
 	_wrapping.used.connect(_on_wrapping)
-	box_thing("Catalog", Vector3(0.15, 0.42, 0.45), Vector3(0.24, 0.02, 0.3), Color(0.85, 0.2, 0.2), "Toy catalog",
+	var catalog := box_thing("Catalog", Vector3(0.15, 0.42, 0.45), Vector3(0.24, 0.02, 0.3), Color(0.85, 0.2, 0.2), "Toy catalog",
 		"The big toy catalog. You've circled the Mega Robo Racer three times, in three different markers.",
 		"Page 47 is folded down. Page 47 is everything.")
-	box_thing("Advent", Vector3(6.27, 1.45, -1.55), Vector3(0.03, 0.32, 0.24), Color(0.7, 0.12, 0.15), "Advent calendar",
+	dress(catalog, Props.catalog(), -10.0)
+	var advent := box_thing("Advent", Vector3(6.27, 1.45, -1.55), Vector3(0.03, 0.32, 0.24), Color(0.7, 0.12, 0.15), "Advent calendar",
 		"Door 24, the last one. A chocolate Santa. Jamie hasn't eaten it. A Christmas miracle.",
 		"All twenty-four doors open. It looks like a little building with every light on.")
+	dress(advent, Props.advent_calendar(), 180.0)
 
 	var window := $House/LivingRoom/Things/Window as Interactable
 	window.memory_text = "Kids pulling sleds up the street. The Hendersons' inflatable Santa keeps bowing. It's kind of polite."
 	window.repeat_text = "It's getting dark already, and it's only four. Christmas Eve dark."
 	_window = window
+	house_text({
+		"Clock": ["3:40. Grandma comes at six. That's two hours and twenty minutes. You did the math twice.",
+			"Still not six. The clock is going slower on purpose. It does that on Christmas Eve."],
+		"Fridge": ["Cookie dough, a ham the size of Biscuit, and the green Jell-O.",
+			"There's a note on the ham in Mom's handwriting: DO NOT. You don't."],
+		"CalendarI": ["DECEMBER. The 24th has a star on it. The 25th has three stars."],
+		"KidWindow": ["Snow on the windowsill. Across the street, somebody's light-up reindeer has fallen over in the yard."],
+	})
 	_fudge = box_thing("Fudge", Vector3(4.6, 0.8, 0.15), Vector3(0.22, 0.06, 0.22), Color(0.2, 0.35, 0.25), "Grandma's fudge tin",
 		"The good tin, with the Scottish dog on the lid. You take two pieces. Grandma pretends not to see.",
 		"The tin is half empty. Dad has a chocolate thumbprint on his sweater.")
+	dress(_fudge, Props.fudge_tin())
 	stash(_fudge)
 	_present = box_thing("GrandmasPresent", Decorations.TREE_POS + Vector3(0.6, 0.11, 0.6), Vector3(0.32, 0.22, 0.26),
 		Color(0.7, 0.12, 0.12), "Open one present")
+	dress(_present, Props.present(Vector3(0.32, 0.22, 0.26), Color(0.7, 0.12, 0.12), Color(0.95, 0.85, 0.3), "LEO"), -15.0)
 	_present.enabled = false
 	_santa_plate = box_thing("SantaCookies", Vector3(4.6, 0.8, 0.65), Vector3(0.24, 0.04, 0.24), Color(0.95, 0.95, 0.92), "Cookies for Santa")
+	dress(_santa_plate, Props.santa_plate())
 	_santa_plate.enabled = false
-	_carrots = box_thing("Carrots", Vector3(6.55, 0.96, 1.7), Vector3(0.25, 0.05, 0.12), Color(1.0, 0.5, 0.1), "Carrots for the reindeer")
+	_carrots = box_thing("Carrots", Vector3(6.55, 0.96, 1.85), Vector3(0.25, 0.05, 0.12), Color(1.0, 0.5, 0.1), "Carrots for the reindeer")
+	dress(_carrots, Props.carrots())
 	_carrots.enabled = false
 
 	grandma.used.connect(_on_grandma)
@@ -108,6 +132,7 @@ func _ready() -> void:
 	_santa_plate.used.connect(_on_santa_plate)
 	_carrots.used.connect(_on_carrots)
 	porch_switch.used.connect(_on_switch)
+	(dog.get_node("PetBody") as Interactable).used.connect(_on_biscuit)
 	front_door.used.connect(_on_front_door)
 	add_chatter(dad, "Dad", [
 		"Cocoa's almost ready. Marshmallows: yes, or obviously?",
@@ -172,8 +197,13 @@ func _nightfall() -> void:
 	set_window_daylight(false)
 
 
+## Names what's left to do, and who it's with, so nothing's a guessing game.
 func _day_objective() -> void:
-	objective("Help get ready for tonight (%d of 3)" % _day_done.size())
+	var left: Array[String] = []
+	for task: Array in DAY_TASKS:
+		if not _day_done.has(task[0]):
+			left.append(task[1])
+	objective("Help get ready for tonight (%d of 3)\n   %s" % [_day_done.size(), "\n   ".join(left)])
 
 
 func _day_task_done(id: String) -> void:
@@ -197,6 +227,7 @@ func _on_sugar_cookies(_by: Node) -> void:
 		["", "You eat one broken star. Quality control."],
 		["Mom", "Save the three best ones. Those are for Santa."],
 	])
+	dress(_sugar_cookies, Props.cookie_tray(6), 90.0)
 	busy = false
 	_day_task_done("cookies")
 
@@ -241,6 +272,11 @@ func _evening() -> void:
 	jamie.rotation.y = deg_to_rad(20.0)
 	_window.memory_text = "Snow on the porch rail. Every house on the street is lit up for Christmas Eve."
 	_window.repeat_text = "The Hendersons' giant star is blinking out of rhythm. It's beautiful anyway."
+	house_text({
+		"Clock": ["8:15. Bedtime's at nine tonight. Santa's rules, not Mom's.",
+			"The faster you fall asleep, the faster it's morning. Jamie says that's science."],
+		"Coats": ["Grandma's coat is on the hook now, still cold on the outside, smelling like her perfume."],
+	})
 	player.teleport(Vector3(-0.6, 0.05, 1.6), 30.0)
 	step = Step.GRANDMA
 	await wait(0.5)
@@ -287,8 +323,28 @@ func _on_present(_by: Node) -> void:
 	await say([
 		["", "The tag's in Grandma's loopy handwriting: 'For Leo. Open Christmas Eve.'"],
 		["", "Pajamas. Matching ones, with little reindeer on them. Everybody got the same pair. Even Dad."],
-		["", "Biscuit gets a reindeer bandana. He looks extremely dignified about it."],
-		["Jamie", "I'm not wearing these."],
+		["", "And at the bottom of the box, something tiny and red: a bandana with little reindeer on it. It's for Biscuit."],
+		["Grandma", "Well, he's family. Go on, put it on him."],
+	])
+	step = Step.BANDANA
+	# Biscuit comes over to see what the fuss is about.
+	var spot := Vector3(-1.2, 0.05, 0.4) # open floor between the tree and the couch
+	dog.set_active(true)
+	dog.go_to([spot], false, player.global_position)
+	dog.arrived.connect(func() -> void: dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
+	busy = false
+	objective("Put the bandana on Biscuit")
+
+
+func _on_biscuit(_by: Node) -> void:
+	if busy or step != Step.BANDANA:
+		return
+	step = Step.PICTURE
+	busy = true
+	Props.tie_bandana(dog)
+	await say([
+		["", "Biscuit holds very, very still while you tie it. Then he walks a slow lap around the living room like he's in a parade."],
+		["Jamie", "He looks better in his than we do in ours. I'm not wearing these."],
 		["Jamie", "...Okay. I'm wearing these. For the picture. Only for the picture."],
 		["Mom", "Picture time! Everybody squish in by the tree."],
 	])
@@ -300,6 +356,18 @@ func _on_present(_by: Node) -> void:
 
 func _on_mom(_by: Node) -> void:
 	if busy:
+		return
+	if step == Step.DAY:
+		# Mom points you at whatever's still left to do (in DAY_TASKS order).
+		var pool := ["Cookies are cooling. Grab a knife, the frosting's in the blue bowl.",
+			"Go see if your father's used the whole roll of tape yet.",
+			"Jamie's been fighting that tree for an hour. Go help before somebody says a word."]
+		for i in range(DAY_TASKS.size() - 1, -1, -1):
+			if _day_done.has(DAY_TASKS[i][0]):
+				pool.remove_at(i)
+		if pool.is_empty():
+			return
+		say([["Mom", pool[randi() % pool.size()]]])
 		return
 	if step != Step.PICTURE:
 		var pool := ["Merry Christmas Eve, sweetie.", "Did you leave Santa a note? You have to leave a note."]
@@ -467,6 +535,9 @@ func _on_porch() -> void:
 	lock(true)
 	Audio.stop_music(4.0)
 	await player.tween_look_at(STREET_POINT, 2.0).finished
+	var on_rail := Props.carrots()
+	on_rail.position = Vector3(-0.9, 0.88, 4.95)
+	add_child(on_rail)
 	await say([
 		["", "You put the carrots on the porch rail, in a neat little row. Three carrots. Nine reindeer. They'll share."],
 		["", "Every house on the street is lit up. Inflatable Santas, light-up reindeer, the Hendersons' blinking star."],
@@ -529,7 +600,7 @@ func _enter_dream() -> void:
 	dog.global_position = DREAM_DOG
 	dog.go_to([DREAM_DOG], false, DREAM_DOG + Vector3(0, 0, 4.0))
 	dog.arrived.connect(func() -> void: dog.set_pose(Dog.Pose.SIT), CONNECT_ONE_SHOT)
-	_bandana(dog)
+	Props.tie_bandana(dog)
 	var glow := OmniLight3D.new()
 	glow.light_color = Color(1.0, 0.78, 0.55)
 	glow.light_energy = 0.7
@@ -543,16 +614,6 @@ func _enter_dream() -> void:
 	lock(false)
 	busy = false
 	hud.show_memory("The hallway is longer than it should be again. Somebody strung Christmas lights all the way down it.", 5.0)
-
-
-## A little red triangle of a bandana on Biscuit's collar.
-func _bandana(d: Dog) -> void:
-	var cloth := CSGPolygon3D.new()
-	cloth.polygon = PackedVector2Array([Vector2(-0.09, 0), Vector2(0.09, 0), Vector2(0, -0.12)])
-	cloth.depth = 0.01
-	cloth.position = Vector3(0, 0.38, -0.33)
-	cloth.material = Decorations.mat(Color(0.75, 0.1, 0.12))
-	d.add_child(cloth)
 
 
 func _process(delta: float) -> void:

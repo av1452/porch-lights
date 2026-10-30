@@ -57,12 +57,23 @@ func _ready() -> void:
 		Color(0, 0, 0, 0), "Look at the ornaments")
 	(_ornaments.get_child(1) as Node3D).visible = false
 	_snacks = box_thing("Snacks", Vector3(-0.1, 0.45, 0.4), Vector3(0.45, 0.08, 0.3), Color(0.85, 0.6, 0.3), "New Year's snacks")
-	box_thing("Racer", Vector3(0.9, 0.09, 1.0), Vector3(0.3, 0.12, 0.18), Color(0.15, 0.35, 0.8), "Mega Robo Racer",
+	dress(_snacks, Props.snacks())
+	var racer := box_thing("Racer", Vector3(0.9, 0.09, 1.0), Vector3(0.3, 0.12, 0.18), Color(0.15, 0.35, 0.8), "Mega Robo Racer",
 		"New batteries. From Grandma, in the mail, with a note: 'For emergencies.'",
 		"It climbs the couch one more time, for the new year.")
+	dress(racer, Props.robo_racer(), 30.0)
+	Props.tie_bandana(dog)
 	var window := $House/LivingRoom/Things/Window as Interactable
 	window.memory_text = "Snow on every roof. Christmas lights still up on every house, and every porch light on."
 	window.repeat_text = "Somebody down the street is already setting off a firework. Too early. Everybody cheers anyway."
+	house_text({
+		"Clock": ["9:10. Not even a little tired. Three more hours. Easy.",
+			"Still not tired. You yawn, but it's a fake yawn. Nobody saw."],
+		"Fridge": ["Sparkling cider, two kinds of dip, and the little hot dogs, waiting for later."],
+		"CalendarI": ["DECEMBER, on the very last box. Behind it, Mom's already hung up next year's calendar. It has puppies."],
+		"KidWindow": ["Snow on the windowsill. Somebody's setting off a firecracker down the street, way too early."],
+		"Backpack": ["School starts again in two days. You push the backpack a little farther under the bed."],
+	})
 
 	_ornaments.used.connect(_on_ornaments)
 	_snacks.used.connect(_on_snacks)
@@ -227,6 +238,9 @@ func _quiet_house() -> void:
 	var window := $House/LivingRoom/Things/Window as Interactable
 	window.memory_text = "The porch light's still on. Up and down the street, everybody's is."
 	window.repeat_text = ""
+	house_text({
+		"Clock": ["12:24 a.m. You've never seen the clock say that before. It looks like a different clock at night."],
+	})
 	tree.used.connect(func(_by: Node) -> void: _look_around("tree"))
 	window.used.connect(func(_by: Node) -> void: _look_around("window"))
 	var pet := dog.get_node_or_null("PetBody") as Interactable
