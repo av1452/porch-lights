@@ -9,8 +9,10 @@ var _fade: ColorRect
 var _dot: Label
 var _prompt: Label
 var _objective: Label
-var _memory: Label
+var _memory: RichTextLabel
 var _line: RichTextLabel
+var _caption: Label
+var _caption_tween: Tween
 var _card_title: Label
 var _card_sub: Label
 var _memory_tween: Tween
@@ -40,30 +42,16 @@ func _ready() -> void:
 	_objective.offset_top = 10
 	_objective.modulate.a = 0.0
 
-	_memory = _make_label("", 12, Color(1, 0.97, 0.9))
-	_memory.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_memory.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_memory.offset_left = 60
-	_memory.offset_right = -60
-	_memory.offset_bottom = -22
-	_memory.modulate.a = 0.0
+	# Thoughts (bottom) and spoken lines (just above), each sized to its text
+	# and growing upward, so the optional background box hugs the words.
+	_memory = _text_block(60, -22, Color(1, 0.97, 0.9))
+	_line = _text_block(50, -62, Color.WHITE)
 
-	_line = RichTextLabel.new()
-	_line.bbcode_enabled = true
-	_line.fit_content = true
-	_line.scroll_active = false
-	_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_line.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_line.offset_left = 50
-	_line.offset_right = -50
-	_line.offset_top = -100
-	_line.offset_bottom = -62
-	_line.add_theme_font_size_override("normal_font_size", 12)
-	_line.add_theme_color_override("default_color", Color.WHITE)
-	_line.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	_line.add_theme_constant_override("outline_size", 4)
-	_line.modulate.a = 0.0
-	add_child(_line)
+	_caption = _make_label("", 10, Color(0.85, 0.92, 1.0))
+	_caption.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_caption.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_caption.offset_top = 32
+	_caption.modulate.a = 0.0
 
 	_card_title = _make_label("", 24, Color(1, 0.93, 0.8))
 	_card_title.offset_bottom = -14
@@ -71,6 +59,64 @@ func _ready() -> void:
 	_card_sub = _make_label("", 11, Color(1, 0.93, 0.8, 0.8))
 	_card_sub.offset_top = 26
 	_card_sub.modulate.a = 0.0
+	apply_settings()
+
+
+func _text_block(side: float, bottom: float, color: Color) -> RichTextLabel:
+	var r := RichTextLabel.new()
+	r.bbcode_enabled = true
+	r.fit_content = true
+	r.scroll_active = false
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	r.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	r.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	r.offset_left = side
+	r.offset_right = -side
+	r.offset_top = bottom
+	r.offset_bottom = bottom
+	r.add_theme_color_override("default_color", color)
+	r.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	r.add_theme_constant_override("outline_size", 4)
+	r.modulate.a = 0.0
+	add_child(r)
+	return r
+
+
+## Text size, subtitle background and crosshair, from Game.settings. Called
+## at start and whenever a setting changes.
+func apply_settings() -> void:
+	var k: float = Game.TEXT_SCALES[clampi(int(Game.settings.text_size), 0, Game.TEXT_SCALES.size() - 1)]
+	for pair in [[_memory, 12], [_line, 12]]:
+		(pair[0] as RichTextLabel).add_theme_font_size_override("normal_font_size", int(round(pair[1] * k)))
+	for pair in [[_objective, 10], [_prompt, 11], [_caption, 10]]:
+		(pair[0] as Label).add_theme_font_size_override("font_size", int(round(pair[1] * k)))
+	var box: StyleBox = StyleBoxEmpty.new()
+	if Game.settings.text_background:
+		var flat := StyleBoxFlat.new()
+		flat.bg_color = Color(0, 0, 0, 0.72)
+		flat.set_corner_radius_all(4)
+		flat.content_margin_left = 10
+		flat.content_margin_right = 10
+		flat.content_margin_top = 4
+		flat.content_margin_bottom = 4
+		box = flat
+	for r in [_memory, _line]:
+		(r as RichTextLabel).add_theme_stylebox_override("normal", box)
+	_caption.add_theme_stylebox_override("normal", box)
+	_dot.self_modulate.a = 1.0 if Game.settings.crosshair else 0.0
+
+
+## A sound, written out ("[Phone ringing]"), when sound captions are on.
+func show_caption(text: String) -> void:
+	if not Game.settings.sound_captions:
+		return
+	_caption.text = text
+	if _caption_tween:
+		_caption_tween.kill()
+	_caption_tween = create_tween()
+	_caption_tween.tween_property(_caption, "modulate:a", 1.0, 0.2)
+	_caption_tween.tween_interval(2.5 * Game.settings.text_hold)
+	_caption_tween.tween_property(_caption, "modulate:a", 0.0, 0.8)
 
 
 func _process(_delta: float) -> void:
@@ -112,7 +158,10 @@ func set_crosshair_visible(v: bool) -> void:
 
 ## A thought. Fades in, lingers, fades out.
 func show_memory(text: String, duration: float = 5.0) -> void:
-	_memory.text = text
+	_memory.text = "[center]%s[/center]" % text
+	duration *= Game.settings.text_hold
+	if Game.settings.read_aloud:
+		Game.speak_aloud(text)
 	if _memory_tween:
 		_memory_tween.kill()
 	_memory_tween = create_tween()
@@ -129,6 +178,9 @@ func show_line(speaker: String, text: String) -> void:
 		return
 	if speaker == "":
 		_line.text = "[center][color=#e8dcc8]%s[/color][/center]" % text
+		# Narration has no recorded voice; read it aloud if asked.
+		if Game.settings.read_aloud:
+			Game.speak_aloud(text)
 	else:
 		_line.text = "[center][color=%s]%s[/color]   %s[/center]" % [SPEAKER_COLOR, speaker, text]
 	if _line_tween:
@@ -148,6 +200,8 @@ func set_objective(text: String) -> void:
 	var t := create_tween()
 	t.tween_property(_objective, "modulate:a", 0.0, 0.4)
 	t.tween_callback(func() -> void: _objective.text = ("▸ " + text) if text != "" else "")
+	if text != "" and Game.settings.read_aloud:
+		Game.speak_aloud("Objective: " + text, false)
 	if text != "":
 		t.tween_property(_objective, "modulate:a", 1.0, 0.8)
 
@@ -156,6 +210,8 @@ func set_objective(text: String) -> void:
 func chapter_card(title: String, subtitle: String, hold: float = 2.5) -> void:
 	_card_title.text = title
 	_card_sub.text = subtitle
+	if Game.settings.read_aloud:
+		Game.speak_aloud("%s. %s." % [title, subtitle])
 	var t := create_tween()
 	t.tween_property(_card_title, "modulate:a", 1.0, 1.2)
 	t.parallel().tween_property(_card_sub, "modulate:a", 1.0, 1.8)
@@ -166,6 +222,10 @@ func chapter_card(title: String, subtitle: String, hold: float = 2.5) -> void:
 
 
 func fade(to_alpha: float, time: float, color: Color = Color.BLACK) -> Tween:
+	# Camera flashes are a quick white pop; with reduced flashing they're a soft glow.
+	if Game.settings.reduce_flashing and color.v > 0.9 and color.s < 0.1 and time < 0.2 and to_alpha > 0.3:
+		to_alpha = 0.2
+		time = 0.4
 	_fade.color = Color(color.r, color.g, color.b, _fade.color.a)
 	var t := create_tween()
 	t.tween_property(_fade, "color:a", to_alpha, time)

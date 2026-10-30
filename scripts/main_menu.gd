@@ -1,6 +1,7 @@
 extends Control
 ## Title screen: a quiet night street with one porch light on, snow falling,
-## and the lullaby. Continue, New Game, Chapters, Photo Album, Settings, Quit.
+## and the lullaby. Continue, New Game, Chapters, Photo Album, Settings,
+## Feedback & Support (the itch.io page), Quit.
 
 var _menu: Control
 var _t := 0.0
@@ -100,6 +101,7 @@ func _show_main() -> void:
 	box.add_child(UI.button("Chapters", _show_chapters))
 	box.add_child(UI.button("Photo Album", func() -> void: _swap(UI.centered(UI.album(_show_main)))))
 	box.add_child(UI.button("Settings", func() -> void: _swap(UI.centered(UI.settings_panel(_show_main)))))
+	box.add_child(UI.button("Feedback & Support", func() -> void: OS.shell_open(Game.ITCH_URL)))
 	box.add_child(UI.button("Quit", func() -> void: get_tree().quit()))
 	_swap(root)
 	(first if first else new_game).grab_focus()

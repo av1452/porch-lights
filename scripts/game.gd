@@ -24,9 +24,24 @@ var reached := 0
 var current := -1
 var finished := false
 var settings := {
-	"master": 1.0, "music": 1.0, "voice": 1.0, "sfx": 1.0,
-	"sensitivity": 1.0, "subtitles": true, "fullscreen": false,
+	# audio
+	"master": 1.0, "music": 1.0, "voice": 1.0, "sfx": 1.0, "mono": false,
+	# display
+	"fullscreen": false, "fov": 75.0,
+	# controls
+	"sensitivity": 1.0, "invert_y": false, "toggle_run": false, "toggle_crouch": false,
+	# accessibility: text
+	"subtitles": true, "text_size": 1, "text_background": false, "sound_captions": false, "text_hold": 1.0,
+	# accessibility: vision and motion
+	"read_aloud": false, "narrate_menus": false, "head_bob": true, "reduce_flashing": false, "crosshair": true,
 }
+## Where players download the game, leave feedback, and can support it.
+const ITCH_URL := "https://aidanbuilds.itch.io/porch-lights"
+## Subtitle / interface text sizes for the "text_size" setting.
+const TEXT_SCALES := [0.85, 1.0, 1.3, 1.65]
+const TEXT_SIZE_NAMES := ["Small", "Medium", "Large", "Extra large"]
+var _tts_voice := ""
+var _defaults := {}
 ## Each photo: { "file": "user://photos/...png" or "", "caption": "...", "stamp": "'03 12 24" }
 var photos: Array = []
 
@@ -38,6 +53,8 @@ var _testing := DisplayServer.get_name() == "headless"
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	Controls.setup()
+	_defaults = settings.duplicate()
+	get_viewport().gui_focus_changed.connect(_on_focus_changed)
 	load_game()
 	apply_settings()
 
@@ -80,8 +97,64 @@ func apply_settings() -> void:
 		var i := AudioServer.get_bus_index(bus)
 		if i != -1:
 			AudioServer.set_bus_volume_db(i, linear_to_db(maxf(settings.voice, 0.001)) + (-4.0 if bus == "TV" else 0.0))
+	_apply_mono(settings.mono)
 	if DisplayServer.get_name() != "headless":
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
+	# Text size, background, crosshair and field of view update live.
+	get_tree().call_group("hud", "apply_settings")
+	get_tree().call_group("player", "apply_settings")
+
+
+func restore_defaults() -> void:
+	settings = _defaults.duplicate()
+	apply_settings()
+	save_game()
+
+
+## "Narrate menus": say what's selected as focus moves.
+func _on_focus_changed(c: Control) -> void:
+	if not settings.narrate_menus or c == null:
+		return
+	var words := ""
+	if c is CheckBox:
+		words = "%s, %s" % [(c as CheckBox).text, "on" if (c as CheckBox).button_pressed else "off"]
+	elif c is OptionButton:
+		words = "%s, %s" % [c.tooltip_text, (c as OptionButton).text]
+	elif c is Button:
+		words = (c as Button).text
+	elif c is Range:
+		words = "%s slider" % c.tooltip_text
+	elif c is TabBar:
+		words = "%s tab" % (c as TabBar).get_tab_title((c as TabBar).current_tab)
+	if words != "":
+		speak_aloud(words)
+
+
+## Mono audio: fold left and right together on the Master bus, so nothing is
+## missed by someone who hears in one ear.
+func _apply_mono(on: bool) -> void:
+	var master := AudioServer.get_bus_index("Master")
+	for i in AudioServer.get_bus_effect_count(master):
+		if AudioServer.get_bus_effect(master, i) is AudioEffectStereoEnhance:
+			AudioServer.remove_bus_effect(master, i)
+			break
+	if on:
+		var mono := AudioEffectStereoEnhance.new()
+		mono.pan_pullout = 0.0
+		AudioServer.add_bus_effect(master, mono)
+
+
+## Speaks text with the operating system's voice (read-aloud and menu
+## narration). Quietly does nothing where text-to-speech isn't available.
+func speak_aloud(text: String, interrupt := true) -> void:
+	if text.strip_edges() == "" or DisplayServer.get_name() == "headless":
+		return
+	if _tts_voice == "":
+		var voices := DisplayServer.tts_get_voices_for_language("en")
+		if voices.is_empty():
+			return
+		_tts_voice = voices[0]
+	DisplayServer.tts_speak(text, _tts_voice, 60, 1.0, 1.0, 0, interrupt)
 
 
 # ---------------------------------------------------------------- chapters

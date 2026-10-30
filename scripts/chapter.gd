@@ -58,7 +58,8 @@ func say(lines: Array) -> void:
 		var text: String = l[1]
 		hud.show_line(l[0], text)
 		var voiced := Audio.speak(l[0], text)
-		await wait(maxf(1.8 + text.length() * 0.045, voiced + 0.4))
+		# "Text speed" in Settings stretches how long each line stays up.
+		await wait(maxf((1.8 + text.length() * 0.045) * Game.settings.text_hold, voiced + 0.4))
 	hud.clear_line()
 	busy = was_busy
 

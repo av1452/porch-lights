@@ -59,49 +59,174 @@ static func centered(child: Control) -> CenterContainer:
 # ---------------------------------------------------------------- settings
 
 static func settings_panel(on_back: Callable) -> Control:
-	var p := panel(Vector2(300, 0))
+	var p := panel(Vector2(470, 0))
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	p.add_child(box)
 	box.add_child(label("Settings", 16, GOLD))
-	var first: Control = null
-	for row in [["Master volume", "master"], ["Music", "music"], ["Voices", "voice"], ["Sound effects", "sfx"],
-			["Look sensitivity", "sensitivity"]]:
-		var h := HBoxContainer.new()
-		var name := label(row[0], 11)
-		name.custom_minimum_size.x = 120
-		h.add_child(name)
-		var s := HSlider.new()
-		s.min_value = 0.0 if row[1] != "sensitivity" else 0.2
-		s.max_value = 1.0 if row[1] != "sensitivity" else 2.5
-		s.step = 0.05
-		s.value = Game.settings[row[1]]
-		s.custom_minimum_size.x = 150
-		s.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var key: String = row[1]
-		s.value_changed.connect(func(v: float) -> void:
-			Game.settings[key] = v
-			Game.apply_settings())
-		h.add_child(s)
-		box.add_child(h)
-		if first == null:
-			first = s
-	for row in [["Subtitles", "subtitles"], ["Fullscreen", "fullscreen"]]:
-		var c := CheckBox.new()
-		c.text = row[0]
-		c.button_pressed = Game.settings[row[1]]
-		c.add_theme_font_size_override("font_size", 11)
-		c.add_theme_color_override("font_color", CREAM)
-		var key: String = row[1]
-		c.toggled.connect(func(on: bool) -> void:
-			Game.settings[key] = on
-			Game.apply_settings())
-		box.add_child(c)
-	box.add_child(button("Back", func() -> void:
+	var tabs := TabContainer.new()
+	tabs.custom_minimum_size = Vector2(450, 250)
+	tabs.add_theme_font_size_override("font_size", 11)
+	box.add_child(tabs)
+
+	var audio := _tab(tabs, "Audio")
+	_slider(audio, "Master volume", "master", 0.0, 1.0)
+	_slider(audio, "Music", "music", 0.0, 1.0)
+	_slider(audio, "Voices", "voice", 0.0, 1.0)
+	_slider(audio, "Sound effects", "sfx", 0.0, 1.0)
+	_check(audio, "Mono audio", "mono", "Left and right channels play in both ears.")
+
+	var display := _tab(tabs, "Display")
+	_check(display, "Fullscreen", "fullscreen")
+	_slider(display, "Field of view", "fov", 60.0, 100.0, 1.0)
+	_check(display, "Crosshair", "crosshair", "The dot in the middle of the screen. Prompts still show.")
+
+	var controls := _tab(tabs, "Controls")
+	_slider(controls, "Look sensitivity", "sensitivity", 0.2, 2.5)
+	_check(controls, "Invert look up/down", "invert_y")
+	_check(controls, "Toggle run", "toggle_run", "Tap Run once instead of holding it.")
+	_check(controls, "Toggle crouch", "toggle_crouch", "Tap Crouch once instead of holding it.")
+	controls.add_child(label("Move: WASD / left stick   Look: mouse / right stick\nInteract: E, click / A   Run: Shift / L3   Crouch: C / B   Pause: Esc / Start", 9, Color(1, 0.93, 0.8, 0.7)))
+
+	var text := _tab(tabs, "Text")
+	_check(text, "Subtitles for spoken lines", "subtitles", "Narration and Leo's thoughts always show.")
+	_choice(text, "Text size", "text_size", Game.TEXT_SIZE_NAMES)
+	_check(text, "Background behind text", "text_background", "A dark box behind subtitles, thoughts and captions.")
+	_check(text, "Sound captions", "sound_captions", "Writes out important sounds: [Phone ringing], [Biscuit barks].")
+	_slider(text, "Text stays on screen", "text_hold", 1.0, 2.5, 0.25, "x")
+
+	var access := _tab(tabs, "Accessibility")
+	_check(access, "Read text aloud", "read_aloud", "The system voice reads narration, thoughts, objectives and chapter titles.")
+	_check(access, "Narrate menus", "narrate_menus", "The system voice reads each menu item as you select it.")
+	_check(access, "Head bob and road shake", "head_bob", "Turn off if movement makes you feel sick.")
+	_check(access, "Reduce flashing", "reduce_flashing", "Camera flashes become a soft glow.")
+	access.add_child(label("No timed sections, no fail states, and the game pauses anywhere.", 9, Color(1, 0.93, 0.8, 0.7)))
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	row.add_child(button("Back", func() -> void:
 		Game.save_game()
 		on_back.call()))
-	_focus_when_shown(p, first)
+	row.add_child(button("Restore defaults", func() -> void:
+		Game.restore_defaults()
+		var parent := p.get_parent()
+		if parent:
+			var fresh := settings_panel(on_back)
+			parent.add_child(fresh)
+			p.queue_free()))
+	box.add_child(row)
+	var bar := tabs.get_tab_bar()
+	bar.focus_mode = Control.FOCUS_ALL
+	_focus_when_shown(p, bar)
 	return p
+
+
+static func _tab(tabs: TabContainer, title: String) -> VBoxContainer:
+	var v := VBoxContainer.new()
+	v.name = title
+	v.add_theme_constant_override("separation", 4)
+	tabs.add_child(v)
+	return v
+
+
+static func _apply(key: String, value: Variant) -> void:
+	Game.settings[key] = value
+	Game.apply_settings()
+
+
+static func _slider(parent: Control, text: String, key: String, lo: float, hi: float, step := 0.05, suffix := "") -> void:
+	var h := HBoxContainer.new()
+	var name := label(text, 11)
+	name.custom_minimum_size.x = 170
+	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	h.add_child(name)
+	var s := HSlider.new()
+	s.min_value = lo
+	s.max_value = hi
+	s.step = step
+	s.value = float(Game.settings[key])
+	s.custom_minimum_size.x = 170
+	s.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	s.tooltip_text = text
+	h.add_child(s)
+	var shown := label("", 10)
+	shown.custom_minimum_size.x = 50
+	var fmt := func(v: float) -> String:
+		if suffix == "x":
+			return "%.2fx" % v
+		if hi > 10.0:
+			return "%d" % int(v)
+		return "%d%%" % int(round(v * 100.0))
+	shown.text = fmt.call(s.value)
+	h.add_child(shown)
+	s.value_changed.connect(func(v: float) -> void:
+		shown.text = fmt.call(v)
+		_apply(key, v)
+		if Game.settings.narrate_menus:
+			Game.speak_aloud(shown.text))
+	parent.add_child(h)
+
+
+## Checkbox icons drawn here, so an unticked box is visible on the dark panel.
+static var _box_icons := {}
+
+
+static func _check_icon(ticked: bool) -> Texture2D:
+	if _box_icons.has(ticked):
+		return _box_icons[ticked]
+	var img := Image.create(14, 14, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for i in 14:
+		for e in [0, 1, 12, 13]:
+			img.set_pixel(i, e, CREAM)
+			img.set_pixel(e, i, CREAM)
+	if ticked:
+		for i in range(4, 10):
+			for j in range(4, 10):
+				img.set_pixel(i, j, GOLD)
+	_box_icons[ticked] = ImageTexture.create_from_image(img)
+	return _box_icons[ticked]
+
+
+static func _check(parent: Control, text: String, key: String, help := "") -> void:
+	var c := CheckBox.new()
+	c.add_theme_icon_override("unchecked", _check_icon(false))
+	c.add_theme_icon_override("checked", _check_icon(true))
+	c.text = text
+	c.button_pressed = bool(Game.settings[key])
+	c.add_theme_font_size_override("font_size", 11)
+	c.add_theme_color_override("font_color", CREAM)
+	c.add_theme_color_override("font_focus_color", GOLD)
+	c.tooltip_text = help
+	c.toggled.connect(func(on: bool) -> void:
+		_apply(key, on)
+		if Game.settings.narrate_menus:
+			Game.speak_aloud("%s, %s" % [text, "on" if on else "off"]))
+	parent.add_child(c)
+	if help != "":
+		var l := label("    " + help, 9, Color(1, 0.93, 0.8, 0.6))
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		parent.add_child(l)
+
+
+static func _choice(parent: Control, text: String, key: String, options: Array) -> void:
+	var h := HBoxContainer.new()
+	var name := label(text, 11)
+	name.custom_minimum_size.x = 170
+	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	h.add_child(name)
+	var o := OptionButton.new()
+	for opt in options:
+		o.add_item(opt)
+	o.selected = int(Game.settings[key])
+	o.add_theme_font_size_override("font_size", 11)
+	o.tooltip_text = text
+	o.item_selected.connect(func(i: int) -> void:
+		_apply(key, i)
+		if Game.settings.narrate_menus:
+			Game.speak_aloud(options[i]))
+	h.add_child(o)
+	parent.add_child(h)
 
 
 ## Controllers need something selected the moment a screen opens.

@@ -35,6 +35,8 @@ signal target_changed(target: Interactable)
 
 ## Set true during cutscenes and transitions.
 var input_locked := false
+var _run_on := false
+var _crouch_on := false
 var crouching := false
 ## While seated you can look around but not walk.
 var seated := false
@@ -51,7 +53,9 @@ var _surface := "wood"
 
 func _ready() -> void:
 	_setup_inputs()
+	add_to_group("player")
 	_capsule = body_shape.shape as CapsuleShape3D
+	base_fov = Game.settings.fov
 	camera.fov = base_fov
 	ray.add_exception(self)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -63,7 +67,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var motion := event as InputEventMouseMotion
 		var sens: float = mouse_sensitivity * Game.settings.sensitivity
 		rotate_y(-motion.relative.x * sens)
-		head.rotate_x(-motion.relative.y * sens)
+		head.rotate_x(-motion.relative.y * sens * (-1.0 if Game.settings.invert_y else 1.0))
 		head.rotation.x = clampf(head.rotation.x, deg_to_rad(-80), deg_to_rad(80))
 	elif event.is_action_pressed("pause") and not Controls.is_pad(event):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -72,6 +76,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("interact") and not input_locked and _target:
 		_target.interact(self)
+	# Toggle run / toggle crouch (Settings > Controls): tap once instead of holding.
+	elif event.is_action_pressed("sprint") and Game.settings.toggle_run:
+		_run_on = not _run_on
+	elif event.is_action_pressed("crouch") and Game.settings.toggle_crouch:
+		_crouch_on = not _crouch_on
+
+
+## Field of view, from Settings. Leaves cutscene zooms alone.
+func apply_settings() -> void:
+	var was := base_fov
+	base_fov = Game.settings.fov
+	if is_equal_approx(camera.fov, was):
+		camera.fov = base_fov
 
 
 func _process(delta: float) -> void:
@@ -84,7 +101,7 @@ func _process(delta: float) -> void:
 	look *= look.length()
 	var speed: float = stick_look_speed * Game.settings.sensitivity * delta
 	rotate_y(-look.x * speed)
-	head.rotate_x(-look.y * speed * 0.8)
+	head.rotate_x(-look.y * speed * 0.8 * (-1.0 if Game.settings.invert_y else 1.0))
 	head.rotation.x = clampf(head.rotation.x, deg_to_rad(-80), deg_to_rad(80))
 
 
@@ -108,7 +125,7 @@ func _physics_process(delta: float) -> void:
 	var speed := walk_speed
 	if crouching:
 		speed = crouch_speed
-	elif Input.is_action_pressed("sprint") and not input_locked:
+	elif _running() and not input_locked:
 		speed = sprint_speed
 
 	var w := clampf(acceleration * delta, 0.0, 1.0)
@@ -125,7 +142,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _update_crouch(delta: float) -> void:
-	crouching = Input.is_action_pressed("crouch") and not input_locked and not seated
+	var want_crouch := _crouch_on if Game.settings.toggle_crouch else Input.is_action_pressed("crouch")
+	crouching = want_crouch and not input_locked and not seated
 	var h := crouch_height if crouching else stand_height
 	_capsule.height = move_toward(_capsule.height, h, delta * 4.0)
 	body_shape.position.y = _capsule.height / 2.0
@@ -137,12 +155,17 @@ func _update_crouch(delta: float) -> void:
 	head.position.y = lerpf(head.position.y, eye, clampf(10.0 * delta, 0.0, 1.0))
 
 
+func _running() -> bool:
+	return _run_on if Game.settings.toggle_run else Input.is_action_pressed("sprint")
+
+
 func _update_bob(delta: float) -> void:
 	var hspeed := Vector2(velocity.x, velocity.z).length()
 	var target := Vector3.ZERO
 	if is_on_floor() and hspeed > 0.2:
 		_bob_t += delta * bob_frequency * TAU * (hspeed / walk_speed) * 0.5
-		target = Vector3(cos(_bob_t * 0.5) * bob_amount * 0.6, sin(_bob_t) * bob_amount, 0)
+		var bob := bob_amount if Game.settings.head_bob else 0.0
+		target = Vector3(cos(_bob_t * 0.5) * bob * 0.6, sin(_bob_t) * bob, 0)
 		var step := int(_bob_t / PI)
 		if step != _step_index:
 			_step_index = step

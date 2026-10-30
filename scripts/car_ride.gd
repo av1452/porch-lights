@@ -49,8 +49,8 @@ func _process(delta: float) -> void:
 			c.position.z += (speed + 26.0) * delta
 			if c.position.z > 40.0:
 				c.visible = false
-	# A little road shake.
-	_cabin.position.y = sin(Time.get_ticks_msec() * 0.011) * 0.004 + sin(Time.get_ticks_msec() * 0.023) * 0.002
+	# A little road shake (off with head bob, for motion comfort).
+	_cabin.position.y = 0.0 if not Game.settings.head_bob else sin(Time.get_ticks_msec() * 0.011) * 0.004 + sin(Time.get_ticks_msec() * 0.023) * 0.002
 
 
 func stop_engine(time := 2.0) -> void:

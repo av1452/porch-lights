@@ -139,7 +139,22 @@ func stop_music(fade_time := 2.0) -> void:
 
 ## One-shot sound. Pass `at` for positional 3D sound. `variants` picks
 ## name_1..name_N at random (footsteps, barks).
+## Important sounds, written out for players who can't hear them (shown when
+## "Sound captions" is on). Ambience, footsteps and clicks stay uncaptioned.
+const CAPTIONS := {
+	"phone_ring": "[Phone ringing]", "knock": "[Knocking]", "dog_bark": "[Biscuit barks]",
+	"dog_whine": "[Biscuit whines]", "dog_growl": "[Biscuit growls]", "dog_tags": "[Jingle of Biscuit's collar]",
+	"school_bell": "[School bell rings]", "door_open": "[Door opens]", "door_close": "[Door closes]",
+	"car_door": "[Car door shuts]", "candy_rustle": "[Rustling]", "title_sting": "",
+	"tv_zap": "[TV changes channel]", "tv_off": "[TV clicks off]", "light_out": "[A porch light clicks off]",
+	"scissors": "[Snip, snip]", "im_message": "[Message chime]",
+}
+
+
 func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter := 0.0, variants := 0) -> void:
+	var caption: String = CAPTIONS.get(name, "")
+	if caption != "":
+		get_tree().call_group("hud", "show_caption", caption)
 	if SEQUENCES.has(name):
 		_play_sequence(name, at, volume_db, pitch_jitter)
 		return
