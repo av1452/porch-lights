@@ -2,7 +2,7 @@ class_name Look
 ## The "less low-poly" pass, run on every chapter when it starts (Chapter._ready).
 ## Keeps the early-2000s style but smooths it toward a late-PS2 look:
 ## - round shapes get enough segments to actually look round
-## - flat-color materials get subtle surface grain and bumpiness (plaster,
+## - flat-color materials get a subtle surface grain and bumpiness (plaster,
 ##   fabric, wood) from two shared noise textures
 ## - block people get rounded bodies, real legs, hands, shoes and faces
 ## - shadow-casting lights get soft, lamp-sized shadows instead of hard edges
@@ -65,7 +65,7 @@ static func _make_textures() -> void:
 	noise.frequency = 0.08
 	noise.fractal_octaves = 4
 	var ramp := Gradient.new()
-	ramp.set_color(0, Color(0.8, 0.8, 0.8))
+	ramp.set_color(0, Color(0.9, 0.9, 0.9))
 	ramp.set_color(1, Color(1, 1, 1))
 	_grain = NoiseTexture2D.new()
 	_grain.noise = noise
@@ -98,7 +98,7 @@ static func _material(m: Variant) -> void:
 	mat.albedo_texture = _grain
 	mat.normal_enabled = true
 	mat.normal_texture = _bumps
-	mat.normal_scale = 0.35
+	mat.normal_scale = 0.15
 	mat.uv1_triplanar = true
 	mat.uv1_scale = Vector3(1.6, 1.6, 1.6)
 	if mat.roughness >= 1.0:

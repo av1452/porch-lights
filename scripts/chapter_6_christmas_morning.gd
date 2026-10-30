@@ -14,12 +14,14 @@ var jamie: Interactable
 var grandma: Interactable
 var _stocking: Interactable
 var _present: Interactable
+var _daylight := {}
 
 
 func _ready() -> void:
 	super._ready()
 	Decorations.christmas_tree(self, true)
 	_morning()
+	_before_dawn()
 	tv_screen.channel = "winter"
 	set_porch_light(true)
 	dad.position = Vector3(6.0, 0.0, -0.6)
@@ -86,6 +88,54 @@ func _morning() -> void:
 	add_child(snow_ground)
 
 
+## 5:52 a.m. is still dark: start from deep blue, with the tree lights doing
+## most of the work. The morning above is where the sunrise ends up.
+func _before_dawn() -> void:
+	var sky := env.sky.sky_material as ProceduralSkyMaterial
+	var sun := lights.get_node("Moon") as DirectionalLight3D
+	_daylight = {
+		"sky_top": sky.sky_top_color, "sky_horizon": sky.sky_horizon_color,
+		"ground_horizon": sky.ground_horizon_color, "ground_bottom": sky.ground_bottom_color,
+		"fog_color": env.fog_light_color, "ambient_color": env.ambient_light_color,
+		"ambient": env.ambient_light_energy, "sun": sun.light_energy, "sun_color": sun.light_color,
+		"lamps": {},
+	}
+	sky.sky_top_color = Color(0.03, 0.04, 0.12)
+	sky.sky_horizon_color = Color(0.12, 0.12, 0.25)
+	sky.ground_horizon_color = Color(0.1, 0.1, 0.18)
+	sky.ground_bottom_color = Color(0.05, 0.05, 0.1)
+	env.fog_light_color = Color(0.1, 0.1, 0.2)
+	env.ambient_light_energy = 0.08
+	env.ambient_light_color = Color(0.4, 0.45, 0.75)
+	sun.light_energy = 0.15
+	sun.light_color = Color(0.55, 0.65, 1.0)
+	# Nobody's turned the lamps on yet; the tree and the TV are the light.
+	for l in lights.get_children():
+		if l is OmniLight3D and not l.name in ["TVGlow", "PorchLight"]:
+			_daylight.lamps[l] = (l as OmniLight3D).light_energy
+			(l as OmniLight3D).light_energy *= 0.3
+
+
+## While the presents get opened, the sun comes up over the snow.
+func _sunrise(time := 25.0) -> void:
+	var sky := env.sky.sky_material as ProceduralSkyMaterial
+	var sun := lights.get_node("Moon") as DirectionalLight3D
+	var t := create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE)
+	t.tween_property(sky, "sky_top_color", _daylight.sky_top, time)
+	t.tween_property(sky, "sky_horizon_color", _daylight.sky_horizon, time)
+	t.tween_property(env, "ambient_light_energy", _daylight.ambient, time)
+	t.tween_property(sun, "light_energy", _daylight.sun, time)
+	t.tween_property(sun, "light_color", _daylight.sun_color, time)
+	t.tween_property(sky, "ground_horizon_color", _daylight.ground_horizon, time)
+	t.tween_property(sky, "ground_bottom_color", _daylight.ground_bottom, time)
+	t.tween_property(env, "fog_light_color", _daylight.fog_color, time)
+	t.tween_property(env, "ambient_light_color", _daylight.ambient_color, time)
+	for l in _daylight.lamps:
+		t.tween_property(l, "light_energy", _daylight.lamps[l], time)
+	# The painted-glass windows in the other rooms catch up when it's full day.
+	get_tree().create_timer(time).timeout.connect(set_window_daylight.bind(true))
+
+
 # --- Step 0: he came ----------------------------------------------------
 
 func _on_see_tree() -> void:
@@ -127,6 +177,7 @@ func _on_present(_by: Node) -> void:
 		return
 	step = Step.DAD
 	busy = true
+	_sunrise()
 	Audio.play_sfx("candy_rustle", _present, -2.0)
 	await say([
 		["", "The Mega Robo Racer. The one you circled in the catalog. Three times. In three markers."],

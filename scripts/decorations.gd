@@ -30,7 +30,8 @@ static func hide(n: Node3D) -> void:
 ## Chapter 1's Halloween things, and seated-at-the-computer Jamie.
 static func put_away_halloween(house: Node) -> void:
 	for p in ["Story/Candy", "Story/Mom", "House/LivingRoom/Things/Mask", "House/LivingRoom/Things/JackOLantern",
-			"House/Kitchen/Things/CandyBowl", "House/JamieRoom/JamieRoomFull/Things/Jamie"]:
+			"House/Kitchen/Things/CandyBowl", "House/JamieRoom/JamieRoomFull/Things/Jamie",
+			"House/LivingRoom/Details/Halloween"]:
 		hide(house.get_node(p) as Node3D)
 	(house.get_node("Lights/PumpkinLight") as OmniLight3D).light_energy = 0.0
 	(house.get_node("House/Kitchen/Furniture/CalendarMonth") as Label3D).text = "DECEMBER"

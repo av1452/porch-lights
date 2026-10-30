@@ -67,6 +67,10 @@ func _process(delta: float) -> void:
 func set_window_daylight(day: bool) -> void:
 	for glass in find_children("Glass", "CSGBox3D", true, false):
 		var g := glass as CSGBox3D
+		# Clear glass shows the real sky already; only painted night glass swaps.
+		var current := g.get_meta("night_material", g.material) as StandardMaterial3D
+		if current and current.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+			continue
 		if not g.has_meta("night_material"):
 			g.set_meta("night_material", g.material)
 		if day:
