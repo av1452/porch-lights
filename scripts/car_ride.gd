@@ -1,10 +1,11 @@
 class_name CarRide
 extends Node3D
-## The family car, built in code. The car stays still and the road slides
+## The family minivan, built in code. The car stays still and the road slides
 ## past: lane dashes, reflector posts, sodium streetlights that sweep through
 ## the cabin at night, and the occasional oncoming car. Set `daytime` before
 ## adding it for an autumn afternoon: lights off, fall trees along the road.
-## Car faces -Z. Back seat: Leo on the right (+X), Jamie on the left.
+## Van faces -Z. Middle row: Leo on the right (+X, by the sliding door),
+## Jamie on the left. A third row behind them, then the rear hatch.
 
 @export var speed := 24.0
 ## Seconds between oncoming cars (randomized around this).
@@ -93,11 +94,18 @@ func _build_cabin() -> void:
 	glass.roughness = 0.05
 	glass.metallic_specular = 1.0
 
-	_box(_cabin, Vector3(1.5, 0.05, 3.2), Vector3(0, -0.02, 0), _mat(Color(0.15, 0.14, 0.14)))
-	_box(_cabin, Vector3(1.5, 0.05, 2.4), Vector3(0, 1.5, -0.1), headliner)
-	# back seat
+	_box(_cabin, Vector3(1.5, 0.05, 4.2), Vector3(0, -0.02, 0.4), _mat(Color(0.15, 0.14, 0.14)))
+	# A minivan's tall roof, with a dome light in the middle.
+	_box(_cabin, Vector3(1.5, 0.05, 3.9), Vector3(0, 1.62, 0.45), headliner)
+	_box(_cabin, Vector3(0.3, 0.03, 0.15), Vector3(0, 1.595, 0.3), _mat(Color(0.9, 0.88, 0.8), 0.6))
+	# middle row (Leo and Jamie)
 	_box(_cabin, Vector3(1.4, 0.42, 0.5), Vector3(0, 0.21, 0.62), upholstery)
 	_box(_cabin, Vector3(1.4, 0.62, 0.14), Vector3(0, 0.72, 0.9), upholstery, Vector3(-8, 0, 0))
+	# third row, with the folding chairs Dad brings every year
+	_box(_cabin, Vector3(1.4, 0.4, 0.45), Vector3(0, 0.2, 1.75), upholstery)
+	_box(_cabin, Vector3(1.4, 0.6, 0.14), Vector3(0, 0.7, 2.02), upholstery, Vector3(-8, 0, 0))
+	for k in 2:
+		_box(_cabin, Vector3(0.45, 0.6, 0.04), Vector3(-0.3 + k * 0.12, 0.72, 2.25 + k * 0.05), _mat(Color(0.2, 0.3, 0.55)), Vector3(-12, 0, 0))
 	# front seats (no headrests, so you can see Mom and Dad)
 	for x in [-0.38, 0.38]:
 		_box(_cabin, Vector3(0.52, 0.42, 0.5), Vector3(x, 0.21, -0.5), upholstery)
@@ -126,18 +134,23 @@ func _build_cabin() -> void:
 	dash_glow.omni_range = 1.2
 	dash_glow.position = Vector3(0, 0.95, -1.05)
 	_cabin.add_child(dash_glow)
-	# doors, windows and pillars
+	# doors, long side windows and pillars, front to back
 	for side in [-1, 1]:
-		_box(_cabin, Vector3(0.06, 0.62, 2.5), Vector3(0.75 * side, 0.5, -0.1), plastic)
-		_box(_cabin, Vector3(0.02, 0.66, 2.4), Vector3(0.74 * side, 1.14, -0.1), glass)
-		for z in [-1.25, 0.1, 1.05]:
-			_box(_cabin, Vector3(0.06, 0.68, 0.08), Vector3(0.74 * side, 1.15, z), plastic)
-	_box(_cabin, Vector3(1.4, 0.7, 0.02), Vector3(0, 1.15, 1.12), glass, Vector3(-25, 0, 0))
-	_box(_cabin, Vector3(1.4, 0.72, 0.02), Vector3(0, 1.15, -1.55), glass, Vector3(30, 0, 0))
-	# outside: hood and trunk so the windows aren't looking into nothing
-	var paint := _mat(Color(0.22, 0.27, 0.33), 0.5)
-	_box(_cabin, Vector3(1.6, 0.5, 1.2), Vector3(0, 0.45, -2.2), paint)
-	_box(_cabin, Vector3(1.6, 0.5, 0.8), Vector3(0, 0.45, 1.6), paint)
+		_box(_cabin, Vector3(0.06, 0.62, 3.8), Vector3(0.75 * side, 0.5, 0.4), plastic)
+		_box(_cabin, Vector3(0.02, 0.74, 3.7), Vector3(0.74 * side, 1.2, 0.4), glass)
+		for z in [-1.25, -0.1, 1.2, 2.25]:
+			_box(_cabin, Vector3(0.06, 0.76, 0.08), Vector3(0.74 * side, 1.2, z), plastic)
+	# The sliding door's track and handle, on Leo's side.
+	_box(_cabin, Vector3(0.03, 0.03, 1.2), Vector3(0.72, 0.84, 0.5), _mat(Color(0.35, 0.35, 0.37), 0.4))
+	_box(_cabin, Vector3(0.04, 0.05, 0.16), Vector3(0.71, 0.7, 0.05), _mat(Color(0.3, 0.3, 0.32), 0.4))
+	# A flat rear hatch window, and a steep, short windshield over a short hood.
+	_box(_cabin, Vector3(1.4, 0.78, 0.02), Vector3(0, 1.2, 2.42), glass, Vector3(-8, 0, 0))
+	_box(_cabin, Vector3(1.4, 0.8, 0.02), Vector3(0, 1.2, -1.58), glass, Vector3(38, 0, 0))
+	# outside: the hood and the back of the van, so the windows aren't looking into nothing
+	var paint := _mat(Color(0.2, 0.33, 0.27), 0.5)
+	_box(_cabin, Vector3(1.6, 0.45, 0.9), Vector3(0, 0.5, -2.1), paint, Vector3(-6, 0, 0))
+	_box(_cabin, Vector3(1.6, 1.2, 0.12), Vector3(0, 0.35, 2.52), paint)
+	_box(_cabin, Vector3(1.0, 0.18, 0.02), Vector3(0, 0.55, 2.59), _mat(Color(0.85, 0.85, 0.82)))
 	var beams := SpotLight3D.new()
 	_beams = beams
 	beams.visible = not daytime
