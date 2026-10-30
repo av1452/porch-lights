@@ -51,7 +51,9 @@ func _ready() -> void:
 	_tree_glow = tree.glow
 	for i in _checks.size():
 		_checks[i].used.connect(_on_bulb.bind(i))
-	tv_screen.channel = "winter"
+	tv_screen.channel = "christmas"
+	tv.memory_text = "The Night Before. It's on every Christmas Eve. The dog at the window gets you every time."
+	tv.repeat_text = "The toy train goes around the tree. You want that train. You also want the robot car."
 	set_porch_light(false)
 	_afternoon()
 	mom = $Story/Mom

@@ -210,7 +210,7 @@ without Godot on your PATH, you can also run:
 - `scripts/living_room_details.gd`: the lived-in clutter. `scripts/radio.gd`: the kitchen radio.
 - `scripts/im_window.gd`: the instant-message window.
 - `scripts/tv_screen.gd`, `scripts/tv_show.gd`: the live TV picture. Drop an Ogg Theora video at
-  `media/<channel>.ogv` (`special`, `commercial`, `winter`, `football`, `newyear`, `dream`, `signoff`, `static`) to use real footage.
+  `media/<channel>.ogv` (`special`, `commercial`, `winter`, `christmas`, `football`, `newyear`, `dream`, `signoff`, `static`) to use real footage.
 - `scripts/look.gd`: the low-poly polish pass (round shapes, subtle surface grain, soft shadows, rounded people).
 - `scripts/audio.gd`: autoload `Audio`: music, sound effects, voices, sound captions.
 

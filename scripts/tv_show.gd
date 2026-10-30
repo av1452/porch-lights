@@ -2,7 +2,8 @@ class_name TvShow
 extends Node2D
 ## Placeholder TV programs drawn live at 160x120: a Halloween cartoon special,
 ## a winter special, a toy commercial, a dream version, a broadcast sign-off,
-## static, Thanksgiving football, and the New Year's Eve countdown.
+## static, Thanksgiving football, the New Year's Eve countdown, and "The
+## Night Before", an original Christmas special.
 ## Replace any of them with a real video via media/<channel>.ogv.
 
 const W := 160.0
@@ -32,6 +33,8 @@ func light_color() -> Color:
 			return Color(0.7, 0.45, 1.0)
 		"winter":
 			return Color(0.75, 0.85, 1.0)
+		"christmas":
+			return Color(1.0, 0.8, 0.6) if fmod(_t, 40.0) < 20.0 else Color(0.6, 0.7, 1.0)
 		"signoff":
 			return Color(0.9, 0.9, 1.0)
 		"static":
@@ -55,6 +58,8 @@ func _draw() -> void:
 			_draw_commercial()
 		"winter":
 			_draw_winter()
+		"christmas":
+			_draw_christmas()
 		"signoff":
 			_draw_signoff()
 		"static":
@@ -144,6 +149,141 @@ func _draw_winter() -> void:
 		draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.85))
 	if fmod(_t, 20.0) < 4.0:
 		_text("A WINTER SPECIAL", Vector2(W / 2, 16), 12, Color(0.9, 0.95, 1.0))
+
+
+## "The Night Before": a 40-second loop in four scenes. A snowy town, a toy
+## train around the tree, the sleigh across the moon, and a dog waiting up
+## by the window with the porch light on.
+func _draw_christmas() -> void:
+	var t := fmod(_t, 40.0)
+	if t < 10.0:
+		_xmas_town(t)
+	elif t < 20.0:
+		_xmas_tree(t - 10.0)
+	elif t < 30.0:
+		_xmas_sleigh(t - 20.0)
+	else:
+		_xmas_window(t - 30.0)
+	_xmas_snow(t < 10.0 or t >= 30.0)
+
+
+func _night_sky() -> void:
+	for i in 12:
+		draw_rect(Rect2(0, i * 10, W, 10), Color(0.03, 0.05, 0.16).lerp(Color(0.16, 0.18, 0.35), i / 11.0))
+	for i in 24:
+		var tw := 0.5 + 0.5 * sin(_t * 3.0 + i * 1.7)
+		draw_rect(Rect2(fmod(i * 41.0, W), fmod(i * 19.0, 55.0), 1, 1), Color(1, 1, 0.9, tw))
+
+
+func _xmas_snow(heavy: bool) -> void:
+	for i in (70 if heavy else 30):
+		var p := Vector2(fmod(i * 53.0 + sin(_t * 0.8 + i) * 6.0, W), fmod(i * 17.0 + _t * (8.0 + i % 5), H))
+		draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.85))
+
+
+func _xmas_town(t: float) -> void:
+	_night_sky()
+	draw_rect(Rect2(0, 92, W, 28), Color(0.88, 0.92, 1.0))
+	var roofs := [Color(0.35, 0.15, 0.15), Color(0.2, 0.25, 0.35), Color(0.3, 0.3, 0.2)]
+	for k in 4:
+		var x := 6.0 + k * 39.0
+		draw_rect(Rect2(x, 70, 30, 22), Color(0.45, 0.32, 0.25).lerp(Color(0.35, 0.35, 0.45), k * 0.25))
+		draw_colored_polygon(PackedVector2Array([Vector2(x - 3, 70), Vector2(x + 15, 58), Vector2(x + 33, 70)]), roofs[k % 3])
+		draw_colored_polygon(PackedVector2Array([Vector2(x - 3, 70), Vector2(x + 15, 58), Vector2(x + 33, 70), Vector2(x + 15, 61)]), Color(0.95, 0.97, 1.0))
+		draw_rect(Rect2(x + 5, 76, 7, 6), Color(1, 0.8, 0.4))
+		draw_rect(Rect2(x + 18, 76, 7, 6), Color(1, 0.8, 0.4) if k % 2 == 0 else Color(0.2, 0.2, 0.3))
+		# Christmas lights along the eaves, chasing
+		for b in 6:
+			var on := int(t * 4.0 + b + k) % 3 != 0
+			draw_rect(Rect2(x + 1 + b * 5, 71, 2, 2), [Color.RED, Color.GREEN, Color(0.3, 0.5, 1), Color.YELLOW][b % 4] if on else Color(0.2, 0.2, 0.2))
+	if t < 7.0:
+		_text("THE NIGHT BEFORE", Vector2(W / 2, 18), 13, Color(1, 0.85, 0.4))
+		_text("a Christmas special", Vector2(W / 2, 32), 8, Color.WHITE)
+
+
+func _xmas_tree(t: float) -> void:
+	draw_rect(Rect2(0, 0, W, H), Color(0.35, 0.18, 0.15))
+	draw_rect(Rect2(0, 92, W, 28), Color(0.25, 0.15, 0.1))
+	# the tree
+	for k in 3:
+		var w := 34.0 - k * 9.0
+		var y := 88.0 - k * 18.0
+		draw_colored_polygon(PackedVector2Array([Vector2(80 - w, y), Vector2(80, y - 26), Vector2(80 + w, y)]), Color(0.1, 0.4, 0.18))
+	draw_rect(Rect2(76, 88, 8, 8), Color(0.35, 0.2, 0.1))
+	draw_colored_polygon(PackedVector2Array([Vector2(80, 24), Vector2(83, 31), Vector2(90, 31), Vector2(84, 35), Vector2(86, 42), Vector2(80, 38), Vector2(74, 42), Vector2(76, 35), Vector2(70, 31), Vector2(77, 31)]), Color(1, 0.85, 0.2))
+	for b in 14:
+		var by := 40.0 + (b % 7) * 7.0
+		var bx := 80.0 + sin(b * 2.3) * (by - 34.0) * 0.7
+		var lit := sin(_t * 4.0 + b) > -0.3
+		draw_circle(Vector2(bx, by), 1.6, [Color.RED, Color(0.3, 0.5, 1), Color.YELLOW, Color(1, 0.5, 0.9)][b % 4] if lit else Color(0.3, 0.3, 0.3))
+	# presents
+	for p in [[52, 90, Color(0.8, 0.1, 0.1)], [96, 92, Color(0.2, 0.4, 0.8)], [108, 94, Color(0.9, 0.8, 0.2)]]:
+		draw_rect(Rect2(p[0], p[1], 12, 8), p[2])
+		draw_rect(Rect2(p[0] + 5, p[1], 2, 8), Color.WHITE)
+	# a toy train going round on the floor
+	var a := t * 1.2
+	var c := Vector2(80 + cos(a) * 52, 106 + sin(a) * 6)
+	var front := sin(a) > 0.0
+	for car in 3:
+		var ca := a - car * 0.22
+		var cp := Vector2(80 + cos(ca) * 52, 106 + sin(ca) * 6)
+		draw_rect(Rect2(cp.x - 5, cp.y - 5, 10, 6), [Color(0.15, 0.15, 0.2), Color(0.8, 0.15, 0.15), Color(0.15, 0.5, 0.2)][car])
+		draw_circle(cp + Vector2(-3, 1), 1.5, Color.BLACK)
+		draw_circle(cp + Vector2(3, 1), 1.5, Color.BLACK)
+	if front:
+		draw_circle(c + Vector2(0, -9 - fmod(_t * 6.0, 4.0)), 2.0, Color(0.85, 0.85, 0.85, 0.7))
+
+
+func _xmas_sleigh(t: float) -> void:
+	_night_sky()
+	draw_circle(Vector2(80, 50), 28, Color(0.95, 0.93, 0.8))
+	draw_rect(Rect2(0, 98, W, 22), Color(0.85, 0.9, 1.0))
+	# the sleigh and reindeer, in silhouette, across the moon
+	var x := -60.0 + t * 26.0
+	var y := 46.0 - sin(t * 0.5) * 10.0
+	var dark := Color(0.06, 0.05, 0.1)
+	for r in 4:
+		var rx := x + 40.0 - r * 9.0
+		var leg := sin(_t * 10.0 + r) * 2.0
+		draw_rect(Rect2(rx, y - 2, 7, 3), dark)
+		draw_line(Vector2(rx + 7, y - 2), Vector2(rx + 9, y - 6), dark, 1.5)
+		draw_line(Vector2(rx + 9, y - 6), Vector2(rx + 8, y - 9), dark, 1.0)
+		draw_line(Vector2(rx + 9, y - 6), Vector2(rx + 11, y - 8), dark, 1.0)
+		draw_line(Vector2(rx + 1, y + 1), Vector2(rx + leg, y + 5), dark, 1.0)
+		draw_line(Vector2(rx + 6, y + 1), Vector2(rx + 6 - leg, y + 5), dark, 1.0)
+	draw_line(Vector2(x + 14, y), Vector2(x + 33, y), dark, 1.0)
+	draw_colored_polygon(PackedVector2Array([Vector2(x, y - 6), Vector2(x + 14, y - 6), Vector2(x + 16, y + 2), Vector2(x - 2, y + 2)]), dark)
+	draw_line(Vector2(x - 3, y + 4), Vector2(x + 18, y + 4), dark, 1.5)
+	draw_circle(Vector2(x + 5, y - 9), 3.0, dark)
+	draw_colored_polygon(PackedVector2Array([Vector2(x + 9, y - 10), Vector2(x + 14, y - 13), Vector2(x + 13, y - 7)]), dark)
+	if t > 6.0:
+		_text("He's on his way!", Vector2(W / 2, 110), 9, Color.WHITE)
+
+
+func _xmas_window(t: float) -> void:
+	draw_rect(Rect2(0, 0, W, H), Color(0.3, 0.2, 0.25))
+	# the window, with the night and the snow outside
+	draw_rect(Rect2(30, 14, 100, 70), Color(0.08, 0.1, 0.25))
+	draw_circle(Vector2(108, 32), 9, Color(0.95, 0.93, 0.8))
+	draw_rect(Rect2(30, 70, 100, 14), Color(0.9, 0.93, 1.0))
+	draw_rect(Rect2(28, 12, 104, 3), Color(0.9, 0.85, 0.7))
+	draw_rect(Rect2(28, 84, 104, 4), Color(0.9, 0.85, 0.7))
+	draw_rect(Rect2(79, 12, 3, 74), Color(0.9, 0.85, 0.7))
+	# the porch light, on
+	draw_circle(Vector2(42, 40), 6, Color(1, 0.8, 0.4, 0.35))
+	draw_circle(Vector2(42, 40), 2.5, Color(1, 0.85, 0.5))
+	# a little dog, waiting up, tail going
+	var d := Vector2(70, 98)
+	draw_circle(d, 9, Color(0.7, 0.48, 0.28))
+	draw_circle(d + Vector2(0, -11), 6, Color(0.7, 0.48, 0.28))
+	draw_circle(d + Vector2(0, -8), 3, Color(0.95, 0.92, 0.85))
+	draw_rect(Rect2(d.x - 7, d.y - 15, 3, 6), Color(0.35, 0.22, 0.12))
+	draw_rect(Rect2(d.x + 4, d.y - 15, 3, 6), Color(0.35, 0.22, 0.12))
+	var wag := sin(_t * 12.0) * 4.0
+	draw_line(d + Vector2(8, 2), d + Vector2(14, -4 + wag), Color(0.7, 0.48, 0.28), 2.0)
+	if t > 4.0:
+		_text("MERRY CHRISTMAS", Vector2(W / 2, 8), 11, Color(1, 0.85, 0.4))
+		_text("to all, and to all a good night", Vector2(W / 2, 112), 7, Color.WHITE)
 
 
 func _draw_commercial() -> void:

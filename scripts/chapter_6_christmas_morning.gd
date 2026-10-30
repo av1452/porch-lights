@@ -22,7 +22,7 @@ func _ready() -> void:
 	Decorations.christmas_tree(self, true)
 	_morning()
 	_before_dawn()
-	tv_screen.channel = "winter"
+	tv_screen.channel = "christmas"
 	set_porch_light(true)
 	Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -14.0)
 	dad.position = Vector3(6.0, 0.0, -0.6)

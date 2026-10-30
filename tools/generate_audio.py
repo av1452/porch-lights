@@ -160,6 +160,8 @@ def tv_tune(name, notes, step, wave_kind, seconds):
             if wave_kind == "square":
                 s = 1.0 if (ph % 1) < 0.5 else -1.0
                 s *= math.exp(-tt * 6)
+            elif wave_kind == "bell":
+                s = (math.sin(TAU * ph) + 0.3 * math.sin(TAU * 2.76 * ph)) * math.exp(-tt * 4)
             else:
                 s = math.sin(TAU * ph) * min(1, tt * 20) * min(1, (step - tt) * 10)
             seg.append(s * 0.6)
@@ -215,6 +217,8 @@ SOUNDS = {
     "im_message": im_message,
     "tv_football": tv_football,
     "tv_newyear": lambda: tv_football("tv_newyear", None),
+    # "The Night Before": an original little bell tune for the Christmas special.
+    "tv_christmas": lambda: tv_tune("tv_christmas", [76, 79, 81, 79, 76, 74, 72, 74, 76, 76, 79, 84, 83, 79, 81, 79], 0.3, "bell", 9.6),
 }
 
 
