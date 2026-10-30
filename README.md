@@ -228,6 +228,15 @@ Windows and Linux are x86_64 with the game data embedded in the executable. `tes
 Godot's Forward+ renderer (soft shadows, fog, SSAO), which doesn't run in browsers. Upload each zip
 to itch.io and mark its platform, or push with [butler](https://itch.io/docs/butler/).
 
+### Trailer
+```
+~/Downloads/Godot.app/Contents/MacOS/Godot --path . --resolution 1280x720 \
+    --fixed-fps 30 --write-movie builds/trailer.avi -s res://tools/trailer.gd
+```
+Records a ~55-second trailer with Godot's Movie Maker (`tools/trailer.gd`): ten shots across
+the chapters with slow camera moves, title cards and the closing music, ending on the title and
+the itch.io link. The output is MJPEG AVI, which YouTube accepts directly.
+
 ### Audio tools
 - **Voices:** every character line is voiced with Kokoro, offline and free. Run
   `python tools/generate_voices.py --setup` once, then `python tools/generate_voices.py` records any
