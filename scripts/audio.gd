@@ -1,42 +1,33 @@
 extends Node
-## Autoload "Audio": music, sound effects and voiced lines with subtitles.
-## Files live in audio/music, audio/sfx and audio/voice. Spoken text lives in
-## data/lines.json. Swap any WAV/OGG for a real recording with the same name.
+## Autoload "Audio": music, sound effects and voiced dialogue.
+## Files live in audio/music, audio/sfx and audio/voice. Swap any WAV/OGG/MP3
+## for a real recording with the same name.
+##
+## Dialogue is voiced automatically: Chapter.say() calls speak(speaker, text),
+## which plays audio/voice/<speaker>_<md5 of text>.wav if it exists.
+## tools/generate_voices.py finds every line in the scripts and records them.
 
-const LINES_PATH := "res://data/lines.json"
-
-## Per-speaker subtitle name, color and playback pitch. Leo's generated voice
-## is nudged up so he reads as an 8-year-old; set 1.0 for real recordings.
-const SPEAKERS := {
-	"leo": { "name": "", "color": Color(1, 0.97, 0.9), "pitch": 1.07, "bus": "Voice" },
-	"mom": { "name": "Mom", "color": Color(1, 0.8, 0.75), "pitch": 1.0, "bus": "Voice" },
-	"dad": { "name": "Dad", "color": Color(0.75, 0.85, 1), "pitch": 1.0, "bus": "Voice" },
-	"sibling": { "name": "Through the door", "color": Color(0.85, 1, 0.75), "pitch": 1.0, "bus": "Muffled" },
-	"tv": { "name": "TV", "color": Color(0.7, 0.85, 1), "pitch": 1.0, "bus": "TV" },
+## Per-speaker playback pitch (1.0 for real recordings).
+## Kokoro has no child voices: the kids are young-sounding voices nudged up.
+## Set a kid to 1.0 if you drop in a real recording of them.
+const PITCH := {
+	"ben": 1.2, "maddie": 1.15, "tyler": 1.12,
+	"maya": 1.12, "tyler_b.": 1.12, "marcus": 1.15, "emily": 1.12, "josh": 1.12,
 }
 
-signal line_finished(id: String)
-
-var lines := {}
 var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer
 var _music_name := ""
 var _voice: AudioStreamPlayer
-var _voice_3d: AudioStreamPlayer3D
-var _line_serial := 0
 var _cache := {}
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_setup_buses()
-	_load_lines()
 	_music_a = _make_player("Music")
 	_music_b = _make_player("Music")
 	_voice = _make_player("Voice")
-	_voice_3d = AudioStreamPlayer3D.new()
-	_voice_3d.unit_size = 4.0
-	add_child(_voice_3d)
 
 
 func _setup_buses() -> void:
@@ -71,26 +62,21 @@ func _setup_buses() -> void:
 	AudioServer.add_bus_effect(AudioServer.get_bus_index("TV"), tv_dist)
 
 	var muffle := AudioEffectLowPassFilter.new()
-	muffle.cutoff_hz = 700.0
+	muffle.cutoff_hz = 1400.0
 	AudioServer.add_bus_effect(AudioServer.get_bus_index("Muffled"), muffle)
 
 
 ## Dream mode: everything gets a big, far-away reverb.
+## True in dreams (more echo on everything), so footsteps can go softer.
+var dreaming := false
+
+
 func set_dreaming(on: bool) -> void:
+	dreaming = on
 	for bus in ["SFX", "Voice"]:
 		var fx := AudioServer.get_bus_effect(AudioServer.get_bus_index(bus), 0) as AudioEffectReverb
 		fx.room_size = 0.9 if on else (0.35 if bus == "SFX" else 0.2)
 		fx.wet = 0.45 if on else (0.12 if bus == "SFX" else 0.06)
-
-
-func _load_lines() -> void:
-	var f := FileAccess.open(LINES_PATH, FileAccess.READ)
-	if f == null:
-		push_error("Missing " + LINES_PATH)
-		return
-	var data = JSON.parse_string(f.get_as_text())
-	if data is Dictionary:
-		lines = data
 
 
 func _make_player(bus: String) -> AudioStreamPlayer:
@@ -158,7 +144,22 @@ func stop_music(fade_time := 2.0) -> void:
 
 ## One-shot sound. Pass `at` for positional 3D sound. `variants` picks
 ## name_1..name_N at random (footsteps, barks).
+## Important sounds, written out for players who can't hear them (shown when
+## "Sound captions" is on). Ambience, footsteps and clicks stay uncaptioned.
+const CAPTIONS := {
+	"phone_ring": "[Phone ringing]", "knock": "[Knocking]", "dog_bark": "[Biscuit barks]",
+	"dog_whine": "[Biscuit whines]", "dog_growl": "[Biscuit growls]", "dog_tags": "[Jingle of Biscuit's collar]",
+	"school_bell": "[School bell rings]", "door_open": "[Door opens]", "door_close": "[Door closes]",
+	"car_door": "[Car door shuts]", "candy_rustle": "[Rustling]", "title_sting": "",
+	"tv_zap": "[TV changes channel]", "tv_off": "[TV clicks off]", "light_out": "[A porch light clicks off]",
+	"scissors": "[Snip, snip]", "im_message": "[Message chime]",
+}
+
+
 func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter := 0.0, variants := 0) -> void:
+	var caption: String = CAPTIONS.get(name, "")
+	if caption != "":
+		get_tree().call_group("hud", "show_caption", caption)
 	if SEQUENCES.has(name):
 		_play_sequence(name, at, volume_db, pitch_jitter)
 		return
@@ -175,7 +176,9 @@ func play_sfx(name: String, at: Variant = null, volume_db := 0.0, pitch_jitter :
 		p3.volume_db = volume_db
 		p3.unit_size = 3.0
 		p3.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
-		get_tree().current_scene.add_child(p3)
+		# Lives under this autoload, which is never busy adding children (a level
+		# might be, mid-_ready). Under a plain Node it uses world coordinates.
+		add_child(p3)
 		p3.global_position = at if at is Vector3 else (at as Node3D).global_position
 		p3.play()
 		p3.finished.connect(p3.queue_free)
@@ -230,50 +233,34 @@ func make_loop(name: String, parent: Node, volume_db := 0.0, bus := "SFX", posit
 
 # ---------------------------------------------------------------- voice
 
-func has_line(id: String) -> bool:
-	return lines.has(id)
+## "Mom (kitchen)" -> "mom", "Uncle Ray" -> "uncle_ray".
+static func speaker_key(speaker: String) -> String:
+	return speaker.get_slice("(", 0).strip_edges().to_lower().replace(" ", "_")
 
 
-func line_text(id: String) -> String:
-	return lines.get(id, {}).get("text", "")
+static func voice_id(speaker: String, text: String) -> String:
+	return "%s_%s" % [speaker_key(speaker), text.md5_text().substr(0, 8)]
 
 
-## Speaks a line (and anything chained with "next"), showing subtitles.
-## Interrupts whatever was being said. Await it to wait for the whole chain.
-func say(id: String, at: Node3D = null) -> void:
-	_line_serial += 1
-	var serial := _line_serial
-	var current := id
-	while current != "" and serial == _line_serial:
-		var line: Dictionary = lines.get(current, {})
-		if line.is_empty():
-			push_warning("Unknown line id: " + current)
-			return
-		var spk: Dictionary = SPEAKERS.get(line.get("speaker", "leo"), SPEAKERS.leo)
-		var text: String = line.get("text", "")
-		var stream := get_stream("voice", current)
-		var length := 1.2 + text.length() * 0.06
-		_voice.stop()
-		_voice_3d.stop()
-		if stream:
-			var player: Node = _voice
-			if at:
-				_voice_3d.global_position = at.global_position
-				player = _voice_3d
-			player.set("stream", stream)
-			player.set("bus", spk.bus)
-			player.set("pitch_scale", spk.pitch)
-			player.call("play")
-			length = stream.get_length() / spk.pitch
-		get_tree().call_group("hud", "show_line", spk.name, text, spk.color, length + 1.5)
-		await get_tree().create_timer(length + 0.35).timeout
-		if serial != _line_serial:
-			return
-		line_finished.emit(current)
-		current = line.get("next", "")
+## Plays the recorded voice for a line, if there is one. Returns its length in
+## seconds (0 for narration or unrecorded lines). Speakers with a location in
+## brackets, like "Mom (kitchen)", sound like they're in another room.
+func speak(speaker: String, text: String) -> float:
+	_voice.stop()
+	if speaker == "":
+		return 0.0
+	var stream := get_stream("voice", voice_id(speaker, text))
+	if stream == null:
+		if OS.is_debug_build():
+			print_verbose("No voice for %s: %s" % [speaker, text])
+		return 0.0
+	var pitch: float = PITCH.get(speaker_key(speaker), 1.0)
+	_voice.stream = stream
+	_voice.bus = "Muffled" if speaker.contains("(") else "Voice"
+	_voice.pitch_scale = pitch
+	_voice.play()
+	return stream.get_length() / pitch
 
 
 func stop_voice() -> void:
-	_line_serial += 1
 	_voice.stop()
-	_voice_3d.stop()

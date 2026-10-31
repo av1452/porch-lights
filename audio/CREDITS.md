@@ -7,6 +7,15 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - `audio/music/ch2_night.mp3`: "Midnight" by Anton Revin (CC0) https://opengameart.org/content/midnight
 - `audio/music/ending.mp3`: "Starfield Romance" by Yoiyami (CC0) https://opengameart.org/node/182246
 - `audio/music/ch1_living_room.wav`: original lullaby, played on BigSoundBank music-box notes (below)
+- `audio/music/ch4_silent_night.wav`: "Silent Night" (Franz Gruber, 1818, public domain) on the same music-box notes
+- `audio/music/school_jingle_bells.wav`: "Jingle Bells" (James Lord Pierpont, 1857, public domain) on the same music-box notes
+- `audio/music/grandma_house.wav`, `drive_home.wav`, `class_party.wav`, `snow_dream.wav`,
+  `static_parade.wav`: original stand-in themes composed and synthesized for this game by
+  `tools/compose_music.py` (no samples). Replace any with the real track of the same name.
+- `audio/music/radio_*.wav`: public-domain compositions arranged and synthesized for this game by
+  `tools/compose_music.py`: Grieg, "In the Hall of the Mountain King" (1875); Bach, Toccata in
+  D minor; "Deck the Halls", "We Wish You a Merry Christmas", "Good King Wenceslas" and "Auld
+  Lang Syne" (traditional).
 
 ## Sound effects
 - Kenney, Impact Sounds + RPG Audio (CC0): footsteps, knocks, dog tags. https://kenney.nl
@@ -27,6 +36,14 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #2955 Barking dog #3: https://bigsoundbank.com/s2955.html
 - #1060 2 small dogs bark and growl: https://bigsoundbank.com/s1060.html
 - #2450 Dog singing #1: https://bigsoundbank.com/s2450.html
+- #3098 Car interior, 80 km/h: https://bigsoundbank.com/s3098.html
+- #1021 Blinker: https://bigsoundbank.com/s1021.html
+- #0971 Car door #1: https://bigsoundbank.com/s0971.html
+- #0252 Fixed telephone ring #3: https://bigsoundbank.com/s0252.html
+- #3353 Phone hung up #1: https://bigsoundbank.com/s3353.html
+- #1269 Industrial doorbell (the school bell): https://bigsoundbank.com/s1269.html
+- #0008 Scissors: https://bigsoundbank.com/s0008.html
+- #2740 Recreation, kindergarten #1: https://bigsoundbank.com/s2740.html
 - #1866 Music box, A# #1: https://bigsoundbank.com/s1866.html
 - #1867 Music box, C #1: https://bigsoundbank.com/s1867.html
 - #1868 Music box, C# #1: https://bigsoundbank.com/s1868.html
@@ -38,8 +55,8 @@ Every recording here is CC0 (public domain). Attribution isn't required, but tha
 - #1875 Music box, C# #2: https://bigsoundbank.com/s1875.html
 
 ## Voices
-Generated with Piper (https://github.com/rhasspy/piper) using the en_US lessac, ryan and
-libritts_r voices. See tools/generate_voices.py.
+Generated with Kokoro-82M (https://huggingface.co/hexgrad/Kokoro-82M, Apache-2.0) via
+kokoro-onnx (https://github.com/thewh1teagle/kokoro-onnx, MIT). See tools/generate_voices.py.
 
 ## Synthesized
 `tv_show`, `tv_ad`, `tv_signoff`, `bulb_flicker`: tools/generate_audio.py

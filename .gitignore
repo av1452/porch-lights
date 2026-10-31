@@ -1,5 +1,20 @@
-﻿.godot/
+# Godot 4
+.godot/
+/android/
+*.translation
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Local screenshots from tests/screenshots.gd
+screenshots/
+
+# Downloaded tools and caches (see tools/)
 tools/piper/
+tools/kokoro/
 tools/.audio_cache/
 __pycache__/
+
+# Exported game builds (tools/build.sh)
+builds/

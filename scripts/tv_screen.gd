@@ -6,7 +6,9 @@ extends Node
 
 const CHANNEL_SOUND := {
 	"special": "tv_show", "commercial": "tv_ad", "dream": "tv_show",
-	"signoff": "tv_signoff", "static": "tv_static", "off": "",
+	"signoff": "tv_signoff", "static": "tv_static", "off": "", "winter": "",
+	"football": "tv_football", "newyear": "tv_newyear", "christmas": "tv_christmas",
+	"parade": "tv_parade", "yulelog": "tv_yulelog", "videogame": "tv_videogame", "xmas_dream": "tv_christmas",
 }
 
 @export var screen_path: NodePath = ^"../Screen"
@@ -30,6 +32,7 @@ func _ready() -> void:
 	add_child(_viewport)
 
 	_show = TvShow.new()
+	_show.channel = channel # already on: no channel-change click at the start
 	_viewport.add_child(_show)
 
 	_video = VideoStreamPlayer.new()
@@ -76,8 +79,13 @@ func _apply_channel() -> void:
 		_sound.stop()
 	else:
 		_sound.stream = Audio.get_stream("sfx", sound, true)
-		_sound.pitch_scale = 0.8 if channel == "dream" else 1.0
+		_sound.pitch_scale = 0.8 if channel == "dream" or channel == "xmas_dream" else 1.0
 		_sound.play()
+
+
+## New Year's Eve: start the ten-second countdown on screen.
+func start_countdown() -> void:
+	_show.countdown_at = _show._t
 
 
 ## Average screen color, so the room's TV light can match the picture.

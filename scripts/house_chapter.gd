@@ -1,0 +1,217 @@
+class_name HouseChapter
+extends Chapter
+## Base for chapters set in the family house after Halloween (the scenes
+## inherit chapter_1_halloween.tscn). Puts Halloween away, stashes Chapter 1's
+## dream pieces, keeps the TV glow flickering and the house sounds going.
+
+@onready var env: Environment = $WorldEnvironment.environment
+@onready var lights: Node3D = $Lights
+@onready var dad: Interactable = $Story/Dad
+@onready var phone: Interactable = $House/Kitchen/Things/Phone
+@onready var couch: Interactable = $House/LivingRoom/Things/Couch
+@onready var tv_screen: TvScreen = $House/LivingRoom/Things/TV/ScreenFeed
+@onready var dog: Dog = $Biscuit
+@onready var front_door: Interactable = $House/LivingRoom/Things/FrontDoor
+@onready var porch_switch: Interactable = $Story/PorchSwitch
+@onready var porch_light: OmniLight3D = $Lights/PorchLight
+@onready var street: Street = $Street
+var tv: Interactable
+
+var _flicker_t := 0.0
+var _tv_energy := 0.0
+var _porch_energy := 0.0
+var _dream_hall: Node
+var _jamie_dream: Node
+## The time of year, for the street and the porch ("fall" or "christmas").
+## Set it before super._ready().
+var season := "christmas"
+
+
+func _ready() -> void:
+	super._ready()
+	# The house scene's environment is shared by every chapter that inherits
+	# it; work on a copy so a sunny morning doesn't leak into another chapter.
+	env = env.duplicate(true)
+	($WorldEnvironment as WorldEnvironment).environment = env
+	_tv_energy = (lights.get_node("TVGlow") as OmniLight3D).light_energy
+	_porch_energy = porch_light.light_energy
+	dog.player = player
+	Decorations.put_away_halloween(self)
+	street.decorate(season, season == "christmas")
+	HouseDetails.dress(self, season)
+	# Chapter 1's dream pieces aren't used after Halloween.
+	_dream_hall = $DreamHall
+	_jamie_dream = $House/JamieRoom/JamieRoomDream
+	stash(_dream_hall)
+	stash(_jamie_dream)
+	for it: Interactable in [phone, couch, front_door]:
+		it.memory_text = ""
+		it.repeat_text = ""
+	phone.prompt = "Phone"
+	couch.prompt = "Sit down"
+	# The TV's lines in the house scene are about Halloween; chapters set their own.
+	var tv := $House/LivingRoom/Things/TV as Interactable
+	tv.memory_text = "Somebody left the TV on. A holiday special, the one with the snow."
+	tv.repeat_text = "Commercials. Every single one of them is for a toy."
+	self.tv = tv
+	# Halloween-night lines on the rest of the house. Chapters replace the
+	# ones that depend on the day with house_text(); these fit any of them.
+	house_text({
+		"Clock": ["Tick, tick, tick. It's the loudest clock in the world when you're waiting for something."],
+		"Coats": ["Your winter coat, your hat, and the mittens on a string Mom swears you'll grow out of."],
+		"Fridge": ["Leftovers, and a lot of mustard."],
+		"CalendarI": ["DECEMBER. Mom writes everything on it. Everything."],
+		"KidWindow": ["Snow on the windowsill, and on every roof down the street."],
+		"Backpack": ["No school for two whole weeks. The backpack is in the corner, being ignored."],
+		"Posters": ["Bands you've never heard of. Jamie says you'll get it when you're older."],
+	})
+	Audio.make_loop("clock_tick", $House/LivingRoom/Things/Clock, -14.0)
+	Audio.make_loop("room_tone", $House/Kitchen/Things/Fridge, -10.0)
+
+
+func _exit_tree() -> void:
+	free_stashed([_dream_hall, _jamie_dream])
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	_flicker_t -= delta
+	if _flicker_t > 0.0:
+		return
+	_flicker_t = randf_range(0.05, 0.22)
+	var tv := lights.get_node("TVGlow") as OmniLight3D
+	tv.light_energy = 0.0 if tv_screen.channel == "off" else _tv_energy * randf_range(0.7, 1.15)
+	tv.light_color = tv.light_color.lerp(tv_screen.light_color(), 0.5)
+
+
+## Every window in the house shares a night-sky glass. For daytime scenes,
+## swap in daylight glass (and back again at dusk).
+func set_window_daylight(day: bool) -> void:
+	for glass in find_children("*Glass", "CSGBox3D", true, false):
+		var g := glass as CSGBox3D
+		# Clear glass shows the real sky already; only painted night glass swaps.
+		var current := g.get_meta("night_material", g.material) as StandardMaterial3D
+		if current and current.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+			continue
+		if not g.has_meta("night_material"):
+			g.set_meta("night_material", g.material)
+		if day:
+			var m := StandardMaterial3D.new()
+			m.albedo_color = Color(0.72, 0.8, 0.9)
+			m.emission_enabled = true
+			m.emission = Color(0.72, 0.8, 0.9)
+			m.emission_energy_multiplier = 0.9
+			g.material = m
+		else:
+			g.material = g.get_meta("night_material")
+
+
+## Christmas Eve and New Year's dreams: colored bulbs along both walls of the
+## Halloween dream hallway, a few of them casting light.
+func string_dream_lights(hall: Node3D) -> void:
+	var i := 0
+	for z in range(9, 26):
+		for x in [1.52, 2.48]:
+			for half in 2:
+				var bulb := CSGSphere3D.new()
+				bulb.radius = 0.03
+				bulb.position = Vector3(x, 2.3 - 0.06 * half, -z - half * 0.5)
+				bulb.material = Decorations.mat(Decorations.BULB_COLORS[i % Decorations.BULB_COLORS.size()], 4.0)
+				hall.add_child(bulb)
+				i += 1
+		if z % 4 == 1:
+			var l := OmniLight3D.new()
+			l.light_color = Decorations.BULB_COLORS[z % Decorations.BULB_COLORS.size()]
+			l.light_energy = 0.35
+			l.omni_range = 2.5
+			l.position = Vector3(2.0, 2.1, -z)
+			hall.add_child(l)
+
+
+## What the house's own things say today: { "Clock": [first, again], ... },
+## by node name (the clock, fridge, calendar, coats, windows and so on).
+## Leave out `again` to say the same thing every time.
+func house_text(lines: Dictionary) -> void:
+	for thing_name: String in lines:
+		var thing := $House.find_child(thing_name, true, false) as Interactable
+		thing.memory_text = lines[thing_name][0]
+		thing.repeat_text = lines[thing_name][1] if lines[thing_name].size() > 1 else ""
+		thing.times_used = 0
+		if thing_name == "Clock":
+			Decorations.set_clock(self, thing.memory_text)
+
+
+func hide_node(path: String) -> void:
+	Decorations.hide(get_node(path) as Node3D)
+
+
+func set_porch_light(on: bool) -> void:
+	porch_light.light_energy = _porch_energy if on else 0.0
+	($Story/PorchPaneOn as Node3D).visible = on
+	(($Exterior/PorchLamp as CSGShape3D).material as StandardMaterial3D).emission_energy_multiplier = 4.0 if on else 0.0
+
+
+## Something simple you can use: a colored box with a prompt.
+func box_thing(node_name: String, pos: Vector3, size: Vector3, color: Color, prompt_text: String,
+		first := "", again := "") -> Interactable:
+	var it := Interactable.new()
+	it.name = node_name
+	it.prompt = prompt_text
+	it.memory_text = first
+	it.repeat_text = again
+	it.position = pos
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	shape.shape = box
+	it.add_child(shape)
+	var mesh := CSGBox3D.new()
+	mesh.size = size
+	mesh.material = Decorations.mat(color)
+	it.add_child(mesh)
+	add_child(it)
+	return it
+
+
+## Swaps a box_thing()'s plain box for a modeled prop (scripts/props.gd),
+## keeping its collision so it's just as easy to look at and use.
+## `yaw` turns the prop; returns `it`. Dress it again to swap the prop
+## (the stocking emptying, the present opened).
+func dress(it: Interactable, model: Node3D, yaw := 0.0) -> Interactable:
+	for child in it.get_children():
+		if child is CSGBox3D or child.has_meta("prop"):
+			it.remove_child(child)
+			child.queue_free()
+	var shape := (it.get_child(0) as CollisionShape3D).shape as BoxShape3D
+	model.position.y = -shape.size.y / 2.0
+	model.rotation_degrees.y = yaw
+	model.set_meta("prop", true)
+	it.add_child(model)
+	Look.upgrade(model)
+	return it
+
+
+## Swing the front door open around its hinge (its origin is its middle).
+func open_front_door() -> void:
+	front_door.enabled = false
+	front_door.collision_layer = 0
+	($Story/PorchPaneOn as Node3D).visible = false
+	($Story/PorchPaneOff as Node3D).visible = false
+	Audio.play_sfx("door_open", front_door)
+	var hinge: Vector3 = front_door.position + Vector3(-0.5, 0, 0)
+	create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT).tween_method(func(a: float) -> void:
+		front_door.rotation.y = a
+		front_door.position = hinge + Vector3(cos(a), 0, -sin(a)) * 0.5, 0.0, deg_to_rad(95.0), 1.6)
+
+
+func add_trigger(pos: Vector3, size: Vector3, callback: Callable) -> Trigger:
+	var t := Trigger.new()
+	t.position = pos
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	shape.shape = box
+	t.add_child(shape)
+	add_child(t)
+	t.player_entered.connect(callback)
+	return t
