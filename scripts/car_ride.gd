@@ -34,6 +34,7 @@ var radio: Interactable
 var _radio_label: Label3D
 var _radio_sound: AudioStreamPlayer3D
 var _arrows: Array[StandardMaterial3D] = []
+var _blinker_glow: OmniLight3D
 var _blink_left := 0.0
 var _blink_t := 0.0
 var _clock_label: Label3D
@@ -75,6 +76,7 @@ func _process(delta: float) -> void:
 		var on := fmod(_blink_t, 0.75) < 0.38 and _blink_left > 0.0
 		for m in _arrows:
 			m.emission_energy_multiplier = 3.0 if on else 0.0
+		_blinker_glow.visible = on
 	# A little road shake (off with head bob, for motion comfort).
 	_cabin.position.y = 0.0 if not Game.settings.head_bob else sin(Time.get_ticks_msec() * 0.011) * 0.004 + sin(Time.get_ticks_msec() * 0.023) * 0.002
 
@@ -260,6 +262,32 @@ func _build_dash() -> void:
 		arrow.material = m
 		_arrows.append(m)
 		_cabin.add_child(arrow)
+	# The same arrow, big, on top of the dash in the middle, where you can see
+	# it from the back seat; and the amber flash outside on the road.
+	var big := CSGPolygon3D.new()
+	big.polygon = PackedVector2Array([Vector2(0.03, 0.025), Vector2(-0.03, 0), Vector2(0.03, -0.025)])
+	big.depth = 0.006
+	big.position = Vector3(-0.1, 1.035, -1.22)
+	big.rotation_degrees.x = -35.0
+	var bm := _mat(Color(0.45, 1.0, 0.4), 0.5, 0.01)
+	bm.emission_energy_multiplier = 0.0
+	big.material = bm
+	_arrows.append(bm)
+	_cabin.add_child(big)
+	_box(_cabin, Vector3(0.1, 0.08, 0.07), Vector3(-0.1, 0.98, -1.23), plastic, Vector3(-35, 0, 0))
+	# Leo's side mirror, out past his window, with the amber repeater on it.
+	_box(_cabin, Vector3(0.08, 0.14, 0.2), Vector3(0.86, 1.0, -1.3), plastic)
+	var repeater := _box(_cabin, Vector3(0.02, 0.03, 0.1), Vector3(0.9, 0.95, -1.3), _mat(Color(1.0, 0.6, 0.15), 0.4, 0.01))
+	var rm := repeater.material as StandardMaterial3D
+	rm.emission_energy_multiplier = 0.0
+	_arrows.append(rm)
+	_blinker_glow = OmniLight3D.new()
+	_blinker_glow.light_color = Color(1.0, 0.6, 0.15)
+	_blinker_glow.light_energy = 1.6
+	_blinker_glow.omni_range = 2.2
+	_blinker_glow.position = Vector3(0.95, 0.95, -1.3)
+	_blinker_glow.visible = false
+	_cabin.add_child(_blinker_glow)
 	# The steering wheel's hub and the column shifter.
 	var hub := CSGCylinder3D.new()
 	hub.radius = 0.06

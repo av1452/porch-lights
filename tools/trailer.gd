@@ -47,6 +47,11 @@ func _initialize() -> void:
 	# 3. Thanksgiving
 	await _shot("res://scenes/chapter_2_thanksgiving.tscn", func() -> void: pass,
 		Vector3(0.7, 1.25, 1.2), Vector3(-2.3, 0.5, -0.9), Vector3(0.1, 1.15, 0.4), Vector3(-2.3, 0.45, -1.3), "Thanksgiving at Grandma's")
+	# 3b. After dinner: everybody in the den with the game on, Grandpa's chair empty
+	await _shot("", func() -> void:
+			ch.stash(ch.grandma_stool)
+			ch._to_den(),
+		Vector3(4.4, 1.2, 0.9), Vector3(7.9, 0.6, 0.0), Vector3(5.6, 1.15, -1.3), Vector3(7.9, 0.6, 0.6), "")
 	# 4. The drive home, snow in the headlights
 	await _shot("res://scenes/chapter_3_drive_home.tscn", func() -> void: ch._snow.emitting = true,
 		Vector3(0.38, 1.0, 0.62), Vector3(-0.6, 0.85, -3.0), Vector3(0.36, 1.0, 0.6), Vector3(0.4, 0.95, -3.0), "The long drive home", "Cabin")

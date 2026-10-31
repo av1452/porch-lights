@@ -234,7 +234,7 @@ to itch.io and mark its platform, or push with [butler](https://itch.io/docs/but
 ~/Downloads/Godot.app/Contents/MacOS/Godot --path . --resolution 1280x720 \
     --fixed-fps 30 --write-movie builds/trailer.avi -s res://tools/trailer.gd
 ```
-Records a ~55-second trailer with Godot's Movie Maker (`tools/trailer.gd`): ten shots across
+Records a ~60-second trailer with Godot's Movie Maker (`tools/trailer.gd`): eleven shots across
 the chapters with slow camera moves, title cards and the closing music, ending on the title and
 the itch.io link. The output is MJPEG AVI, which YouTube accepts directly.
 
