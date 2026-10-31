@@ -2,8 +2,9 @@ class_name TvShow
 extends Node2D
 ## Placeholder TV programs drawn live at 160x120: a Halloween cartoon special,
 ## a winter special, a toy commercial, a dream version, a broadcast sign-off,
-## static, Thanksgiving football, the New Year's Eve countdown, and "The
-## Night Before", an original Christmas special.
+## static, Thanksgiving football, the Thanksgiving parade, the New Year's Eve
+## countdown, "The Night Before" (an original Christmas special) and its dream
+## version, the Christmas-morning yule log, and a two-player racing game.
 ## Replace any of them with a real video via media/<channel>.ogv.
 
 const W := 160.0
@@ -21,7 +22,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_t += delta * (0.4 if channel == "dream" else 1.0)
+	_t += delta * (0.4 if channel == "dream" or channel == "xmas_dream" else 1.0)
 	queue_redraw()
 
 
@@ -41,6 +42,14 @@ func light_color() -> Color:
 			return Color(0.8, 0.85, 0.9)
 		"football":
 			return Color(0.5, 0.9, 0.55)
+		"parade":
+			return Color(0.85, 0.85, 0.95)
+		"yulelog":
+			return Color(1.0, 0.55, 0.25) * (0.85 + 0.15 * sin(_t * 9.0) * sin(_t * 5.3))
+		"videogame":
+			return Color(0.55, 0.8, 1.0) if fmod(_t, 3.0) < 1.5 else Color(0.7, 1.0, 0.6)
+		"xmas_dream":
+			return Color(0.6, 0.45, 1.0)
 		"newyear":
 			return Color(0.6, 0.6, 1.0) if countdown_at < 0.0 or _t - countdown_at < 10.0 else Color.from_hsv(fmod(_t * 0.5, 1.0), 0.5, 1.0)
 		"off":
@@ -66,6 +75,16 @@ func _draw() -> void:
 			_draw_static(1.0)
 		"football":
 			_draw_football()
+		"parade":
+			_draw_parade()
+		"yulelog":
+			_draw_yulelog()
+		"videogame":
+			_draw_videogame()
+		"xmas_dream":
+			_draw_christmas()
+			# The same special, but slow and purple, like it's underwater.
+			draw_rect(Rect2(0, 0, W, H), Color(0.35, 0.1, 0.55, 0.45))
 		"newyear":
 			_draw_newyear()
 		_:
@@ -369,6 +388,117 @@ func _draw_newyear() -> void:
 			draw_rect(Rect2(x, y, 2, 2), Color.from_hsv(fmod(i * 0.13, 1.0), 0.7, 1.0))
 		_text("HAPPY NEW YEAR!", Vector2(W / 2, 90), 14, Color(1, 0.9, 0.4))
 		_text("2004", Vector2(W / 2, 106), 12, Color.WHITE)
+
+
+## Thanksgiving morning: the big parade downtown. Buildings, a crowd behind
+## the barricades, a marching band, and a giant turkey balloon drifting by.
+func _draw_parade() -> void:
+	draw_rect(Rect2(0, 0, W, 60), Color(0.62, 0.7, 0.82))
+	for i in 9:
+		var bh := 34.0 + fmod(i * 29.0, 26.0)
+		var x := i * 19.0 - 4.0
+		draw_rect(Rect2(x, 62 - bh, 17, bh), Color(0.5, 0.45, 0.48).lerp(Color(0.62, 0.58, 0.55), fmod(i * 0.37, 1.0)))
+		for k in 8:
+			draw_rect(Rect2(x + 2 + (k % 3) * 5, 64 - bh + 4 + int(k / 3) * 8, 3, 4), Color(0.75, 0.8, 0.88))
+	draw_rect(Rect2(0, 62, W, 58), Color(0.38, 0.38, 0.4))
+	# The crowd, bundled up, behind blue barricades.
+	for i in 70:
+		var x := fmod(i * 23.0, W)
+		var y := 60.0 + fmod(i * 7.0, 8.0)
+		draw_rect(Rect2(x, y, 3, 5), Color.from_hsv(fmod(i * 0.21, 1.0), 0.55, 0.7))
+		draw_circle(Vector2(x + 1.5, y - 1), 1.3, Color(0.85, 0.7, 0.55))
+	draw_rect(Rect2(0, 70, W, 2), Color(0.2, 0.35, 0.8))
+	# The marching band, stepping in time.
+	for i in 12:
+		var bx := fmod(i * 13.0 + _t * 9.0, W + 30.0) - 15.0
+		var by := 92.0 + (i % 3) * 8.0 + (1.0 if int(_t * 4.0 + i) % 2 == 0 else 0.0)
+		draw_rect(Rect2(bx - 2, by - 5, 4, 7), Color(0.75, 0.1, 0.12))
+		draw_rect(Rect2(bx - 2, by - 8, 4, 3), Color(0.95, 0.95, 0.95))
+		draw_rect(Rect2(bx + 2, by - 4, 3, 1), Color(0.95, 0.8, 0.2))
+	# The turkey balloon: a round brown body, a fan of tail feathers, ropes.
+	var tx := fmod(_t * 6.0, W + 90.0) - 45.0
+	var ty := 30.0 + sin(_t * 0.8) * 2.0
+	var feathers := [Color(0.85, 0.25, 0.1), Color(0.95, 0.6, 0.1), Color(0.95, 0.85, 0.2), Color(0.55, 0.3, 0.12)]
+	for f in 7:
+		var a := deg_to_rad(-160.0 + f * 23.0)
+		draw_circle(Vector2(tx, ty) + Vector2(cos(a), sin(a)) * 15.0, 7.0, feathers[f % feathers.size()])
+	draw_circle(Vector2(tx, ty + 3), 12.0, Color(0.5, 0.3, 0.15))
+	draw_circle(Vector2(tx + 9, ty - 6), 5.0, Color(0.55, 0.33, 0.17))
+	draw_circle(Vector2(tx + 11, ty - 7), 1.2, Color.BLACK)
+	draw_colored_polygon(PackedVector2Array([Vector2(tx + 13, ty - 6), Vector2(tx + 18, ty - 4), Vector2(tx + 13, ty - 3)]), Color(0.95, 0.75, 0.1))
+	draw_circle(Vector2(tx + 13, ty - 2), 1.8, Color(0.85, 0.1, 0.1))
+	for r in 4:
+		draw_line(Vector2(tx - 8 + r * 5, ty + 14), Vector2(tx - 14 + r * 7, 88), Color(0.2, 0.2, 0.2, 0.6), 1.0)
+	if fmod(_t, 18.0) < 5.0:
+		draw_rect(Rect2(0, 0, W, 16), Color(0.55, 0.15, 0.08, 0.9))
+		_text("THANKSGIVING DAY PARADE", Vector2(W / 2, 6), 9, Color(1, 0.9, 0.6))
+	else:
+		_text("LIVE", Vector2(16, 8), 8, Color(1, 0.3, 0.3))
+
+
+## Christmas morning: a log fire, filling the whole screen, on a loop forever.
+func _draw_yulelog() -> void:
+	draw_rect(Rect2(0, 0, W, H), Color(0.08, 0.04, 0.03))
+	# Brick around the firebox.
+	for row in 12:
+		for col in 9:
+			var x := col * 20.0 - (10.0 if row % 2 else 0.0)
+			draw_rect(Rect2(x + 1, row * 10.0 + 1, 18, 8), Color(0.45, 0.18, 0.12).lerp(Color(0.3, 0.12, 0.09), fmod(row * 0.31 + col * 0.17, 1.0)))
+	draw_rect(Rect2(18, 22, 124, 86), Color(0.05, 0.03, 0.02))
+	# Flames: layered tongues that lick and flicker.
+	for layer in 3:
+		var c: Color = [Color(0.85, 0.25, 0.05), Color(1.0, 0.55, 0.1), Color(1.0, 0.85, 0.35)][layer]
+		for i in 9:
+			var x := 30.0 + i * 12.5 + sin(_t * 3.0 + i) * 2.0
+			var h := (46.0 - layer * 12.0) * (0.75 + 0.25 * sin(_t * (7.0 + i) + i * 2.1))
+			var w := 9.0 - layer * 2.0
+			draw_colored_polygon(PackedVector2Array([Vector2(x - w, 92), Vector2(x + sin(_t * 5.0 + i) * 4.0, 92 - h), Vector2(x + w, 92)]), c)
+	# Logs and glowing embers.
+	draw_rect(Rect2(28, 90, 104, 9), Color(0.3, 0.17, 0.08))
+	draw_rect(Rect2(38, 96, 88, 8), Color(0.38, 0.22, 0.1))
+	for i in 14:
+		var glow := 0.6 + 0.4 * sin(_t * 4.0 + i * 1.3)
+		draw_rect(Rect2(30 + i * 7.0, 103 + (i % 2) * 2.0, 3, 2), Color(1.0, 0.45, 0.1) * glow)
+	# Sparks drifting up.
+	for i in 6:
+		var y := 90.0 - fmod(_t * 18.0 + i * 15.0, 70.0)
+		draw_rect(Rect2(60 + sin(_t + i) * 20.0 + i * 6.0, y, 1, 1), Color(1, 0.8, 0.4))
+	if fmod(_t, 30.0) < 3.0:
+		_text("MERRY CHRISTMAS FROM CHANNEL 7", Vector2(W / 2, 12), 7, Color(1, 0.95, 0.85))
+
+
+## Player one and player two, split screen: a kart race on a looping track.
+func _draw_videogame() -> void:
+	for half in 2:
+		var y0 := half * 60.0
+		var t := _t * (1.0 if half == 0 else 0.93) + half * 2.0
+		draw_rect(Rect2(0, y0, W, 24), Color(0.45, 0.7, 1.0) if half == 0 else Color(0.95, 0.6, 0.4))
+		for k in 3:
+			draw_circle(Vector2(fmod(k * 60.0 - t * 6.0, W + 40.0) - 20.0, y0 + 8 + k * 3), 6, Color(1, 1, 1, 0.85))
+		draw_rect(Rect2(0, y0 + 24, W, 36), Color(0.3, 0.7, 0.3))
+		# The road, curving with the track.
+		var bend := sin(t * 0.7) * 30.0
+		var road := PackedVector2Array([Vector2(W / 2 - 6 + bend, y0 + 24), Vector2(W / 2 + 6 + bend, y0 + 24), Vector2(W / 2 + 60, y0 + 60), Vector2(W / 2 - 60, y0 + 60)])
+		draw_colored_polygon(road, Color(0.35, 0.35, 0.38))
+		for k in 5:
+			var d := fmod(k * 0.2 + t * 0.9, 1.0)
+			var yy := y0 + 24 + d * d * 36.0
+			var xx := W / 2 + bend * (1.0 - d)
+			draw_rect(Rect2(xx - 1 - d * 2, yy, 2 + d * 4, 1 + d * 2), Color(1, 1, 1))
+		# Your kart (red for player one, blue for player two) and the other one ahead.
+		var kc := Color(0.9, 0.15, 0.15) if half == 0 else Color(0.2, 0.4, 0.95)
+		var other := Color(0.2, 0.4, 0.95) if half == 0 else Color(0.9, 0.15, 0.15)
+		var ox := W / 2 + bend * 0.6 + sin(t * 1.3) * 6.0
+		draw_rect(Rect2(ox - 3, y0 + 33, 6, 3), other)
+		var kx := W / 2 + sin(t * 2.0) * 10.0
+		draw_rect(Rect2(kx - 10, y0 + 46, 20, 8), kc)
+		draw_rect(Rect2(kx - 5, y0 + 41, 10, 6), Color(0.95, 0.85, 0.7))
+		draw_rect(Rect2(kx - 12, y0 + 52, 5, 5), Color.BLACK)
+		draw_rect(Rect2(kx + 7, y0 + 52, 5, 5), Color.BLACK)
+		_text("P%d" % (half + 1), Vector2(10, y0 + 4), 8, Color.WHITE)
+		_text(["1ST", "4TH"][half] if fmod(_t, 12.0) < 9.0 else ["2ND", "1ST"][half], Vector2(W - 14, y0 + 4), 8, Color(1, 0.9, 0.2))
+		_text("LAP %d/3" % (1 + int(_t / 20.0) % 3), Vector2(W / 2, y0 + 4), 7, Color.WHITE)
+	draw_rect(Rect2(0, 59, W, 2), Color.BLACK)
 
 
 func _player_dot(at: Vector2, jersey: Color) -> void:

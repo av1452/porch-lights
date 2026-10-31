@@ -34,7 +34,7 @@ const ROLLS := [
 	] },
 	{ "result": "The die bounces off the table and under the couch. Biscuit gets there first.", "spaces": [1], "lines": [
 		["Mom", "It's a one. I'm calling it a one. It's wet, I'm not checking."],
-		["", "Biscuit looks very proud of himself. Jamie laughs so hard they snort, which makes everybody laugh."],
+		["", "Biscuit looks very proud of himself. Jamie laughs so hard he snorts, which makes everybody laugh."],
 	] },
 ]
 
@@ -58,9 +58,13 @@ var _marshmallows := 0
 func _ready() -> void:
 	super._ready()
 	Decorations.christmas_tree(self, true)
-	tv_screen.channel = "winter"
+	# Jamie's new game, from Christmas. He's been playing since breakfast.
+	tv_screen.channel = "videogame"
+	tv.memory_text = "Jamie's new racing game, split screen. Player one is winning. Player one is always winning."
+	tv.repeat_text = "The music from the game is going to be stuck in your head until New Year's."
 	set_porch_light(true)
 	_snow_day()
+	street.add_people("sleds")
 	Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -16.0)
 	mom = $Story/Mom
 	mom.visible = true
@@ -72,6 +76,12 @@ func _ready() -> void:
 	dad.position = Vector3(-0.4, -0.45, 8.0)
 	dad.rotation.y = deg_to_rad(160.0)
 	jamie = Figure.person(self, "Jamie", Vector3(-0.5, 0.0, 2.05), 180.0, 1.62, Figure.JAMIE, true)
+	# Controller in his hands, player one, since breakfast.
+	var pad := Props.controller(0.0)
+	pad.position = Vector3(0.0, 0.6, 0.3)
+	pad.rotation_degrees.x = -30.0
+	jamie.add_child(pad)
+	Look.upgrade(pad)
 
 	_note = box_thing("ThankYouNote", Vector3(4.6, 0.77, 0.4), Vector3(0.2, 0.01, 0.15), Color(0.95, 0.93, 0.85), "Write to Grandma")
 	dress(_note, Props.letter_and_crayons(), 90.0)
@@ -344,6 +354,12 @@ func _evening() -> void:
 	lock(true)
 	await hud.fade(1.0, 2.5).finished
 	set_window_daylight(false)
+	street.clear_people()
+	# Game's off; the winter special's on, quiet, for company.
+	tv_screen.channel = "winter"
+	tv.memory_text = "The winter special's on with the sound low. Nobody's watching it. It's just nice to have on."
+	tv.repeat_text = ""
+	tv.times_used = 0
 	env.ambient_light_energy = 0.35
 	(lights.get_node("Moon") as DirectionalLight3D).light_energy = 0.2
 	street.restore_lights()
@@ -408,9 +424,18 @@ func _set_up_board() -> void:
 	_cap.position = _space(0) + Vector3(0, 0.012, 0)
 	_cap.material = Decorations.mat(Color(0.75, 0.75, 0.78))
 	_board.add_child(_cap)
-	_dice = box_thing("Dice", BOARD_AT + Vector3(0.25, 0.015, 0.2), Vector3(0.08, 0.03, 0.05), Color(0.97, 0.97, 0.95), "Roll the dice")
+	# The box lid, held together with packing tape.
+	var lid := Props.box(_board, Vector3(0.26, 0.03, 0.26), Vector3(-0.4, 0.015, 0.02), Color(0.75, 0.2, 0.15), Vector3(0, 12, 0))
+	for k in 3:
+		Props.box(lid, Vector3(0.05, 0.032, 0.262), Vector3(-0.09 + k * 0.09, 0, 0), Color(0.75, 0.62, 0.42))
+	Props.label(lid, "FAMILY\nNIGHT", Vector3(0, 0.017, 0), 0.05, Color(1, 0.9, 0.5))
+	Look.upgrade(lid)
+	# A generous grab box: the dice are small, and you're on the couch.
+	_dice = box_thing("Dice", BOARD_AT + Vector3(0.25, 0.04, 0.22), Vector3(0.2, 0.08, 0.18), Color(0.97, 0.97, 0.95), "Roll the dice")
 	dress(_dice, Props.dice())
 	_dice.used.connect(_on_dice)
+	# Anywhere you look at the board from the couch counts as reaching for the dice.
+	player.aim_at(_dice, BOARD_AT + Vector3(0.1, 0.0, 0.1), 16.0)
 
 
 ## Where space `i` is, going around the edge of the board.
@@ -465,6 +490,7 @@ func _good_night() -> void:
 	busy = true
 	lock(true)
 	_dice.enabled = false
+	player.aim_at(null)
 	await say([
 		["", "Somebody's mad at somebody within ten minutes. Mom wins. Mom always wins."],
 		["Jamie", "This game is rigged. I'm going to bed. ...One more round."],

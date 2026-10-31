@@ -209,6 +209,80 @@ def bulb_flicker():
     sfx("bulb_flicker", buzz)
 
 
+def tv_parade():
+    """A marching band through a TV speaker: an original brassy tune over a bass
+    drum and snare, with the crowd along the street. Loops."""
+    random.seed(23)
+    secs = 9.6
+    step = 0.3
+    notes = [67, 72, 76, 79, 76, 72, 74, 77, 81, 79, 77, 74, 72, 76, 79, 84, 83, 79, 81, 79, 77, 76, 74, 72,
+             67, 72, 76, 79, 77, 76, 74, 72]
+    out = buf(secs)
+    for i, note in enumerate(notes):
+        f = midi(note)
+        n = int(step * 0.9 * SR)
+        seg = []
+        for k in range(n):
+            tt = k / SR
+            # A brassy stack of odd harmonics, swelling in.
+            s = sum(math.sin(TAU * f * h * tt) / h for h in (1, 2, 3, 4, 5))
+            seg.append(s * 0.32 * min(1, tt * 25) * min(1, (step * 0.9 - tt) * 12))
+        mix(out, seg, i * step, wrap=True)
+    for b in range(int(secs / step)):
+        at = b * step
+        if b % 2 == 0:
+            n = int(0.18 * SR)
+            mix(out, [math.sin(TAU * 60 * k / SR) * math.exp(-k / SR * 18) * 0.9 for k in range(n)], at, wrap=True)
+        else:
+            mix(out, [random.uniform(-1, 1) * math.exp(-k / SR * 30) * 0.35 for k in range(int(0.12 * SR))], at, wrap=True)
+    crowd = highpass(lowpass(noise(secs, 1.0), 1000), 200)
+    out = [a + c * (0.12 + 0.1 * math.exp(-((k / SR - 4.8) / 0.8) ** 2)) for k, (a, c) in enumerate(zip(out, crowd))]
+    out = highpass(lowpass(out, 3500), 250)
+    sfx("tv_parade", crossfade_loop(out, 0.3), 0.55)
+
+
+def tv_yulelog():
+    """A fireplace on TV: crackles and pops, a low rumble of flame, and a
+    soft music-box carol under it. Loops."""
+    random.seed(29)
+    secs = 9.6
+    out = [s * 0.25 for s in lowpass(noise(secs, 1.0), 300)]
+    for _ in range(140):
+        at = random.uniform(0, secs)
+        n = int(random.uniform(0.004, 0.02) * SR)
+        mix(out, [random.uniform(-1, 1) * math.exp(-k / n * 4) * random.uniform(0.3, 1.0) for k in range(n)], at, wrap=True)
+    bells = buf(secs)
+    for i, note in enumerate([72, 72, 74, 72, 77, 76, 72, 72, 74, 72, 79, 77, 72, 72, 84, 81, 77, 76, 74, 82, 82, 81, 77, 79, 77]):
+        f = midi(note)
+        n = int(0.6 * SR)
+        mix(bells, [(math.sin(TAU * f * k / SR) + 0.2 * math.sin(TAU * 3 * f * k / SR)) * math.exp(-k / SR * 5) * 0.22
+                    for k in range(n)], i * 0.38, wrap=True)
+    out = [a + b for a, b in zip(out, bells)]
+    sfx("tv_yulelog", crossfade_loop(out, 0.4), 0.5)
+
+
+def tv_videogame():
+    """Two-player racing game: a bouncy chip tune and two little engines. Loops."""
+    secs = 6.4
+    out = buf(secs)
+    lead = [76, 79, 83, 79, 81, 84, 88, 84, 76, 79, 83, 86, 88, 86, 83, 79]
+    bass = [52, 52, 55, 55, 57, 57, 55, 55]
+    for i in range(int(secs / 0.2)):
+        f = midi(lead[i % len(lead)])
+        n = int(0.17 * SR)
+        mix(out, [(1.0 if (f * k / SR) % 1 < 0.25 else -1.0) * 0.18 * math.exp(-k / SR * 7) for k in range(n)], i * 0.2, wrap=True)
+    for i in range(int(secs / 0.4)):
+        f = midi(bass[i % len(bass)])
+        n = int(0.36 * SR)
+        mix(out, [(2 * ((f * k / SR) % 1) - 1) * 0.16 for k in range(n)], i * 0.4, wrap=True)
+    for k in range(len(out)):
+        t = k / SR
+        engine = math.sin(TAU * (95 + 25 * math.sin(TAU * 0.5 * t)) * t) * 0.08
+        engine += math.sin(TAU * (120 + 30 * math.sin(TAU * 0.37 * t + 1)) * t) * 0.06
+        out[k] += engine
+    sfx("tv_videogame", crossfade_loop(lowpass(out, 5000), 0.2), 0.5)
+
+
 SOUNDS = {
     "tv_show": lambda: tv_tune("tv_show", [69, 72, 76, 75, 74, 72, 69, 68, 69, 76, 77, 76], 0.33, "theremin", 7.92),
     "tv_ad": lambda: tv_tune("tv_ad", [72, 76, 79, 84, 79, 76, 72, 76, 77, 81, 84, 81], 0.15, "square", 5.4),
@@ -219,6 +293,9 @@ SOUNDS = {
     "tv_newyear": lambda: tv_football("tv_newyear", None),
     # "The Night Before": an original little bell tune for the Christmas special.
     "tv_christmas": lambda: tv_tune("tv_christmas", [76, 79, 81, 79, 76, 74, 72, 74, 76, 76, 79, 84, 83, 79, 81, 79], 0.3, "bell", 9.6),
+    "tv_parade": tv_parade,
+    "tv_yulelog": tv_yulelog,
+    "tv_videogame": tv_videogame,
 }
 
 

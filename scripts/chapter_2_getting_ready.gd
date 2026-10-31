@@ -25,9 +25,13 @@ const DOOR_WAIT := Vector3(-1.5, 0.05, 1.25)
 
 
 func _ready() -> void:
+	season = "fall"
 	super._ready()
 	_morning()
-	tv_screen.channel = "special"
+	# The parade's on. Nobody's watching it, but it's on.
+	tv_screen.channel = "parade"
+	tv.memory_text = "The parade. A giant turkey balloon is trying to get around a corner. Twelve people are holding its ropes."
+	tv.repeat_text = "The marching band from somewhere in Ohio. The announcer says they practiced all year. They look cold."
 	set_porch_light(false)
 
 	mom = $Story/Mom
@@ -207,14 +211,26 @@ func _drive() -> void:
 	await hud.fade(1.0, 1.5).finished
 	car = CarRide.new()
 	car.daytime = true
+	car.clock_text = "10:12"
 	car.position = DRIVE_AT
 	add_child(car)
 	var cabin := car.get_node("Cabin") as Node3D
 	var car_dad := Figure.person(cabin, "Dad", Vector3(-0.38, -0.1, -0.5), 180.0, 1.8, Figure.DAD, true)
 	var car_mom := Figure.person(cabin, "Mom", Vector3(0.38, -0.1, -0.5), 180.0, 1.68, Figure.MOM, true)
-	Figure.person(cabin, "Jamie", Vector3(-0.38, -0.04, 0.62), 180.0, 1.62, Figure.JAMIE, true)
+	var car_jamie := Figure.person(cabin, "Jamie", Vector3(-0.38, -0.04, 0.62), 180.0, 1.62, Figure.JAMIE, true)
+	# Jamie's Discman, and the CD wallet with every CD he owns.
+	Props.discman(car_jamie)
+	Look.upgrade(car_jamie)
 	add_chatter(car_dad, "Dad", ["Nobody needs the bathroom. Right? Right.", "That's a hawk. Or a big pigeon."])
 	add_chatter(car_mom, "Mom", ["Look at the trees, hon. Look how red."])
+	add_chatter(car_jamie, "Jamie", [
+		"This CD skips every time Dad hits a bump. Dad. DAD.",
+		"Brought twenty-four CDs. Listened to one. On repeat. It's a good one.",
+	])
+	# The parade's on the radio. Ask Dad and he'll change it.
+	car.set_station("AM 820", "tv_parade")
+	car.radio.used.connect(_on_car_radio)
+	player.aim_at(car.radio, car.radio.global_position, 9.0)
 	# Leo's window: nothing to see but what's outside it.
 	var window := Interactable.new()
 	window.name = "CarWindow"
@@ -239,6 +255,7 @@ func _drive() -> void:
 		["Dad", "Everybody buckled? Biscuit, you buckled?"],
 		["", "Biscuit's nose is pressed to the window. Every car that passes is the most exciting car he's ever seen."],
 		["Mom", "The parade's on the radio."],
+		["Announcer (radio)", "And here comes the big turkey, folks, sixty feet tall, and the wind is NOT helping."],
 		["Jamie", "How do you watch a parade on the radio."],
 		["Dad", "Imagination, Jamie. Look into your heart."],
 	])
@@ -252,6 +269,7 @@ func _drive() -> void:
 	])
 	await wait(5.0)
 	lock(true)
+	player.aim_at(null)
 	await hud.fade(1.0, 2.5).finished
 	hud.show_line("", "Two hours. One rest stop. Biscuit's nose prints on every window in the van.")
 	await wait(3.5)
@@ -259,6 +277,27 @@ func _drive() -> void:
 	step = Step.END
 	busy = false
 	go_to_chapter("res://scenes/chapter_2_thanksgiving.tscn")
+
+
+## Leo asks, Dad changes the station: the parade, the classical station,
+## static and a weather report, then back to the parade because Mom says so.
+var _station := 0
+const STATIONS := [
+	["AM 820", "tv_parade", ["Mom", "Leave it on the parade, please. I want to hear the bands."]],
+	["FM 89.3", "radio_mountain_king", ["Dad", "The classical station. This is the song from the cartoon where the guy sneaks around."]],
+	["AM 1140", "tv_static", ["Dad", "...and that's just static. And a man talking about a cold front in a city we've never heard of."]],
+]
+
+
+func _on_car_radio(_by: Node) -> void:
+	if busy:
+		return
+	_station = (_station + 1) % STATIONS.size()
+	var st: Array = STATIONS[_station]
+	Audio.play_sfx("switch_click", car.radio, -10.0)
+	var folder := "music" if (st[1] as String).begins_with("radio_") else "sfx"
+	car.set_station(st[0], st[1], folder)
+	say([st[2]])
 
 
 ## Biscuit rides in the middle seat, sitting up so he can see out.
@@ -269,7 +308,7 @@ func _biscuit_in_car(cabin: Node3D) -> void:
 	pet.name = "PetBody"
 	pet.prompt = "Pet Biscuit"
 	pet.memory_text = "He leans his whole weight into your hand without looking away from the window."
-	pet.repeat_text = "His tail thumps the seat. Jamie says 'ow' even though it didn't hit them."
+	pet.repeat_text = "His tail thumps the seat. Jamie says 'ow' even though it didn't hit him."
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = Vector3(0.3, 0.45, 0.5)

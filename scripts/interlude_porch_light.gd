@@ -94,8 +94,11 @@ func _set_up_night() -> void:
 	ch.tv_screen.channel = "off"
 	_set_porch_light(false)
 
-	# Up and down the street, every porch light is on again.
+	# Up and down the street, every porch light is on again. Somebody got
+	# the Hendersons' tree while we were asleep.
 	street.restore_lights()
+	street.show_halloween_aftermath()
+	street.clear_people()
 
 	ch.mom.visible = true
 	ch.dad.visible = true
@@ -106,6 +109,7 @@ func _set_up_night() -> void:
 
 	var clock := $"../House/LivingRoom/Things/Clock" as Interactable
 	clock.memory_text = "2:14. You've never been awake at 2:14 before. The numbers look wrong."
+	Decorations.set_clock(ch, clock.memory_text)
 	clock.repeat_text = "Still the middle of the night. Every tick sounds like a crinkle."
 	clock.times_used = 0
 	front_door.memory_text = ""

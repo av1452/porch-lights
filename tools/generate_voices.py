@@ -54,6 +54,8 @@ SPEAKERS = {
     "marcus": {"voice": "am_adam", "speed": 1.05},
     "emily": {"voice": "af_alloy", "speed": 1.05},
     "josh": {"voice": "am_liam", "speed": 1.1},
+    # the parade on the car radio
+    "announcer": {"voice": "am_fenrir", "speed": 1.1},
 }
 
 STRING = r'"((?:[^"\\]|\\.)*)"'

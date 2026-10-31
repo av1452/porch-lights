@@ -25,6 +25,8 @@ var grandma: Interactable
 var street: Street
 var _dream_bounds: StaticBody3D
 var _snow: GPUParticles3D
+var _ads: CSGBox3D
+var _lights_changed := 0
 
 
 func _ready() -> void:
@@ -34,13 +36,28 @@ func _ready() -> void:
 	dad = Figure.person(cabin, "Dad", Vector3(-0.38, -0.1, -0.5), 180.0, 1.8, Figure.DAD, true)
 	mom = Figure.person(cabin, "Mom", Vector3(0.38, -0.1, -0.5), 180.0, 1.68, Figure.MOM, true)
 	jamie = Figure.person(cabin, "Jamie", Vector3(-0.38, -0.04, 0.62), 180.0, 1.62, Figure.JAMIE, true)
-	_earbuds(jamie)
+	Props.discman(jamie)
 	_biscuit(cabin)
 	_snow = _make_snow(cabin)
 
-	_thing(cabin, "Leftovers", Vector3(0.38, 0.52, 0.3), Vector3(0.28, 0.06, 0.22), Color(0.75, 0.75, 0.78),
+	var pie := _thing(cabin, "Leftovers", Vector3(0.38, 0.6, 0.38), Vector3(0.28, 0.06, 0.22), Color(0, 0, 0, 0),
 		"Leftovers", "Grandma wrapped two slices of pie. One is for you. One is 'for your father, and don't let him eat both.'",
 		"The foil is still a little warm. You can smell the cinnamon through it.")
+	# A paper plate under a tent of foil, on your lap.
+	var plate := Props.leftovers()
+	plate.position = Vector3(0, -0.03, 0)
+	pie.add_child(plate)
+	Look.upgrade(plate)
+	# Mom's Black Friday ads, folded on her lap until she clicks on the dome light.
+	_ads = Props.box(mom, Vector3(0.3, 0.01, 0.22), Vector3(0, 0.62, 0.22), Color(0.9, 0.88, 0.82), Vector3(-25, 0, 0))
+	Props.box(_ads, Vector3(0.12, 0.012, 0.08), Vector3(-0.06, 0, -0.03), Color(0.85, 0.15, 0.12))
+	Props.box(_ads, Vector3(0.1, 0.012, 0.06), Vector3(0.07, 0, 0.05), Color(0.2, 0.35, 0.75))
+	Props.ring(_ads, 0.03, 0.036, Vector3(-0.05, 0.007, -0.03), Color(0.9, 0.1, 0.1))
+	_ads.visible = false
+	car.radio.used.connect(func(_by: Node) -> void:
+		if not busy:
+			say([["Dad", "Radio's your mom's department tonight. Take it up with management."]]))
+	car.set_station("AM 1010")
 	_thing(cabin, "Window", Vector3(0.73, 1.05, 0.35), Vector3(0.04, 0.4, 0.6), Color(0, 0, 0, 0),
 		"Look out the window", "Streetlights slide over the ceiling one at a time, like the second hand on a clock.",
 		"You fog the glass and draw a house. Then a porch. Then a little light by the door.")
@@ -60,49 +77,22 @@ func _ready() -> void:
 		"Grandma sent you home with half the kitchen, huh?",
 	])
 
+	car.clock_text = "7:48"
 	player.sit(LEO_SEAT, 0.0)
-	Audio.play_sfx("blinker", null, -14.0)
+	# Dad's turn signal, out of Grandma's street and onto the highway.
+	car.blink(11.0)
 	Audio.play_music("drive_home", 4.0, -12.0)
 	await open_chapter("November", "Thanksgiving: The Drive Home")
-	hud.show_memory("Leftovers on your lap. The heater smells like burnt dust. Jamie has their headphones on.", 5.0)
+	hud.show_memory("Click, click, click. Dad's blinker, turning out of Grandma's street. Her porch light gets smaller in the back window.", 5.5)
+	await wait(6.0)
+	hud.show_memory("Then the highway. Leftovers on your lap. The heater smells like burnt dust. Jamie has his headphones on.", 5.0)
 	await wait(3.0)
-	objective("Ask Jamie what they're listening to")
+	objective("Ask Jamie what he's listening to")
 
 
 func _exit_tree() -> void:
 	if is_instance_valid(street) and street.get_parent() == null:
 		street.free()
-
-
-## Earbuds on a cord, down to the portable CD player in Jamie's lap.
-func _earbuds(who: Node3D) -> void:
-	var white := StandardMaterial3D.new()
-	white.albedo_color = Color(0.92, 0.92, 0.9)
-	var head_y := 0.8656 * 1.62 - 0.136 * 1.62
-	for side in [-1, 1]:
-		var bud := CSGSphere3D.new()
-		bud.radius = 0.018
-		bud.position = Vector3(0.11 * side, head_y - 0.01, 0)
-		bud.material = white
-		who.add_child(bud)
-	var cord := CSGCylinder3D.new()
-	cord.radius = 0.004
-	cord.height = 0.5
-	cord.position = Vector3(0.06, head_y - 0.27, -0.06)
-	cord.rotation_degrees.x = 12.0
-	cord.material = white
-	who.add_child(cord)
-	# The CD player: a silver disc with a little window on top.
-	var player_mat := StandardMaterial3D.new()
-	player_mat.albedo_color = Color(0.7, 0.72, 0.76)
-	player_mat.metallic = 0.6
-	player_mat.roughness = 0.35
-	var cd := CSGCylinder3D.new()
-	cd.radius = 0.07
-	cd.height = 0.025
-	cd.position = Vector3(0.04, head_y - 0.5, -0.16)
-	cd.material = player_mat
-	who.add_child(cd)
 
 
 ## Biscuit rides home stretched across the back seat, head in Leo's lap.
@@ -212,7 +202,7 @@ func _on_jamie(_by: Node) -> void:
 	var song := "static_parade" if Audio.get_stream("music", "static_parade") else "ch2_night"
 	Audio.play_music(song, 2.0, -16.0)
 	await say([
-		["", "Static Parade. The band from the poster in Jamie's room. It sounds like a radio playing in another house."],
+		["", "Static Parade. The band from the poster in his room. It sounds like a radio playing in another house."],
 		["", "It's a song you don't know yet. By spring you'll know every word."],
 		["Jamie", "If you tell anyone I listen to this, you're dead."],
 	])
@@ -243,19 +233,25 @@ func _worry() -> void:
 
 func _overhear() -> void:
 	busy = true
+	car.set_dome(true)
+	_ads.visible = true
 	await say([
 		["", "Mom clicks on the dome light. She's got the Black Friday ads from Grandma's paper and a pen."],
 		["Mom", "Okay. I'm circling things. Nobody look."],
 		["Dad", "Is it the robot car? It's the robot car."],
 		["Mom", "I said nobody look!"],
 	])
+	car.set_station("FM 101.5")
 	Audio.play_music("radio_deck_the_halls", 2.0, -10.0)
 	await say([
 		["", "The radio plays the first Christmas song of the year. Dad turns it up. Mom pretends to be annoyed, then sings anyway."],
 		["Dad", "It's not even December!"],
 		["Mom", "It's after Thanksgiving. It counts."],
 		["", "Jamie takes out the earbud so you can both hear. Everybody sings the part they know."],
+		["", "Mom folds up the ads and clicks the dome light off. The van goes dark and warm."],
 	])
+	car.set_dome(false)
+	_ads.visible = false
 	busy = false
 	step = Step.SLEEP
 	(car.get_node("Cabin/Hoodie") as Interactable).enabled = true
@@ -271,7 +267,7 @@ func _on_sleep(_by: Node) -> void:
 	busy = true
 	objective("")
 	lock(true)
-	hud.show_memory("Jamie's hoodie is bunched against the glass. It smells like their room.", 4.0)
+	hud.show_memory("Jamie's hoodie is bunched against the glass. It smells like his room.", 4.0)
 	Audio.stop_music(6.0)
 	var t := create_tween().set_parallel(true)
 	t.tween_property(player.head, "rotation:z", deg_to_rad(14.0), 4.0)
@@ -287,9 +283,11 @@ func _on_sleep(_by: Node) -> void:
 	await hud.fade(0.0, 3.0).finished
 	lock(false)
 	busy = false
-	hud.show_memory("The car is gone. You're standing on a street you almost know. Every porch light is on, waiting.", 5.0)
-	await wait(3.0)
-	objective("Follow the porch lights")
+	hud.show_memory("You're asleep in the van. You know you are. But you're also here: a street you almost know, every porch light on, like they're waiting up for someone.", 6.5)
+	await wait(7.0)
+	hud.show_memory("Way down at the end, one light is orange. The same orange as Grandma's porch.", 4.5)
+	await wait(2.0)
+	objective("Follow the porch lights to the orange one")
 
 
 func _enter_dream() -> void:
@@ -348,6 +346,11 @@ func _process(delta: float) -> void:
 			e["christmas"] = true
 			street.set_light_color(e, Decorations.BULB_COLORS[street.porch_lights.find(e) % 3])
 			Audio.play_sfx("dog_tags", (e.light as Node3D).global_position, -6.0, 0.2)
+			_lights_changed += 1
+			if _lights_changed == 1:
+				hud.show_memory("As you walk past, the porch light turns red. Like Christmas lights. The next one turns green.", 4.5)
+			elif _lights_changed == 4:
+				hud.show_memory("The whole street is turning into Christmas, one porch at a time, just because you walked by.", 4.5)
 	if step == Step.DREAM and player.global_position.z < -52.0:
 		step = Step.GRANDMA
 		objective("Go up to Grandma's porch")

@@ -67,7 +67,12 @@ func _setup_buses() -> void:
 
 
 ## Dream mode: everything gets a big, far-away reverb.
+## True in dreams (more echo on everything), so footsteps can go softer.
+var dreaming := false
+
+
 func set_dreaming(on: bool) -> void:
+	dreaming = on
 	for bus in ["SFX", "Voice"]:
 		var fx := AudioServer.get_bus_effect(AudioServer.get_bus_index(bus), 0) as AudioEffectReverb
 		fx.room_size = 0.9 if on else (0.35 if bus == "SFX" else 0.2)

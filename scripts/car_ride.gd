@@ -12,6 +12,12 @@ extends Node3D
 @export var traffic_gap := 9.0
 ## Autumn daytime instead of night (set before the car enters the tree).
 @export var daytime := false
+## What the dashboard clock says (set before the car enters the tree).
+@export var clock_text := "11:48":
+	set(v):
+		clock_text = v
+		if _clock_label:
+			_clock_label.text = v
 
 const ROAD_LENGTH := 320.0
 const ROAD_Y := -0.35
@@ -22,10 +28,23 @@ var _traffic_t := 3.0
 var _hum: AudioStreamPlayer
 var _cabin: Node3D
 var _beams: SpotLight3D
+## The radio in the dash: use it to ask Dad to change the station
+## (chapters connect `used` and call set_station()).
+var radio: Interactable
+var _radio_label: Label3D
+var _radio_sound: AudioStreamPlayer3D
+var _arrows: Array[StandardMaterial3D] = []
+var _blink_left := 0.0
+var _blink_t := 0.0
+var _clock_label: Label3D
+var _dome: OmniLight3D
+var _dome_lens: StandardMaterial3D
 
 
 func _ready() -> void:
 	_build_cabin()
+	_build_dash()
+	_build_clutter()
 	_build_road()
 	_hum = Audio.make_loop("car_interior", self, -6.0, "SFX", false) as AudioStreamPlayer
 
@@ -49,8 +68,38 @@ func _process(delta: float) -> void:
 			c.position.z += (speed + 26.0) * delta
 			if c.position.z > 40.0:
 				c.visible = false
+	# The turn signal: the dash arrow blinks along with the click.
+	if _blink_left > 0.0:
+		_blink_left -= delta
+		_blink_t += delta
+		var on := fmod(_blink_t, 0.75) < 0.38 and _blink_left > 0.0
+		for m in _arrows:
+			m.emission_energy_multiplier = 3.0 if on else 0.0
 	# A little road shake (off with head bob, for motion comfort).
 	_cabin.position.y = 0.0 if not Game.settings.head_bob else sin(Time.get_ticks_msec() * 0.011) * 0.004 + sin(Time.get_ticks_msec() * 0.023) * 0.002
+
+
+## Dad's turn signal: the click, and the green arrow on the dash blinking with it.
+func blink(seconds := 11.0) -> void:
+	_blink_left = seconds
+	_blink_t = 0.0
+	Audio.play_sfx("blinker", null, -14.0)
+
+
+## The dome light over the middle row, on or off.
+func set_dome(on: bool) -> void:
+	_dome.visible = on
+	_dome_lens.emission_energy_multiplier = 2.5 if on else 0.0
+
+
+## Tunes the radio: what the display says, and what plays (a loop from
+## audio/sfx or audio/music through the little speakers, or nothing).
+func set_station(display: String, sound := "", folder := "sfx") -> void:
+	_radio_label.text = display
+	_radio_sound.stop()
+	if sound != "":
+		_radio_sound.stream = Audio.get_stream(folder, sound, true)
+		_radio_sound.play()
 
 
 func stop_engine(time := 2.0) -> void:
@@ -97,7 +146,16 @@ func _build_cabin() -> void:
 	_box(_cabin, Vector3(1.5, 0.05, 4.2), Vector3(0, -0.02, 0.4), _mat(Color(0.15, 0.14, 0.14)))
 	# A minivan's tall roof, with a dome light in the middle.
 	_box(_cabin, Vector3(1.5, 0.05, 3.9), Vector3(0, 1.62, 0.45), headliner)
-	_box(_cabin, Vector3(0.3, 0.03, 0.15), Vector3(0, 1.595, 0.3), _mat(Color(0.9, 0.88, 0.8), 0.6))
+	var lens := _box(_cabin, Vector3(0.3, 0.03, 0.15), Vector3(0, 1.595, 0.3), _mat(Color(0.9, 0.88, 0.8), 0.6, 0.01))
+	_dome_lens = lens.material as StandardMaterial3D
+	_dome_lens.emission_energy_multiplier = 0.0
+	_dome = OmniLight3D.new()
+	_dome.light_color = Color(1.0, 0.9, 0.7)
+	_dome.light_energy = 0.9
+	_dome.omni_range = 2.6
+	_dome.position = Vector3(0, 1.45, 0.3)
+	_dome.visible = false
+	_cabin.add_child(_dome)
 	# middle row (Leo and Jamie)
 	_box(_cabin, Vector3(1.4, 0.42, 0.5), Vector3(0, 0.21, 0.62), upholstery)
 	_box(_cabin, Vector3(1.4, 0.62, 0.14), Vector3(0, 0.72, 0.9), upholstery, Vector3(-8, 0, 0))
@@ -120,7 +178,8 @@ func _build_cabin() -> void:
 	wheel.material = plastic
 	_cabin.add_child(wheel)
 	var clock := Label3D.new()
-	clock.text = "11:48"
+	clock.text = clock_text
+	_clock_label = clock
 	clock.font_size = 24
 	clock.pixel_size = 0.0025
 	clock.modulate = Color(0.4, 1.0, 0.6)
@@ -162,6 +221,154 @@ func _build_cabin() -> void:
 	beams.position = Vector3(0, 0.6, -2.85)
 	beams.rotation_degrees = Vector3(-7, 0, 0)
 	_cabin.add_child(beams)
+
+
+## The driver's side of a late-90s family van: two round gauges under a hood,
+## the turn-signal arrows, a tape-deck radio in the middle, vents, the
+## rearview mirror with a pine-tree air freshener, and sun visors.
+func _build_dash() -> void:
+	var plastic := _mat(Color(0.1, 0.1, 0.11), 0.7)
+	var trim := _mat(Color(0.2, 0.2, 0.21), 0.6)
+	var glow := Color(0.45, 1.0, 0.65)
+	# The gauge hood and two dials, tipped back toward the driver.
+	_box(_cabin, Vector3(0.48, 0.1, 0.16), Vector3(-0.38, 0.96, -1.2), plastic, Vector3(-15, 0, 0))
+	for k in 2:
+		var dial := Node3D.new()
+		dial.position = Vector3(-0.48 + k * 0.2, 0.93, -1.12)
+		dial.rotation_degrees.x = -20.0
+		_cabin.add_child(dial)
+		var face := CSGCylinder3D.new()
+		face.radius = 0.065
+		face.height = 0.01
+		face.rotation_degrees.x = 90.0
+		face.material = _mat(Color(0.05, 0.06, 0.06), 0.5, 0.0 if daytime else 0.15)
+		dial.add_child(face)
+		for i in 7:
+			var a := deg_to_rad(-120.0 + i * 40.0)
+			_box(dial, Vector3(0.004, 0.012, 0.004), Vector3(sin(a), cos(a), 0) * 0.052 + Vector3(0, 0, 0.007), _mat(glow, 0.5, 1.0), Vector3(0, 0, -rad_to_deg(a)))
+		var needle_a := deg_to_rad(10.0 if k == 0 else -60.0)
+		_box(dial, Vector3(0.004, 0.05, 0.004), Vector3(sin(needle_a), cos(needle_a), 0) * 0.022 + Vector3(0, 0, 0.009), _mat(Color(1, 0.35, 0.1), 0.5, 1.5), Vector3(0, 0, -rad_to_deg(needle_a)))
+	# Turn-signal arrows between the dials: dark until Dad signals.
+	for side in [-1, 1]:
+		var arrow := CSGPolygon3D.new()
+		arrow.polygon = PackedVector2Array([Vector2(0, 0.012), Vector2(0.022 * side, 0), Vector2(0, -0.012)])
+		arrow.depth = 0.004
+		arrow.position = Vector3(-0.38 + side * 0.012, 0.955, -1.105)
+		arrow.rotation_degrees.x = -20.0
+		var m := _mat(glow, 0.5, 0.01)
+		m.emission_energy_multiplier = 0.0
+		arrow.material = m
+		_arrows.append(m)
+		_cabin.add_child(arrow)
+	# The steering wheel's hub and the column shifter.
+	var hub := CSGCylinder3D.new()
+	hub.radius = 0.06
+	hub.height = 0.05
+	hub.position = Vector3(-0.38, 0.95, -1.08)
+	hub.rotation_degrees.x = 70.0
+	hub.material = plastic
+	_cabin.add_child(hub)
+	# Two spokes, out to the rim at nine and three o'clock.
+	_box(_cabin, Vector3(0.3, 0.025, 0.02), Vector3(-0.38, 0.95, -1.08), plastic, Vector3(70, 0, 0))
+	_box(_cabin, Vector3(0.015, 0.015, 0.2), Vector3(-0.2, 0.9, -1.0), trim, Vector3(25, -30, 0))
+	_box(_cabin, Vector3(0.03, 0.03, 0.03), Vector3(-0.16, 0.86, -0.92), trim)
+	# The center stack: two vents, the radio with its orange display, a tape slot.
+	for v in 2:
+		var vent := _box(_cabin, Vector3(0.1, 0.05, 0.02), Vector3(-0.07 + v * 0.14, 0.93, -1.16), trim)
+		for i in 3:
+			_box(vent, Vector3(0.095, 0.004, 0.022), Vector3(0, -0.015 + i * 0.015, 0.002), plastic)
+	radio = Interactable.new()
+	radio.name = "CarRadio"
+	radio.prompt = "Ask Dad to change the station"
+	radio.position = Vector3(0.0, 0.84, -1.16)
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(0.3, 0.12, 0.08)
+	shape.shape = box
+	radio.add_child(shape)
+	_cabin.add_child(radio)
+	_box(radio, Vector3(0.26, 0.08, 0.03), Vector3.ZERO, _mat(Color(0.08, 0.08, 0.09), 0.5))
+	_box(radio, Vector3(0.12, 0.022, 0.004), Vector3(0, 0.015, 0.017), _mat(Color(0.12, 0.06, 0.02), 0.3))
+	_box(radio, Vector3(0.1, 0.006, 0.004), Vector3(0, -0.022, 0.017), _mat(Color(0.02, 0.02, 0.02)))
+	for x in [-0.1, 0.1]:
+		var knob := CSGCylinder3D.new()
+		knob.radius = 0.016
+		knob.height = 0.02
+		knob.rotation_degrees.x = 90.0
+		knob.position = Vector3(x, 0, 0.02)
+		knob.material = trim
+		radio.add_child(knob)
+	for i in 5:
+		_box(radio, Vector3(0.018, 0.008, 0.006), Vector3(-0.04 + i * 0.02, -0.01, 0.017), trim)
+	_radio_label = Label3D.new()
+	_radio_label.text = ""
+	_radio_label.font_size = 20
+	_radio_label.pixel_size = 0.0012
+	_radio_label.modulate = Color(1.0, 0.6, 0.2)
+	_radio_label.outline_size = 0
+	_radio_label.position = Vector3(0, 0.015, 0.0195)
+	radio.add_child(_radio_label)
+	_radio_sound = AudioStreamPlayer3D.new()
+	_radio_sound.bus = "TV"
+	_radio_sound.volume_db = -8.0
+	_radio_sound.unit_size = 2.0
+	radio.add_child(_radio_sound)
+	# The rearview mirror, with a little pine tree hanging off it.
+	_box(_cabin, Vector3(0.02, 0.08, 0.02), Vector3(0, 1.52, -1.38), plastic)
+	_box(_cabin, Vector3(0.26, 0.07, 0.025), Vector3(0, 1.46, -1.36), plastic, Vector3(-8, 0, 0))
+	_box(_cabin, Vector3(0.24, 0.055, 0.004), Vector3(0, 1.46, -1.345), _mat(Color(0.55, 0.6, 0.65), 0.05), Vector3(-8, 0, 0))
+	_box(_cabin, Vector3(0.002, 0.12, 0.002), Vector3(0.05, 1.37, -1.37), _mat(Color(0.9, 0.9, 0.9)))
+	var tree := CSGPolygon3D.new()
+	tree.polygon = PackedVector2Array([Vector2(-0.03, 0), Vector2(0, 0.07), Vector2(0.03, 0)])
+	tree.depth = 0.003
+	tree.position = Vector3(0.05, 1.24, -1.37)
+	tree.material = _mat(Color(0.1, 0.45, 0.2))
+	_cabin.add_child(tree)
+	# Sun visors, folded up.
+	for x in [-0.38, 0.38]:
+		_box(_cabin, Vector3(0.4, 0.02, 0.18), Vector3(x, 1.57, -1.25), _mat(Color(0.55, 0.52, 0.47)), Vector3(-10, 0, 0))
+	# Glovebox on Mom's side.
+	_box(_cabin, Vector3(0.36, 0.12, 0.01), Vector3(0.4, 0.72, -1.15), trim)
+	_box(_cabin, Vector3(0.06, 0.015, 0.012), Vector3(0.4, 0.76, -1.143), plastic)
+
+
+## The family-van stuff: Leo's booster seat, cupholders with Dad's travel mug,
+## a tissue box on the dash, the road atlas in the door pocket, Mom's purse,
+## and floor mats with Cheerios on them.
+func _build_clutter() -> void:
+	var fabric := _mat(Color(0.18, 0.2, 0.32))
+	# Booster seat under Leo.
+	_box(_cabin, Vector3(0.38, 0.08, 0.36), Vector3(0.38, 0.46, 0.62), fabric)
+	for x in [0.2, 0.56]:
+		_box(_cabin, Vector3(0.04, 0.1, 0.32), Vector3(x, 0.52, 0.62), fabric)
+	# Seatbelt across the booster, from the pillar.
+	_box(_cabin, Vector3(0.05, 0.6, 0.005), Vector3(0.6, 0.85, 0.82), _mat(Color(0.15, 0.15, 0.16)), Vector3(0, 0, 25))
+	# Console between the front seats, two cupholders, Dad's travel mug.
+	_box(_cabin, Vector3(0.2, 0.25, 0.45), Vector3(0, 0.12, -0.6), _mat(Color(0.14, 0.14, 0.15)))
+	var mug := CSGCylinder3D.new()
+	mug.radius = 0.035
+	mug.height = 0.16
+	mug.position = Vector3(-0.04, 0.32, -0.75)
+	mug.material = _mat(Color(0.65, 0.66, 0.7), 0.3)
+	_cabin.add_child(mug)
+	_box(_cabin, Vector3(0.06, 0.012, 0.06), Vector3(-0.04, 0.405, -0.75), _mat(Color(0.1, 0.1, 0.1)))
+	# A box of tissues riding on the dash, and the road atlas in Leo's door pocket.
+	_box(_cabin, Vector3(0.22, 0.09, 0.11), Vector3(0.45, 0.94, -1.3), _mat(Color(0.55, 0.75, 0.85)))
+	_box(_cabin, Vector3(0.05, 0.02, 0.03), Vector3(0.45, 0.995, -1.3), _mat(Color(0.97, 0.97, 0.97)))
+	_box(_cabin, Vector3(0.02, 0.26, 0.34), Vector3(0.7, 0.4, 0.35), _mat(Color(0.2, 0.45, 0.7)), Vector3(0, 0, 8))
+	# Mom's purse at her feet; floor mats; Cheerios.
+	_box(_cabin, Vector3(0.28, 0.18, 0.12), Vector3(0.45, 0.1, -1.0), _mat(Color(0.35, 0.22, 0.14)))
+	for z in [-0.9, 0.2, 1.3]:
+		_box(_cabin, Vector3(1.2, 0.01, 0.55), Vector3(0, 0.01, z), _mat(Color(0.1, 0.1, 0.1)))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	for i in 7:
+		var o := CSGTorus3D.new()
+		o.inner_radius = 0.003
+		o.outer_radius = 0.008
+		o.position = Vector3(rng.randf_range(0.1, 0.6), 0.02, rng.randf_range(0.0, 0.4))
+		o.material = _mat(Color(0.85, 0.7, 0.4))
+		_cabin.add_child(o)
 
 
 func _build_road() -> void:

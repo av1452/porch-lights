@@ -19,12 +19,38 @@ enum Step { HI_GRANDMA, FIND_SEAT, DINNER, FIND_GRANDMA, END }
 
 var _tv: TvScreen
 var _tv_flicker_t := 0.0
+var _house: GrandmasHouse
+var _clock: Interactable
+var _biscuit: Dog
+## Seats in the den after dinner: [who (under Story), position, facing].
+const DEN_SEATS := [
+	["Diners/UncleRay", Vector3(5.05, 0.0, -0.35), 90.0], ["Diners/Dad", Vector3(5.05, 0.0, 0.3), 90.0],
+	["Diners/AuntLisa", Vector3(5.05, 0.0, 0.95), 90.0], ["Diners/Mom", Vector3(6.0, 0.0, 1.78), 150.0],
+	["Diners/Jamie", Vector3(6.6, 0.0, 2.12), 150.0], ["Cousins/Maddie", Vector3(6.9, 0.0, -0.95), 40.0],
+	["Cousins/Tyler", Vector3(7.3, 0.0, 1.35), 148.0], ["Cousins/Ben", Vector3(6.2, 0.0, -1.5), 60.0],
+]
 
 
 func _ready() -> void:
 	super._ready()
 	stash(grandma_stool)
 	stash(grandma_table)
+	# The TV cart faces the tables, so everybody can see the game from dinner.
+	tv_cart.rotation_degrees.y = -110.0
+	# Maddie and Tyler sit at the ends of the kids' table, facing in.
+	for pair in [["Story/Cousins/Maddie", 90.0], ["House/Furniture/FoldingChair1", 90.0],
+			["Story/Cousins/Tyler", -90.0], ["House/Furniture/FoldingChair2", -90.0]]:
+		(get_node(pair[0]) as Node3D).rotation_degrees.y = pair[1]
+	# Dinner's on the big table now, so the turkey's off the counter.
+	for n in ["Turkey", "Platter", "GravyBoat", "Candle1"]:
+		($House/Furniture.get_node(n) as Node3D).visible = false
+	_house = GrandmasHouse.new()
+	_house.build(self)
+	stash(_house.evening)
+	_clock = HouseDetails._thing(self, "GrandmasClock", Vector3(3.97, 2.33, 0.0), Vector3(0.06, 0.36, 0.36), "Clock",
+		"12:40. Grandma said dinner at one. Grandma means one-thirty.",
+		"The clock ticks louder than the one at home. Everything at Grandma's is a little louder and a little slower.")
+	_add_biscuit()
 	_install_tv()
 
 	grandma_standing.used.connect(_on_grandma_hi)
@@ -65,6 +91,30 @@ func _ready() -> void:
 	objective("Say hi to Grandma")
 
 
+## Biscuit rode the whole way here with his nose on the window. Now he's
+## under the kids' table, where the food falls.
+func _add_biscuit() -> void:
+	_biscuit = Dog.new()
+	_biscuit.name = "Biscuit"
+	var pet := Interactable.new()
+	pet.name = "PetBody"
+	pet.prompt = "Pet Biscuit"
+	pet.memory_text = "Biscuit's under the kids' table. He's betting everything on Ben."
+	pet.repeat_text = "Ben drops a whole roll. Biscuit doesn't even chew it. Best day of his life."
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(0.3, 0.3, 0.6)
+	shape.shape = box
+	shape.position = Vector3(0, 0.15, 0)
+	pet.add_child(shape)
+	_biscuit.add_child(pet)
+	_biscuit.parked = true
+	_biscuit.pose = Dog.Pose.LIE
+	_biscuit.position = Vector3(-1.35, 0.0, 1.95)
+	_biscuit.rotation_degrees.y = 160.0
+	add_child(_biscuit)
+
+
 ## The game's on all day: put a live picture on Grandma's TV cart. Drop a
 ## real clip in as media/football.ogv and it plays instead (TvScreen).
 func _install_tv() -> void:
@@ -96,7 +146,7 @@ func _process(delta: float) -> void:
 
 
 func _exit_tree() -> void:
-	free_stashed([grandma_standing, grandma_stool, grandma_table, diners, cousins])
+	free_stashed([grandma_standing, grandma_stool, grandma_table, diners, cousins, _house.dinner, _house.evening])
 
 
 func _on_grandma_hi(_by: Node) -> void:
@@ -135,14 +185,17 @@ func _on_seat(_by: Node) -> void:
 	step = Step.DINNER
 	busy = true
 	seat.enabled = false
+	_house.set_clock(1, 35)
+	_clock.memory_text = "1:35. Grandma said one. It's always one-thirty. Everybody knows that but Grandma."
+	_clock.times_used = 0
 	objective("")
 	player.sit(Vector3(-1.5, 0.05, 1.25), 180.0)
 	await say([
 		["Maddie", "Jamie's at the big table this year."],
-		["Tyler", "That's so unfair. They're not even that old."],
+		["Tyler", "That's so unfair. He's not even that old."],
 		["Ben", "I'm gonna sit at the big table when I'm eleven."],
 		["Maddie", "You have to be, like, in high school."],
-		["", "You look over. Jamie's laughing at something Uncle Ray said. They don't look back."],
+		["", "You look over. Jamie's laughing at something Uncle Ray said. He doesn't look back."],
 		["Aunt Lisa", "Kids' table, look up! Say 'turkey!'"],
 	])
 	await Game.take_photo("The kids' table", "'03 11 27")
@@ -165,10 +218,9 @@ func _after_dinner() -> void:
 	hud.clear_line()
 
 	# Evening: everyone drifts to the den. The house goes quiet.
-	stash(diners)
-	stash(cousins)
 	stash(grandma_stool)
 	unstash(grandma_table, story)
+	_to_den()
 	window_day.visible = false
 	(lights.get_node("WindowLight") as OmniLight3D).light_energy = 0.0
 	(lights.get_node("KitchenLight") as OmniLight3D).light_energy = 0.4
@@ -190,6 +242,53 @@ func _after_dinner() -> void:
 	])
 	await wait(1.0)
 	objective("Find Grandma")
+
+
+## The table's cleared, the leftovers are in tubs, and everybody's in the
+## den with the game on: Dad and Uncle Ray and Aunt Lisa on the couch, Mom
+## and Jamie on the loveseat, the cousins in the beanbags. Grandpa's chair
+## stays empty. Biscuit goes to lie by Grandma.
+func _to_den() -> void:
+	stash(_house.dinner)
+	unstash(_house.evening, self)
+	_tv.channel = "off"
+	_house.den_tv.channel = "football"
+	_house.den_light.light_energy = 0.9
+	_house.set_clock(7, 35)
+	_clock.memory_text = "7:35. It got dark at five. Grandma's house in the dark is the coziest place in the world."
+	_clock.repeat_text = ""
+	_clock.times_used = 0
+	for seat_info: Array in DEN_SEATS:
+		var who := story.get_node(seat_info[0]) as Node3D
+		who.position = seat_info[1]
+		who.rotation_degrees.y = seat_info[2]
+		who.set_meta("mute_chatter", true)
+	# What everybody says from the den (Uncle Ray's asleep, so he says nothing).
+	var den_lines := {
+		"Diners/UncleRay": ["", "Uncle Ray is asleep with his mouth open and the remote on his chest."],
+		"Diners/Dad": ["Dad", "Third down. Shh. Okay, you can talk now. No. Shh."],
+		"Diners/AuntLisa": ["Aunt Lisa", "Go check on Grandma, sweetie. She likes the company."],
+		"Diners/Jamie": ["Jamie", "I'm not watching. I'm just sitting near the game."],
+		"Cousins/Maddie": ["Maddie", "The button jar's in Grandma's sewing room. Tomorrow, okay? Promise?"],
+		"Cousins/Tyler": ["Tyler", "I didn't do the alphabet. I got to G and Aunt Lisa looked at me."],
+		"Cousins/Ben": ["Ben", "I'm not tired. I'm resting my eyes. Like Uncle Ray."],
+	}
+	for path: String in den_lines:
+		var who := story.get_node(path) as Interactable
+		var line: Array = den_lines[path]
+		who.used.connect(func(_by: Node) -> void:
+			if busy or step != Step.FIND_GRANDMA:
+				return
+			if line[0] == "":
+				hud.show_memory(line[1], 4.0)
+			else:
+				say([line]))
+	# Biscuit, by Grandma's chair.
+	_biscuit.position = Vector3(-0.2, 0.0, -0.55)
+	_biscuit.rotation_degrees.y = -120.0
+	(_biscuit.get_node("PetBody") as Interactable).memory_text = "Biscuit left the den to lie by Grandma's feet. He knows who saves him the turkey skin."
+	(_biscuit.get_node("PetBody") as Interactable).repeat_text = "He sighs. Full. Very full."
+	(_biscuit.get_node("PetBody") as Interactable).times_used = 0
 
 
 func _on_grandma_table(_by: Node) -> void:

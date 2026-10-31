@@ -2064,7 +2064,7 @@ shape = SubResource("shape_0p15_0p35_0p15")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.48, -3.4)
 script = ExtResource("inter")
 prompt = "Look at phone"
-memory_text = "Jamie's flip phone. They spent a whole Saturday picking the ringtone."
+memory_text = "Jamie's flip phone. He spent a whole Saturday picking the ringtone."
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="House/JamieRoom/JamieRoomFull/Things/JamiePhone"]
 shape = SubResource("shape_0p2_0p08_0p2")
@@ -2158,7 +2158,7 @@ material = SubResource("mat_cardboard")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.4, -4.18)
 script = ExtResource("inter")
 prompt = "Read label"
-memory_text = "It's taped shut. You can't remember when they packed it."
+memory_text = "It's taped shut. You can't remember when he packed it."
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="House/JamieRoom/JamieRoomDream/PackedBox"]
 shape = SubResource("shape_0p6_0p3_0p1")

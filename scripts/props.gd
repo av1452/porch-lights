@@ -487,3 +487,362 @@ static func leash_on_hook() -> Node3D:
 	ring(r, 0.02, 0.03, Vector3(0, 0.02, 0), red, Vector3(90, 0, 0))
 	ball(r, 0.012, Vector3(0, 0.05, 0.008), Color(0.75, 0.75, 0.7))
 	return r
+
+
+# --- Pictures ------------------------------------------------------------
+
+## A framed photo with a real little picture in it (painted in code): faces
+## +Z, flat against a wall behind it. `kind`: family, beach, wedding, school,
+## baby, dog, lake, grandpa, halloween, snow. `size` is the frame's outside.
+static func photo(kind: String, size := Vector2(0.24, 0.18), frame := Color(0.45, 0.3, 0.18)) -> Node3D:
+	var r := _root("Photo")
+	var border := 0.018
+	box(r, Vector3(size.x, size.y, 0.015), Vector3(0, size.y / 2.0, 0.0075), frame)
+	box(r, Vector3(size.x - border * 1.4, size.y - border * 1.4, 0.003), Vector3(0, size.y / 2.0, 0.0155), Color(0.95, 0.94, 0.9))
+	var pic := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(size.x - border * 2.6, size.y - border * 2.6)
+	pic.mesh = quad
+	pic.position = Vector3(0, size.y / 2.0, 0.0175)
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = photo_texture(kind, size.x / size.y)
+	m.roughness = 0.35
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	pic.material_override = m
+	r.add_child(pic)
+	return r
+
+
+static var _photo_cache := {}
+
+
+## The picture inside photo(): a tiny snapshot, painted pixel by pixel.
+static func photo_texture(kind: String, aspect := 1.33) -> ImageTexture:
+	var key := "%s_%.2f" % [kind, aspect]
+	if _photo_cache.has(key):
+		return _photo_cache[key]
+	var h := 48
+	var w := int(round(h * aspect))
+	var img := Image.create(w, h, false, Image.FORMAT_RGB8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(kind)
+	match kind:
+		"beach":
+			_fill(img, 0, 0, w, h * 0.5, Color(0.55, 0.75, 0.95), Color(0.75, 0.88, 1.0))
+			_fill(img, 0, h * 0.45, w, h * 0.2, Color(0.15, 0.45, 0.7), Color(0.25, 0.6, 0.8))
+			_fill(img, 0, h * 0.65, w, h * 0.35, Color(0.92, 0.82, 0.6), Color(0.85, 0.75, 0.55))
+			_disc(img, w * 0.82, h * 0.15, 4, Color(1, 0.95, 0.7))
+			_people(img, [[0.35, 0.55, Color(0.9, 0.3, 0.3)], [0.5, 0.6, Color(0.3, 0.5, 0.9)], [0.62, 0.42, Color(0.95, 0.8, 0.2)]], h)
+		"wedding":
+			_fill(img, 0, 0, w, h, Color(0.82, 0.78, 0.72), Color(0.7, 0.66, 0.6))
+			_people(img, [[0.38, 0.85, Color(0.97, 0.97, 0.95)], [0.6, 0.95, Color(0.15, 0.15, 0.18)]], h, true)
+			_disc(img, w * 0.36, h * 0.82, 3, Color(0.9, 0.5, 0.6))
+		"school":
+			# The laser background. Everybody's had one.
+			_fill(img, 0, 0, w, h, Color(0.2, 0.15, 0.45), Color(0.05, 0.4, 0.6))
+			for i in 6:
+				var y0 := rng.randi_range(0, h)
+				for x in w:
+					var y := y0 + int(x * 0.6) - w / 3
+					if y >= 0 and y < h:
+						img.set_pixel(x, y, Color(1, 0.4, 0.9))
+			_people(img, [[0.5, 1.15, Color(0.3, 0.55, 0.35)]], h)
+		"baby":
+			_fill(img, 0, 0, w, h, Color(0.85, 0.82, 0.9), Color(0.75, 0.8, 0.9))
+			_disc(img, w * 0.5, h * 0.62, 13, Color(0.75, 0.85, 0.95))
+			_disc(img, w * 0.5, h * 0.42, 8, Color(0.95, 0.8, 0.7))
+		"dog":
+			_fill(img, 0, 0, w, h * 0.55, Color(0.6, 0.75, 0.9), Color(0.75, 0.85, 0.95))
+			_fill(img, 0, h * 0.55, w, h * 0.45, Color(0.35, 0.6, 0.3), Color(0.3, 0.5, 0.25))
+			_disc(img, w * 0.48, h * 0.62, 9, Color(0.8, 0.55, 0.3))
+			_disc(img, w * 0.62, h * 0.5, 6, Color(0.8, 0.55, 0.3))
+			_disc(img, w * 0.64, h * 0.48, 1, Color(0.1, 0.1, 0.1))
+			_people(img, [[0.3, 0.7, Color(0.95, 0.75, 0.2)]], h)
+		"lake":
+			_fill(img, 0, 0, w, h * 0.4, Color(0.95, 0.7, 0.5), Color(0.6, 0.6, 0.85))
+			_fill(img, 0, h * 0.4, w, h * 0.2, Color(0.2, 0.32, 0.22), Color(0.15, 0.28, 0.2))
+			_fill(img, 0, h * 0.6, w, h * 0.4, Color(0.3, 0.45, 0.65), Color(0.2, 0.3, 0.5))
+			_fill(img, w * 0.2, h * 0.68, w * 0.35, 3, Color(0.6, 0.4, 0.25), Color(0.6, 0.4, 0.25))
+			_people(img, [[0.3, 0.4, Color(0.85, 0.2, 0.2)], [0.42, 0.4, Color(0.2, 0.2, 0.25)]], h)
+		"grandpa":
+			# Black and white, a little faded: Grandpa, young, by his car.
+			_fill(img, 0, 0, w, h, Color(0.72, 0.68, 0.6), Color(0.55, 0.52, 0.46))
+			_fill(img, w * 0.45, h * 0.6, w * 0.5, h * 0.22, Color(0.25, 0.24, 0.22), Color(0.2, 0.2, 0.18))
+			_people(img, [[0.3, 1.0, Color(0.3, 0.29, 0.27)]], h, true)
+		"halloween":
+			_fill(img, 0, 0, w, h, Color(0.1, 0.08, 0.2), Color(0.25, 0.12, 0.2))
+			_people(img, [[0.35, 0.75, Color(0.95, 0.95, 0.95)], [0.6, 1.0, Color(0.1, 0.1, 0.1)]], h)
+			_disc(img, w * 0.5, h * 0.88, 4, Color(0.95, 0.5, 0.1))
+		"snow":
+			_fill(img, 0, 0, w, h * 0.5, Color(0.7, 0.75, 0.85), Color(0.85, 0.88, 0.92))
+			_fill(img, 0, h * 0.5, w, h * 0.5, Color(0.95, 0.96, 1.0), Color(0.88, 0.9, 0.95))
+			_disc(img, w * 0.65, h * 0.72, 7, Color(0.97, 0.97, 1.0))
+			_disc(img, w * 0.65, h * 0.55, 5, Color(0.97, 0.97, 1.0))
+			_people(img, [[0.35, 0.8, Color(0.85, 0.2, 0.2)], [0.45, 1.0, Color(0.2, 0.3, 0.7)]], h)
+		_:
+			# The whole family on the porch, everybody squinting.
+			_fill(img, 0, 0, w, h * 0.5, Color(0.65, 0.78, 0.92), Color(0.8, 0.86, 0.9))
+			_fill(img, 0, h * 0.5, w, h * 0.5, Color(0.55, 0.45, 0.35), Color(0.45, 0.37, 0.3))
+			_people(img, [[0.22, 1.0, Color(0.6, 0.55, 0.75)], [0.4, 1.05, Color(0.6, 0.2, 0.15)], [0.58, 0.85, Color(0.12, 0.12, 0.14)], [0.74, 0.65, Color(0.95, 0.75, 0.2)]], h)
+			_disc(img, w * 0.86, h * 0.86, 4, Color(0.8, 0.55, 0.3))
+	# A faint warm cast, like a drugstore print.
+	for y in h:
+		for x in w:
+			img.set_pixel(x, y, img.get_pixel(x, y).lerp(Color(1.0, 0.9, 0.75), 0.08))
+	var tex := ImageTexture.create_from_image(img)
+	_photo_cache[key] = tex
+	return tex
+
+
+static func _fill(img: Image, x0: float, y0: float, fw: float, fh: float, top: Color, bottom: Color) -> void:
+	var w := img.get_width()
+	var h := img.get_height()
+	for y in range(maxi(0, int(y0)), mini(h, int(y0 + fh))):
+		var c := top.lerp(bottom, (y - y0) / maxf(fh, 1.0))
+		for x in range(maxi(0, int(x0)), mini(w, int(x0 + fw))):
+			img.set_pixel(x, y, c)
+
+
+static func _disc(img: Image, cx: float, cy: float, rad: float, c: Color) -> void:
+	for y in range(int(cy - rad), int(cy + rad) + 1):
+		for x in range(int(cx - rad), int(cx + rad) + 1):
+			if x >= 0 and y >= 0 and x < img.get_width() and y < img.get_height() and Vector2(x - cx, y - cy).length() <= rad:
+				img.set_pixel(x, y, c)
+
+
+## Little people standing on the bottom of the picture: [x (0-1), height
+## (1 = a grown-up), shirt color]. `formal` gives everyone dark legs and a
+## tidy pose.
+static func _people(img: Image, who: Array, h: int, formal := false) -> void:
+	var w := img.get_width()
+	for p: Array in who:
+		var cx: float = p[0] * w
+		var tall: float = p[1] * h * 0.62
+		var feet := h - 2.0
+		var legs := Color(0.15, 0.15, 0.2) if formal else Color(0.25, 0.3, 0.45)
+		_fill(img, cx - 2, feet - tall * 0.45, 2, tall * 0.45, legs, legs)
+		_fill(img, cx + 1, feet - tall * 0.45, 2, tall * 0.45, legs, legs)
+		_fill(img, cx - 3.5, feet - tall * 0.85, 8, tall * 0.42, p[2], (p[2] as Color).darkened(0.2))
+		var head := maxf(2.0, tall * 0.11)
+		_disc(img, cx + 0.5, feet - tall * 0.85 - head, head, Color(0.92, 0.75, 0.62))
+		_fill(img, cx + 0.5 - head, feet - tall * 0.85 - head * 2.1, head * 2.0, head * 0.9, Color(0.3, 0.2, 0.12), Color(0.3, 0.2, 0.12))
+
+
+# --- 2003 ------------------------------------------------------------------
+
+## Earbuds on a cord down to a portable CD player in Jamie's lap.
+## `who` is a seated figure of `height` (Figure.person).
+static func discman(who: Node3D, height := 1.62) -> void:
+	var head_y := 0.8656 * height - 0.136 * height
+	for side in [-1, 1]:
+		ball(who, 0.018, Vector3(0.11 * side, head_y - 0.01, 0), Color(0.92, 0.92, 0.9))
+	var cord := cyl(who, 0.004, 0.5, Vector3(0.06, head_y - 0.27, -0.06), Color(0.92, 0.92, 0.9), Vector3(12, 0, 0))
+	cord.sides = 6
+	var player := Node3D.new()
+	player.position = Vector3(0.04, head_y - 0.5, 0.16)
+	who.add_child(player)
+	cyl(player, 0.07, 0.025, Vector3.ZERO, Color(0.7, 0.72, 0.76))
+	cyl(player, 0.03, 0.004, Vector3(0, 0.013, 0), Color(0.3, 0.35, 0.45))
+	box(player, Vector3(0.025, 0.004, 0.01), Vector3(0.0, 0.013, 0.05), Color(0.2, 0.9, 0.5), Vector3.ZERO, 1.0)
+	# The CD wallet next to him, zipped half open.
+	box(who, Vector3(0.16, 0.035, 0.16), Vector3(-0.2, head_y - 0.52, 0.18), Color(0.12, 0.12, 0.14))
+	box(who, Vector3(0.12, 0.004, 0.12), Vector3(-0.2, head_y - 0.5, 0.18), Color(0.75, 0.78, 0.85))
+
+
+## A free-trial internet CD in a cardboard sleeve, the kind that came in the mail every week.
+static func trial_cd() -> Node3D:
+	var r := _root("TrialCD")
+	box(r, Vector3(0.13, 0.004, 0.13), Vector3(0, 0.002, 0), Color(0.15, 0.3, 0.75))
+	cyl(r, 0.055, 0.002, Vector3(0.01, 0.005, 0.0), Color(0.8, 0.82, 0.88))
+	label(r, "500 HOURS\nFREE!", Vector3(-0.03, 0.0045, 0.03), 0.014, Color(1, 0.9, 0.2))
+	return r
+
+
+## A cordless phone in its cradle, and the answering machine with its
+## little red number blinking.
+static func phone_and_machine(messages := 1) -> Node3D:
+	var r := _root("PhoneMachine")
+	box(r, Vector3(0.1, 0.03, 0.14), Vector3(-0.08, 0.015, 0), Color(0.88, 0.87, 0.84))
+	box(r, Vector3(0.05, 0.18, 0.025), Vector3(-0.08, 0.1, -0.03), Color(0.88, 0.87, 0.84), Vector3(-12, 0, 0))
+	box(r, Vector3(0.016, 0.06, 0.004), Vector3(-0.08, 0.17, -0.012), Color(0.3, 0.4, 0.35), Vector3(-12, 0, 0))
+	box(r, Vector3(0.14, 0.045, 0.11), Vector3(0.07, 0.022, 0), Color(0.12, 0.12, 0.13))
+	box(r, Vector3(0.022, 0.016, 0.004), Vector3(0.1, 0.046, 0.02), Color(0.2, 0.02, 0.02))
+	if messages > 0:
+		label(r, str(messages), Vector3(0.1, 0.0475, 0.02), 0.014, Color(1, 0.15, 0.1))
+	cyl(r, 0.02, 0.004, Vector3(0.04, 0.046, 0.01), Color(0.6, 0.6, 0.62))
+	return r
+
+
+## A wall phone with a long, tangled cord (Grandma's, and the kitchen's).
+static func wall_phone(c := Color(0.9, 0.86, 0.75)) -> Node3D:
+	var r := _root("WallPhone")
+	box(r, Vector3(0.12, 0.2, 0.05), Vector3(0, 0.1, 0.025), c)
+	box(r, Vector3(0.05, 0.2, 0.045), Vector3(-0.02, 0.1, 0.07), c)
+	for i in 9:
+		ring(r, 0.012, 0.02, Vector3(0.03 + sin(i * 0.9) * 0.02, -0.02 - i * 0.045, 0.06), Color(c).darkened(0.1), Vector3(0, 0, 90))
+	return r
+
+
+## A clock radio with red numbers.
+static func clock_radio(time := "7:00") -> Node3D:
+	var r := _root("ClockRadio")
+	box(r, Vector3(0.2, 0.07, 0.1), Vector3(0, 0.035, 0), Color(0.1, 0.1, 0.11), Vector3(-6, 0, 0))
+	label(r, time, Vector3(-0.02, 0.04, 0.051), 0.035, Color(1, 0.12, 0.08), Vector3.ZERO).modulate = Color(1, 0.12, 0.08)
+	return r
+
+
+## A video game controller with its cord.
+static func controller(cord := 0.6) -> Node3D:
+	var r := _root("Controller")
+	var g := Color(0.15, 0.15, 0.17)
+	box(r, Vector3(0.1, 0.025, 0.05), Vector3(0, 0.0125, 0), g)
+	for side in [-1, 1]:
+		ball(r, 0.026, Vector3(side * 0.05, 0.012, 0.02), g, Vector3(1, 0.5, 1.4))
+	ball(r, 0.006, Vector3(0.035, 0.026, -0.005), Color(0.2, 0.7, 0.3))
+	ball(r, 0.006, Vector3(0.05, 0.026, 0.005), Color(0.85, 0.2, 0.2))
+	box(r, Vector3(0.02, 0.005, 0.006), Vector3(-0.04, 0.026, 0), Color(0.05, 0.05, 0.05))
+	box(r, Vector3(0.006, 0.005, 0.02), Vector3(-0.04, 0.026, 0), Color(0.05, 0.05, 0.05))
+	if cord > 0.0:
+		box(r, Vector3(0.006, 0.006, cord), Vector3(0, 0.003, -0.025 - cord / 2.0), Color(0.1, 0.1, 0.1))
+	return r
+
+
+# --- Cars --------------------------------------------------------------------
+
+## A parked car, long side along Z, nose toward -Z. `style`: sedan, wagon,
+## hatchback, pickup, minivan, suv. Bottom at y = 0.
+static func car(style: String, paint: Color) -> Node3D:
+	var r := _root("Car")
+	var glass := Color(0.12, 0.15, 0.2)
+	var black := Color(0.06, 0.06, 0.07)
+	var chrome := Color(0.7, 0.72, 0.75)
+	# [length, width, body height, cabin start (from nose), cabin length, cabin height, ride]
+	var d: Array = {
+		"sedan": [4.6, 1.75, 0.55, 1.35, 2.3, 0.45, 0.25],
+		"wagon": [4.7, 1.75, 0.55, 1.35, 3.0, 0.48, 0.25],
+		"hatchback": [3.9, 1.65, 0.55, 1.1, 2.3, 0.48, 0.22],
+		"pickup": [5.2, 1.85, 0.7, 1.6, 1.5, 0.55, 0.38],
+		"minivan": [4.9, 1.85, 0.7, 0.95, 3.75, 0.65, 0.25],
+		"suv": [4.6, 1.85, 0.75, 1.15, 3.2, 0.6, 0.4],
+	}.get(style, [4.6, 1.75, 0.55, 1.35, 2.3, 0.45, 0.25])
+	var length: float = d[0]
+	var width: float = d[1]
+	var body_h: float = d[2]
+	var ride: float = d[6]
+	var nose := -length / 2.0
+	box(r, Vector3(width, body_h, length), Vector3(0, ride + body_h / 2.0, 0), paint)
+	# Cabin and its windows (a dark band all around, with pillars in paint).
+	var cab_z: float = nose + d[3] + d[4] / 2.0
+	var cab_h: float = d[5]
+	var cab := box(r, Vector3(width - 0.12, cab_h, d[4]), Vector3(0, ride + body_h + cab_h / 2.0, cab_z), paint)
+	box(cab, Vector3(width - 0.1, cab_h * 0.72, d[4] - 0.25), Vector3(0, -0.02, 0), glass)
+	box(cab, Vector3(width - 0.3, cab_h * 0.7, d[4] + 0.02), Vector3(0, -0.02, 0), glass)
+	if style == "pickup":
+		# The bed: open, with a toolbox.
+		var bed_z: float = nose + d[3] + d[4] + 0.05
+		var bed_len: float = length - d[3] - d[4] - 0.1
+		box(r, Vector3(width - 0.1, 0.02, bed_len), Vector3(0, ride + body_h + 0.01, bed_z + bed_len / 2.0), black)
+		box(r, Vector3(width - 0.2, 0.25, 0.4), Vector3(0, ride + body_h + 0.13, bed_z + 0.25), Color(0.75, 0.1, 0.1))
+	# Wheels, bumpers, lights, plates.
+	for x in [-width / 2.0 + 0.05, width / 2.0 - 0.05]:
+		for z in [nose + 0.85, length / 2.0 - 0.85]:
+			var wheel := cyl(r, 0.32, 0.22, Vector3(x, 0.32, z), black, Vector3(0, 0, 90))
+			cyl(wheel, 0.17, 0.23, Vector3.ZERO, chrome)
+	box(r, Vector3(width + 0.04, 0.14, 0.12), Vector3(0, ride + 0.07, nose - 0.04), Color(0.25, 0.25, 0.27))
+	box(r, Vector3(width + 0.04, 0.14, 0.12), Vector3(0, ride + 0.07, length / 2.0 + 0.04), Color(0.25, 0.25, 0.27))
+	for side in [-1, 1]:
+		box(r, Vector3(0.32, 0.12, 0.03), Vector3(side * (width / 2.0 - 0.25), ride + body_h - 0.15, nose - 0.01), Color(1.0, 0.97, 0.85))
+		box(r, Vector3(0.25, 0.14, 0.03), Vector3(side * (width / 2.0 - 0.2), ride + body_h - 0.15, length / 2.0 + 0.01), Color(0.75, 0.08, 0.06))
+	box(r, Vector3(0.6, 0.16, 0.02), Vector3(0, ride + body_h * 0.45, nose - 0.005), black)
+	box(r, Vector3(0.32, 0.16, 0.02), Vector3(0, ride + 0.25, length / 2.0 + 0.11), Color(0.95, 0.95, 0.9))
+	# Side mirrors and door handles.
+	for side in [-1, 1]:
+		box(r, Vector3(0.1, 0.1, 0.06), Vector3(side * (width / 2.0 + 0.04), ride + body_h + 0.05, nose + d[3] + 0.1), black)
+		box(r, Vector3(0.012, 0.03, 0.12), Vector3(side * (width / 2.0 + 0.005), ride + body_h - 0.12, cab_z - 0.3), chrome)
+	return r
+
+
+# --- Thanksgiving ---------------------------------------------------------
+
+## The turkey on its platter: golden, glossy, drumsticks up, a few slices
+## already carved off the near side. Long axis along X.
+static func roast_turkey() -> Node3D:
+	var r := _root("Turkey")
+	cyl(r, 0.22, 0.015, Vector3(0, 0.008, 0), Color(0.93, 0.92, 0.88))
+	ring(r, 0.19, 0.23, Vector3(0, 0.014, 0), Color(0.55, 0.62, 0.75))
+	var skin := Color(0.72, 0.42, 0.16)
+	var body := ball(r, 0.12, Vector3(0, 0.085, 0), skin, Vector3(1.25, 0.75, 1.0))
+	body.material = Decorations.mat(skin)
+	(body.material as StandardMaterial3D).roughness = 0.35
+	for side in [-1, 1]:
+		var leg := ball(r, 0.05, Vector3(0.1, 0.11, side * 0.07), Color(0.68, 0.38, 0.14), Vector3(1.4, 0.9, 0.9))
+		leg.rotation_degrees.z = 25.0
+		cyl(r, 0.012, 0.05, Vector3(0.17, 0.14, side * 0.065), Color(0.95, 0.92, 0.85), Vector3(0, 0, 60))
+		ball(r, 0.045, Vector3(-0.02, 0.09, side * 0.1), Color(0.7, 0.4, 0.15), Vector3(1.2, 0.6, 0.6))
+	# Carved slices fanned on the platter.
+	for i in 4:
+		box(r, Vector3(0.07, 0.008, 0.05), Vector3(-0.13 + i * 0.012, 0.022 + i * 0.004, 0.12 - i * 0.015), Color(0.93, 0.85, 0.72), Vector3(0, i * 10, 8))
+	# Parsley and cranberries around the edge.
+	for i in 6:
+		var a := i * TAU / 6.0 + 0.3
+		ball(r, 0.018, Vector3(cos(a) * 0.18, 0.02, sin(a) * 0.17), Color(0.2, 0.5, 0.15) if i % 2 else Color(0.7, 0.05, 0.1))
+	return r
+
+
+## A serving dish: potatoes, beans, stuffing, cranberry, corn, butter, gravy.
+static func dish(kind: String) -> Node3D:
+	var r := _root("Dish")
+	match kind:
+		"potatoes":
+			cyl(r, 0.09, 0.06, Vector3(0, 0.03, 0), Color(0.95, 0.95, 0.93))
+			ball(r, 0.085, Vector3(0, 0.06, 0), Color(0.97, 0.95, 0.85), Vector3(1, 0.5, 1))
+			ball(r, 0.02, Vector3(0, 0.1, 0), Color(0.97, 0.85, 0.35), Vector3(1, 0.4, 1))
+			cyl(r, 0.006, 0.18, Vector3(0.04, 0.12, 0), Color(0.75, 0.75, 0.78), Vector3(0, 0, -40))
+		"beans":
+			box(r, Vector3(0.22, 0.05, 0.15), Vector3(0, 0.025, 0), Color(0.95, 0.95, 0.93))
+			box(r, Vector3(0.2, 0.012, 0.13), Vector3(0, 0.05, 0), Color(0.45, 0.55, 0.3))
+			for i in 9:
+				ball(r, 0.012, Vector3(-0.08 + (i % 5) * 0.04, 0.058, -0.04 + int(i / 5) * 0.07), Color(0.75, 0.5, 0.2), Vector3(1.5, 0.5, 1))
+		"stuffing":
+			cyl(r, 0.09, 0.05, Vector3(0, 0.025, 0), Color(0.85, 0.82, 0.75))
+			for i in 10:
+				var a := i * 2.4
+				box(r, Vector3(0.025, 0.02, 0.025), Vector3(cos(a) * (0.02 + i * 0.006), 0.055, sin(a) * (0.02 + i * 0.006)), Color(0.65, 0.45, 0.22), Vector3(i * 17, i * 31, 0))
+			ball(r, 0.07, Vector3(0, 0.045, 0), Color(0.6, 0.42, 0.22), Vector3(1.1, 0.3, 1.1))
+		"cranberry":
+			# The cranberry log: still the shape of the can, ridges and all.
+			cyl(r, 0.08, 0.012, Vector3(0, 0.006, 0), Color(0.93, 0.93, 0.9))
+			var cran := cyl(r, 0.035, 0.11, Vector3(0, 0.047, 0), Color(0.6, 0.04, 0.12), Vector3(0, 0, 90))
+			(cran.material as StandardMaterial3D).roughness = 0.2
+			for k in 4:
+				ring(r, 0.033, 0.037, Vector3(-0.04 + k * 0.027, 0.047, 0), Color(0.5, 0.03, 0.1), Vector3(0, 0, 90))
+		"corn":
+			cyl(r, 0.07, 0.05, Vector3(0, 0.025, 0), Color(0.95, 0.95, 0.93))
+			ball(r, 0.065, Vector3(0, 0.05, 0), Color(0.98, 0.82, 0.25), Vector3(1, 0.35, 1))
+		"butter":
+			box(r, Vector3(0.14, 0.012, 0.07), Vector3(0, 0.006, 0), Color(0.93, 0.93, 0.9))
+			box(r, Vector3(0.1, 0.03, 0.04), Vector3(0, 0.027, 0), Color(0.98, 0.9, 0.55))
+		"gravy":
+			cyl(r, 0.07, 0.01, Vector3(0, 0.005, 0), Color(0.93, 0.93, 0.9))
+			ball(r, 0.055, Vector3(0, 0.04, 0), Color(0.93, 0.93, 0.9), Vector3(1.5, 0.7, 0.9))
+			cyl(r, 0.045, 0.006, Vector3(0, 0.065, 0), Color(0.5, 0.3, 0.12))
+			cyl(r, 0.015, 0.05, Vector3(0.075, 0.06, 0), Color(0.93, 0.93, 0.9), Vector3(0, 0, -60))
+	return r
+
+
+## A full plate (food only; it sits on the scene's plates): turkey slices,
+## potatoes with a gravy lake, green beans, a dab of cranberry, a roll.
+## `kid` cuts everything up and keeps the foods from touching.
+static func dinner_plate(kid := false) -> Node3D:
+	var r := _root("Plate")
+	var s := 0.8 if kid else 1.0
+	for i in 2:
+		box(r, Vector3(0.07, 0.008, 0.045) * s, Vector3(-0.03 + i * 0.012, 0.004 + i * 0.004, -0.035) * s, Color(0.93, 0.85, 0.72), Vector3(0, i * 15, 5))
+	ball(r, 0.035 * s, Vector3(0.035, 0.012, -0.02) * s, Color(0.97, 0.95, 0.85), Vector3(1, 0.5, 1))
+	cyl(r, 0.018 * s, 0.004, Vector3(0.035 * s, 0.026 * s, -0.02 * s), Color(0.5, 0.3, 0.12))
+	for i in 5:
+		box(r, Vector3(0.05, 0.007, 0.007) * s, Vector3(-0.02 + i * 0.006, 0.006, 0.04 + i * 0.008) * s, Color(0.3, 0.5, 0.2), Vector3(0, i * 20 - 30, 0))
+	box(r, Vector3(0.025, 0.012, 0.025) * s, Vector3(0.055, 0.006, 0.04) * s, Color(0.6, 0.04, 0.12))
+	if not kid:
+		ball(r, 0.025, Vector3(-0.06, 0.015, 0.03), Color(0.85, 0.65, 0.35), Vector3(1.2, 0.8, 1))
+	return r

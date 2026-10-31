@@ -276,6 +276,7 @@ func _on_rug(_by: Node) -> void:
 	player.sit(Classroom.RUG + Vector3(0.3, -0.25, 0.3), -150.0)
 	lock(true)
 	room.tv_screen.channel = "winter"
+	room.clock_label.text = "2:35"
 	await player.tween_look_at(Classroom.TV_CART + Vector3(0, 1.5, 0), 1.0).finished
 	await say([
 		["", "Mrs. Patterson rolls in the TV cart. Everybody cheers like it's a rocket launch. The claymation reindeer special, on VHS."],
@@ -290,6 +291,9 @@ func _on_rug(_by: Node) -> void:
 	Audio.play_music("school_jingle_bells", 1.0, -2.0)
 	await say([
 		["", "Everybody sings. You sing the loudest. 'Batman smells' goes around the back row. Mrs. Patterson pretends not to hear."],
+	])
+	room.clock_label.text = "2:59"
+	await say([
 		["", "Then the clock says 2:59, and everybody is very, very quiet."],
 	])
 	Audio.stop_music(1.5)

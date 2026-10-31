@@ -52,6 +52,9 @@ var _radio: Radio
 func _ready() -> void:
 	super._ready()
 	_tv_energy = (lights.get_node("TVGlow") as OmniLight3D).light_energy
+	Decorations.set_clock(self, ($House/LivingRoom/Things/Clock as Interactable).memory_text)
+	HouseDetails.dress(self, "halloween")
+	street.add_people("trick_or_treat")
 	stash(dream_hall)
 	stash(jamie_dream)
 
@@ -210,7 +213,7 @@ func _on_jamie_door(_by: Node) -> void:
 	if step != Step.SHOW_JAMIE:
 		var muffled := [
 			"Music through the door, a lot of guitar. Jamie yells 'busy!' and turns it up.",
-			"You sit against the door for a while. You can hear them laughing at something on the computer.",
+			"You sit against the door for a while. You can hear him laughing at something on the computer.",
 		]
 		hud.show_memory(muffled[_knocks % muffled.size()], 5.0)
 		_knocks += 1
@@ -258,8 +261,8 @@ func _on_jamie_pc(_by: Node) -> void:
 	busy = true
 	jamie_pc.enabled = false
 	await say([
-		["", "Jamie's typing to three people at once. Every time the door-creak sound plays, they type faster."],
-		["", "Their away message is a song lyric you don't understand yet."],
+		["", "Jamie's typing to three people at once. Every time the door-creak sound plays, he types faster."],
+		["", "His away message is a song lyric you don't understand yet."],
 	])
 	await _read_jamie_im()
 	await say([
@@ -276,7 +279,7 @@ func _on_jamie_pc(_by: Node) -> void:
 	objective("Get ready for bed")
 
 
-## One of Jamie's chats, read over their shoulder. Jamie is talking about
+## One of Jamie's chats, read over his shoulder. Jamie is talking about
 ## Static Parade, then about Leo.
 func _read_jamie_im() -> void:
 	lock(true)

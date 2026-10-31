@@ -3,7 +3,7 @@
 **A short, first-person story game about being a kid in the early 2000s, from Halloween to
 New Year's Eve.**
 
-You play Leo, an 8-year-old. Your older sibling Jamie is 15 and has a band poster on every
+You play Leo, an 8-year-old. Your older brother Jamie is 15 and has a band poster on every
 wall, Mom and Dad are doing their best, Biscuit is a very good dog, and Grandma brings the
 fudge. There's no combat, no timer and no way to lose. You walk around familiar places, pick
 things up, listen to your family, and live through one holiday season: candy taxes, the kids'
@@ -38,7 +38,8 @@ light you leave on so everyone can find their way home.
 - **Talk to people.** Mom, Dad, Jamie, Grandma, cousins, classmates and the teacher all have things to say, and they say different things as the day goes on.
 - **Do the holiday things:** sort your candy, open the cranberry sauce, pass out cupcakes, decorate cookies, wrap presents, find the one dead bulb on the tree, build a snowman, stay up for the countdown.
 - **Spend time with Biscuit.** He follows you around, naps, rides along in the van, and shows up in your dreams.
-- **Change the station** on the kitchen radio: spooky classics on Halloween, carols at Christmas.
+- **Change the station** on the kitchen radio: spooky classics on Halloween, carols at Christmas. In the van, ask Dad to change it: the parade, the classical station, static.
+- **Look around a lived-in 2003:** the VCR blinking 12:00, the answering machine, the free internet CD that comes in the mail every week, Jamie's Discman and burned CDs, Leo's virtual pet, Grandma's rotary phone and her console TV in the wood-paneled den.
 - **Collect photos.** Whenever someone pulls out a disposable camera, the picture really gets taken. Your prints "come back from the drugstore" at the end, and you can look at them any time in the **Photo Album**.
 
 Objectives in the top-left corner always tell you the next step, but you're never rushed. Wander, poke around and listen.

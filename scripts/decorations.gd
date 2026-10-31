@@ -29,6 +29,40 @@ static func hide(n: Node3D) -> void:
 		(n as Interactable).enabled = false
 
 
+## Turns the living-room clock's hands to a time, and adds the twelve hour
+## marks the first time. Pass the clock's line ("9:42. Way past bedtime.");
+## a line that doesn't start with a time leaves the hands alone.
+static func set_clock(house: Node, line: String) -> void:
+	var re := RegEx.create_from_string("^(\\d{1,2}):(\\d{2})")
+	var m := re.search(line)
+	if m == null:
+		return
+	var hour := int(m.get_string(1)) % 12
+	var minute := int(m.get_string(2))
+	var furniture := house.get_node("House/LivingRoom/Furniture")
+	var face := furniture.get_node("ClockFace") as Node3D
+	var center := face.position + Vector3(0, 0, 0.025)
+	if not furniture.has_node("HourMarks"):
+		var marks := Node3D.new()
+		marks.name = "HourMarks"
+		furniture.add_child(marks)
+		for i in 12:
+			var tick := CSGBox3D.new()
+			var a := i * TAU / 12.0
+			tick.size = Vector3(0.01, 0.03 if i % 3 == 0 else 0.018, 0.004)
+			tick.position = center + Vector3(sin(a), cos(a), 0) * 0.13
+			tick.rotation.z = -a
+			tick.material = mat(Color(0.12, 0.12, 0.12))
+			marks.add_child(tick)
+	var hands := [["HourHand", (hour + minute / 60.0) / 12.0, 0.08, 0.016], ["MinuteHand", minute / 60.0, 0.12, 0.01]]
+	for h: Array in hands:
+		var hand := furniture.get_node(h[0]) as CSGBox3D
+		var a: float = h[1] * TAU
+		hand.size = Vector3(h[3], h[2], 0.01)
+		hand.rotation = Vector3(0, 0, -a)
+		hand.position = center + Vector3(sin(a), cos(a), 0) * h[2] * 0.4 + Vector3(0, 0, 0.004 if h[0] == "MinuteHand" else 0.0)
+
+
 ## Chapter 1's Halloween things, and seated-at-the-computer Jamie.
 static func put_away_halloween(house: Node) -> void:
 	for p in ["Story/Candy", "Story/Mom", "House/LivingRoom/Things/Mask", "House/LivingRoom/Things/JackOLantern",

@@ -34,7 +34,13 @@ func _initialize():
 	print("pancakes flipped=", ch._flips, " jamie in yard=", ch.jamie.position.z > 6.0)
 	ch.front_door.interact(ch.player); await until_step(ch.Step.PORCH)
 	ch._on_porch(); await until_step(ch.Step.THROW)
-	print("can reach jamie=", ch.player.ray.target_position.length() > Vector3(-1.55, 1.15, 4.3).distance_to(ch.jamie.global_position + Vector3(0, 1.3, 0)), " prompt=", ch.jamie.prompt)
+	# Standing on the porch, looking at Jamie out in the yard, targets him.
+	ch.player.teleport(Vector3(-1.55, 0.05, 4.3), 0.0)
+	await physics_frame
+	ch.player.tween_look_at(ch.jamie.global_position + Vector3(0, 1.0, 0), 0.01)
+	for i in 4:
+		await physics_frame
+	print("can aim at jamie=", ch.player._target == ch.jamie, " prompt=", ch.jamie.prompt)
 	ch.jamie.interact(ch.player)
 	for i in 80:
 		await create_timer(1.0).timeout

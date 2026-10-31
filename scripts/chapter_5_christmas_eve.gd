@@ -155,6 +155,8 @@ func _ready() -> void:
 
 ## Late, snowy December afternoon light. Remembers the night look for later.
 func _afternoon() -> void:
+	# Kids pulling sleds up the street (the window says so).
+	street.add_people("sleds")
 	var sky := env.sky.sky_material as ProceduralSkyMaterial
 	var sun := lights.get_node("Moon") as DirectionalLight3D
 	_night_look = {
@@ -181,6 +183,8 @@ func _afternoon() -> void:
 
 ## Back to Christmas Eve night: the original sky, lights and windows.
 func _nightfall() -> void:
+	# Everybody's gone in for the night.
+	street.clear_people()
 	var sky := env.sky.sky_material as ProceduralSkyMaterial
 	var sun := lights.get_node("Moon") as DirectionalLight3D
 	sky.sky_top_color = _night_look.sky_top
@@ -457,7 +461,7 @@ func _on_bulb(_by: Node, index: int) -> void:
 	Decorations.light_tree({ "bulbs": _bulb_mats, "glow": _tree_glow }, true)
 	await say([
 		["Jamie", "...YES. See? Just the one."],
-		["", "The whole tree lights up at once. Red, green, blue, gold. Dad cheers from the couch like it's a touchdown."],
+		["", "The whole tree lights up at once. Red, green, blue, gold. Dad cheers from across the room like it's a touchdown."],
 		["Dad", "THAT'S what I'm talking about!"],
 	])
 	busy = false
@@ -540,7 +544,7 @@ func _on_porch() -> void:
 	add_child(on_rail)
 	await say([
 		["", "You put the carrots on the porch rail, in a neat little row. Three carrots. Nine reindeer. They'll share."],
-		["", "Every house on the street is lit up. Inflatable Santas, light-up reindeer, the Hendersons' blinking star."],
+		["", "Every house on the street is lit up. Lights on every roof, a wreath on every door, and the Hendersons' inflatable Santa, bowing at everybody."],
 	])
 	await wait(1.0)
 	Audio.play_sfx("dog_tags", STREET_POINT + Vector3(0, 8, 0), 6.0)
@@ -580,7 +584,7 @@ func _enter_dream() -> void:
 	var door := _dream_hall.get_node("DreamDoor") as Interactable
 	door.prompt = "Open the door"
 	door.used.connect(_on_dream_door)
-	tv_screen.channel = "dream"
+	tv_screen.channel = "xmas_dream"
 	Audio.set_dreaming(true)
 	Audio.play_music("dream_hall", 3.0)
 	for n in ["Lamp", "KitchenLight", "HallLight", "PorchLight"]:

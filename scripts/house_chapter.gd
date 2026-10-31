@@ -22,6 +22,9 @@ var _tv_energy := 0.0
 var _porch_energy := 0.0
 var _dream_hall: Node
 var _jamie_dream: Node
+## The time of year, for the street and the porch ("fall" or "christmas").
+## Set it before super._ready().
+var season := "christmas"
 
 
 func _ready() -> void:
@@ -34,6 +37,8 @@ func _ready() -> void:
 	_porch_energy = porch_light.light_energy
 	dog.player = player
 	Decorations.put_away_halloween(self)
+	street.decorate(season, season == "christmas")
+	HouseDetails.dress(self, season)
 	# Chapter 1's dream pieces aren't used after Halloween.
 	_dream_hall = $DreamHall
 	_jamie_dream = $House/JamieRoom/JamieRoomDream
@@ -82,7 +87,7 @@ func _process(delta: float) -> void:
 ## Every window in the house shares a night-sky glass. For daytime scenes,
 ## swap in daylight glass (and back again at dusk).
 func set_window_daylight(day: bool) -> void:
-	for glass in find_children("Glass", "CSGBox3D", true, false):
+	for glass in find_children("*Glass", "CSGBox3D", true, false):
 		var g := glass as CSGBox3D
 		# Clear glass shows the real sky already; only painted night glass swaps.
 		var current := g.get_meta("night_material", g.material) as StandardMaterial3D
@@ -132,6 +137,8 @@ func house_text(lines: Dictionary) -> void:
 		thing.memory_text = lines[thing_name][0]
 		thing.repeat_text = lines[thing_name][1] if lines[thing_name].size() > 1 else ""
 		thing.times_used = 0
+		if thing_name == "Clock":
+			Decorations.set_clock(self, thing.memory_text)
 
 
 func hide_node(path: String) -> void:

@@ -44,6 +44,13 @@ func _on_used(_by: Node) -> void:
 	_play(_index + 1)
 
 
+## Loud enough to hear all over the house, like Christmas morning.
+func fill_house(volume := -6.0) -> void:
+	_player.volume_db = volume
+	_player.unit_size = 7.0
+	_player.max_distance = 40.0
+
+
 ## Off, quietly (bedtime, dreams). Using it turns it back on.
 func turn_off() -> void:
 	_on = false

@@ -18,6 +18,8 @@ const TV_CART := Vector3(3.9, 0.0, -0.9)
 const GIFT_PILE := Vector3(1.2, 0.0, -3.2)
 const WINDOW_X := -4.94
 
+## The wall clock (set its text as the afternoon goes on).
+var clock_label: Label3D
 var tv_screen: TvScreen
 var _sky: StandardMaterial3D
 
@@ -151,7 +153,8 @@ func _front_wall() -> void:
 	face.position = Vector3(3.2, 2.45, fz + 0.03)
 	face.material = _mat(Color(0.97, 0.97, 0.95))
 	add_child(face)
-	_text("2:55", Vector3(3.2, 2.45, fz + 0.06), 28, Color(0.1, 0.1, 0.1))
+	# A digital readout on the face; the party starts after lunch.
+	clock_label = _text("1:50", Vector3(3.2, 2.45, fz + 0.06), 28, Color(0.1, 0.1, 0.1))
 	# teacher's desk, with the North Pole mailbox on it
 	var wood := _mat(Color(0.5, 0.36, 0.22), 0.0, 0.6)
 	_box(Vector3(1.5, 0.75, 0.75), TEACHER_DESK + Vector3(0, 0.375, 0), wood, true)

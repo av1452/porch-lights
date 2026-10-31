@@ -40,6 +40,12 @@ var _crouch_on := false
 var crouching := false
 ## While seated you can look around but not walk.
 var seated := false
+## Something out of arm's reach you can still use by looking at it: Jamie
+## across the yard with a snowball in your hand, the dice from the couch.
+## Looking within `aim_degrees` of `aim_point` targets it. Clear with aim_at(null).
+var aim_target: Interactable = null
+var aim_point := Vector3.ZERO
+var aim_degrees := 10.0
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _bob_t := 0.0
@@ -171,19 +177,33 @@ func _update_bob(delta: float) -> void:
 		if step != _step_index:
 			_step_index = step
 			var vol := -14.0 if crouching else (-4.0 if hspeed > walk_speed + 0.3 else -8.0)
+			# Dreams echo; soft, dreamy footsteps instead of loud ones.
+			if Audio.dreaming:
+				vol -= 12.0
 			Audio.play_sfx("footstep_" + _surface, global_position, vol, 0.08, 4)
 	camera.position = camera.position.lerp(target, clampf(10.0 * delta, 0.0, 1.0))
 
 
 func _update_target() -> void:
 	var found: Interactable = null
-	if ray.is_colliding() and not input_locked:
+	if aim_target and is_instance_valid(aim_target) and aim_target.enabled and not input_locked:
+		var to := aim_point - camera.global_position
+		if (-camera.global_basis.z).angle_to(to) < deg_to_rad(aim_degrees):
+			found = aim_target
+	if found == null and ray.is_colliding() and not input_locked:
 		var c := ray.get_collider()
 		if c is Interactable and (c as Interactable).enabled:
 			found = c
 	if found != _target:
 		_target = found
 		target_changed.emit(_target)
+
+
+## Lets `it` be used by looking toward `point` from anywhere (see aim_target).
+func aim_at(it: Interactable, point := Vector3.ZERO, degrees := 10.0) -> void:
+	aim_target = it
+	aim_point = point
+	aim_degrees = degrees
 
 
 ## Smoothly change field of view (used for dream transitions).

@@ -29,9 +29,12 @@ func _initialize():
 		await create_timer(0.5).timeout
 		if ch._dice and not ch.busy:
 			break
-	var eye: Vector3 = ch.player.camera.global_position
-	print("board on table=", ch._board.is_inside_tree(), " dice in reach=", eye.distance_to(ch._dice.global_position) < 1.6,
-		" clock=", ch.get_node("House/LivingRoom/Things/Clock").memory_text.left(5))
+	# Seated on the couch: looking down at the board picks up the dice.
+	ch.player.tween_look_at(ch.BOARD_AT, 0.01)
+	for i in 4:
+		await physics_frame
+	print("board on table=", ch._board.is_inside_tree(), " seated=", ch.player.seated, " dice targeted=", ch.player._target == ch._dice,
+		" clock=", ch.get_node("House/LivingRoom/Things/Clock").memory_text.left(5), " tv=", ch.tv_screen.channel)
 	for i in ch.ROLLS.size():
 		ch._dice.interact(ch.player)
 		if i == ch.ROLLS.size() - 1:

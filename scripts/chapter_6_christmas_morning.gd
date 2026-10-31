@@ -46,9 +46,14 @@ func _ready() -> void:
 	Decorations.christmas_tree(self, true)
 	_morning()
 	_before_dawn()
-	tv_screen.channel = "christmas"
+	# The yule log channel: a fire on TV all morning, nothing else.
+	tv_screen.channel = "yulelog"
+	tv.memory_text = "The yule log channel. It's just a fire, on TV, all morning. Dad says it's the best show of the year."
+	tv.repeat_text = "Every once in a while a log falls and everybody looks. It's the same log falling. It's on a loop."
 	set_porch_light(true)
-	Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -14.0)
+	# Christmas music all morning, all over the house: Mom's had the station on since five.
+	var radio := Radio.on_kitchen_counter(self, PackedStringArray(["radio_deck_the_halls", "radio_we_wish_you", "radio_wenceslas"]), -8.0)
+	radio.fill_house(-8.0)
 	# At the stove, to the side of the pan so you can reach it too.
 	dad.position = Vector3(6.05, 0.0, -1.05)
 	dad.rotation.y = deg_to_rad(60.0)
@@ -357,6 +362,12 @@ func _serve_pancakes() -> void:
 		Props.ball(plate, 0.006, Vector3(side * 0.012, 0.03, 0.08), Color(0.2, 0.1, 0.05))
 	Props.cyl(plate, 0.05, 0.003, Vector3(0.05, 0.014, -0.03), Color(0.55, 0.3, 0.08))
 	Look.upgrade(plate)
+	# Presents took a while. The neighborhood's up now too.
+	street.add_people("sleds")
+	house_text({
+		"Clock": ["8:20. Two whole hours of presents, and nobody's even dressed yet.",
+			"The sun's all the way up. It's still Christmas. It's Christmas all day."],
+	})
 
 
 func _on_grandma(_by: Node) -> void:
@@ -415,9 +426,9 @@ func _on_porch() -> void:
 		["Jamie", "Merry Christmas! That was your present from me. Also the CD. But mostly the snowball."],
 		["", "You scoop a handful of snow off the porch rail and pack it tight. Revenge."],
 	])
-	# Jamie's out in the yard: let Leo reach that far, just for this.
-	player.ray.target_position = Vector3(0, 0, -10.0)
+	# Jamie's out in the yard, past the porch rail: aim at him and throw.
 	jamie.prompt = "Throw the snowball"
+	player.aim_at(jamie, jamie.global_position + Vector3(0, 1.0, 0), 14.0)
 	lock(false)
 	busy = false
 	objective("Throw one back at Jamie")
@@ -449,8 +460,14 @@ func _on_throw() -> void:
 	busy = true
 	objective("")
 	lock(true)
-	player.ray.target_position = Vector3(0, 0, -1.6)
+	player.aim_at(null)
 	jamie.prompt = "Talk to Jamie"
+	# Grandma's come to the open door in her robe; Biscuit's out in the yard.
+	grandma.queue_free()
+	grandma = Figure.person(self, "Grandma", Vector3(-2.1, 0.0, 3.05), 0.0, 1.6, Figure.GRANDMA)
+	dog.global_position = JAMIE_YARD + Vector3(1.0, 0.05, -0.9)
+	dog.set_pose(Dog.Pose.STAND)
+	dog.bark(1)
 	await _throw_snowball()
 	await say([
 		["Jamie", "HEY! Right in the hood! That's going down my back!"],
